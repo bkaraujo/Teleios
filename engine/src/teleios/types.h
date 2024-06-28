@@ -15,7 +15,7 @@
 #   else
 #       define TLAPI
 #   endif // TL_EXPORT
-#elif  defined(__clang__) || defined(__gcc__)
+#elif  defined(__clang__) || defined(__GNUC__)
 #   define TLINLINE __attribute__((always_inline)) inline
 #   define TLNOINLINE __attribute__((noinline))
 #   ifdef TL_EXPORT
@@ -49,10 +49,25 @@ TLSTASSERT(sizeof(u16) == 2, "Expected u16 to be 2 bytes.");
 TLSTASSERT(sizeof(u32) == 4, "Expected u32 to be 4 bytes.");
 TLSTASSERT(sizeof(u64) == 8, "Expected u64 to be 8 bytes.");
 
+#define U8MAX               255
+#define U16MAX              65535
+#define U32MAX              4294967295
+#define U64MAX              18446744073709551615
+
 typedef signed char         i8;
 typedef signed short        i16;
 typedef signed int          i32;
 typedef signed long long    i64;
+
+#define I8MAX               127
+#define I16MAX              32767
+#define I32MAX              2147483647
+#define I64MAX              9223372036854775807
+
+#define I8MIN               -128
+#define I16MIN              -32768
+#define I32MIN              -2147483648
+#define I64MIN              -9223372036854775808
 
 TLSTASSERT(sizeof(i8) == 1, "Expected i8 to be 1 byte.");
 TLSTASSERT(sizeof(i16) == 2, "Expected i16 to be 2 bytes.");
@@ -70,6 +85,5 @@ typedef char                b8;
 
 #define true  1
 #define false 0
-
 
 #endif // TELEIOS_TYPES

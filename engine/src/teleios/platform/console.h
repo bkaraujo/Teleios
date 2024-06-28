@@ -3,6 +3,6 @@
 
 #include "teleios/types.h"
 
-void tl_platform_console(const char* message);
+void tl_platform_console(u8 level, const char* message);
 
 #endif // TELEIOS_PLATFORM_CONSOLE
