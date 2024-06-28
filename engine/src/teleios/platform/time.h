@@ -14,6 +14,7 @@ typedef struct {
 } TLTime;
 
 void tl_platform_time_now(TLTime* time);
+u64 tl_platform_time_epoch(void);
 
 typedef struct {
     u64 start;

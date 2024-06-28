@@ -17,6 +17,26 @@ void tl_platform_time_now(TLTime* time) {
     time->millis    = st.wMilliseconds;
 }
 
+u64 tl_platform_time_epoch(void) {
+    // #################################################################
+    // Obtain the system 64bit time
+    // #################################################################
+    FILETIME stime; GetSystemTimeAsFileTime(&stime);
+    ULARGE_INTEGER curr_time_as_uint64;
+    curr_time_as_uint64.HighPart = stime.dwHighDateTime;
+    curr_time_as_uint64.LowPart = stime.dwLowDateTime;
+    // #################################################################
+    // Translate the extern unix_epoch to 64bit filetime
+    // #################################################################
+    FILETIME utime; SystemTimeToFileTime(&unix_epoch, &utime);
+    ULARGE_INTEGER unix_epoch_as_uint64;
+    unix_epoch_as_uint64.HighPart = utime.dwHighDateTime;
+    unix_epoch_as_uint64.LowPart = utime.dwLowDateTime;
+    // #################################################################
+    // Compute the milliseconds since unix epoch
+    // #################################################################
+    return (curr_time_as_uint64.QuadPart - unix_epoch_as_uint64.QuadPart) / 10000;
+}
 
 void tl_platform_timer_start(TLTimer* timer) {
     if (timer == NULL) return;
@@ -36,7 +56,7 @@ void tl_platform_timer_update(TLTimer* timer){
 u64 tl_platform_timer_micros(TLTimer* timer) {
     if (timer == NULL) return 0;
     u64 elapsed = timer->update - timer->start;
-    u64 elapsedMicros = elapsed * 1000000;
+    u64 elapsedMicros = elapsed * 1000000; // 100-nanos to micros
     return elapsedMicros / frequency.QuadPart;
 }
 

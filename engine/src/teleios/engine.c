@@ -17,7 +17,7 @@ TLAPI b8 tl_engine_initialize(void) {
 TLAPI b8 tl_engine_run(void) {
     TLTRACE("tl_engine_run(void)");
 
-    u64 fps = 0;
+    u32 fps = 0;
     
     TLTimer timer = { 0 }; 
     tl_platform_timer_start(&timer);
