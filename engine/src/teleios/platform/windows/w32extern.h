@@ -4,5 +4,7 @@
 #include <Windows.h>
 
 extern HINSTANCE hinstance;
+extern HANDLE hconsole;
+extern HANDLE heap;
 
 #endif // TELEIOS_PLATFORM_WINDOWS

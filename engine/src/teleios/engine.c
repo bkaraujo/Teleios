@@ -3,11 +3,12 @@
 #include "teleios/platform/lifecycle.h"
 
 TLAPI b8 tl_engine_initialize(void) {
-    TLTRACE("tl_engine_initialize(void)");
     if (!tl_platform_initialize()) {
         TLERROR("Platform failed to initialize");
         return false;
     }
+
+    TLTRACE("tl_engine_initialize(void)");
 
     return true;
 }
