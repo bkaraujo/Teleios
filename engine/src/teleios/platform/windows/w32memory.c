@@ -4,7 +4,6 @@
 #include "teleios/platform/memory.h"
 #include "teleios/platform/windows/w32extern.h"
 
-
 void* tl_platform_memory_alloc(u64 size) {
     return (void*)HeapAlloc(heap, HEAP_ZERO_MEMORY, size);
 }

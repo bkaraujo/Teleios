@@ -3,7 +3,6 @@
 #ifdef TLPLATFORM_WINDOWS
 #include <malloc.h>
 #include "teleios/platform/console.h"
-#include "teleios/platform/memory.h"
 #include "teleios/platform/windows/w32extern.h"
 
 void tl_platform_console(const char* message) {
@@ -12,7 +11,7 @@ void tl_platform_console(const char* message) {
     // Convert from char* to wchar_t*
     // ##############################################################################
     int length = MultiByteToWideChar(CP_OEMCP, MB_COMPOSITE, message, -1, NULL, 0);
-    void* unicode = _malloca(length);
+    void* unicode = _malloca(length * sizeof(wchar_t));
     MultiByteToWideChar(CP_OEMCP, MB_COMPOSITE, message, -1, unicode, length);
     // ##############################################################################
     // Change the console color
