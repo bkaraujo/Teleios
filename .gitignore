@@ -1,0 +1,7 @@
+# Directories
+.vs/
+Binaries/
+
+# Files
+*.vcxproj*
+*.sln

@@ -1,0 +1,75 @@
+#ifndef TELEIOS_TYPES
+#define TELEIOS_TYPES
+
+#include "stddef.h"
+// ############################################################################
+//
+//                               BASIC MACROS
+// 
+// ############################################################################
+#ifdef _MSC_VER
+#   define TLINLINE __forceinline
+#   define TLNOINLINE __declspec(noinline)
+#   ifdef TL_EXPORT
+#       define TLAPI __declspec(dllexport)
+#   else
+#       define TLAPI
+#   endif // TL_EXPORT
+#elif  defined(__clang__) || defined(__gcc__)
+#   define TLINLINE __attribute__((always_inline)) inline
+#   define TLNOINLINE __attribute__((noinline))
+#   ifdef TL_EXPORT
+#       define TLAPI __attribute__((visibility("default")))
+#   else
+#       define TLAPI
+#   endif // TL_EXPORT
+#else
+#   define TLAPI
+#   define TLINLINE static inline
+#   define TLNOINLINE
+#endif
+
+#if defined(__clang__) || defined(__GNUC__)
+#   define TLSTASSERT _Static_assert
+#else
+#   define TLSTASSERT static_assert
+#endif
+// ############################################################################
+//
+//                               BASIC TYPES
+// 
+// ############################################################################
+typedef unsigned char       u8;
+typedef unsigned short      u16;
+typedef unsigned int        u32;
+typedef unsigned long long  u64;
+
+TLSTASSERT(sizeof(u8) == 1, "Expected u8 to be 1 byte.");
+TLSTASSERT(sizeof(u16) == 2, "Expected u16 to be 2 bytes.");
+TLSTASSERT(sizeof(u32) == 4, "Expected u32 to be 4 bytes.");
+TLSTASSERT(sizeof(u64) == 8, "Expected u64 to be 8 bytes.");
+
+typedef signed char         i8;
+typedef signed short        i16;
+typedef signed int          i32;
+typedef signed long long    i64;
+
+TLSTASSERT(sizeof(i8) == 1, "Expected i8 to be 1 byte.");
+TLSTASSERT(sizeof(i16) == 2, "Expected i16 to be 2 bytes.");
+TLSTASSERT(sizeof(i32) == 4, "Expected i32 to be 4 bytes.");
+TLSTASSERT(sizeof(i64) == 8, "Expected i64 to be 8 bytes.");
+
+typedef float               f32;
+typedef double              f64;
+
+TLSTASSERT(sizeof(f32) == 4, "Expected f32 to be 4 bytes.");
+TLSTASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
+
+typedef int                 b32;
+typedef char                b8;
+
+#define true  1
+#define false 0
+
+
+#endif // TELEIOS_TYPES
