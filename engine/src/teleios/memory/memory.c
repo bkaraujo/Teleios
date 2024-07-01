@@ -9,12 +9,12 @@ typedef struct {
     u64 oftype[TL_MEMORY_MAXIMUM];
 } TLMemoryRegistry;
 
-static TLMemoryRegistry registry = { 0 };
+static TLMemoryRegistry registry;
 
 b8 tl_memory_initialize(void) {
     TLDIAGNOSTICS_PUSH;
 
-
+    tl_platform_memory_set((void*) &registry, sizeof(TLMemoryRegistry), 0);
 
     TLDIAGNOSTICS_POP;
     return true;
@@ -30,6 +30,9 @@ void* tl_memory_alloc(TLMemoryType type, u64 size) {
         return NULL;
     }
 
+    registry.allocated += size;
+    registry.oftype[type] += size;
+
     TLDIAGNOSTICS_POP;
     return block;
 }
@@ -44,6 +47,9 @@ void tl_memory_free(TLMemoryType type, u64 size, void* pointer) {
     }
 
     tl_platform_memory_hfree(pointer);
+
+    registry.allocated -= size;
+    registry.oftype[type] -= size;
 
     TLDIAGNOSTICS_POP;
 }
@@ -102,10 +108,25 @@ void tl_memory_set(void* pointer, u64 size, i32 value) {
     TLDIAGNOSTICS_POP;
 }
 
+static const char* tl_memory_label(TLMemoryType type) {
+    switch (type) {
+    case TL_MEMORY_CONTAINER: return "TL_MEMORY_CONTAINER";
+    case TL_MEMORY_CONTAINER_NODE: return "TL_MEMORY_CONTAINER_NODE";
+    default: return "????";
+    }
+}
+
 b8 tl_memory_terminate(void) {
     TLDIAGNOSTICS_PUSH;
 
+    if (registry.allocated != 0) {
+        TLERROR("Memory leaked");
+        for (int i = 0; i < TL_MEMORY_MAXIMUM; ++i) {
+            if (registry.oftype[i] == 0) continue;
 
+            TLERROR("%s: %llu", tl_memory_label(i), registry.oftype[i]);
+        }
+    }
 
     TLDIAGNOSTICS_POP;
     return true;

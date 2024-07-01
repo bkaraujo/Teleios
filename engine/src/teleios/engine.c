@@ -37,16 +37,16 @@ TLAPI b8 tl_engine_run(void) {
     TLTimer timer = { 0 }; 
     tl_platform_timer_start(&timer);
 
-    while (true) {
-        fps++;
-    
-        tl_platform_timer_update(&timer);
-        if (tl_platform_timer_seconds(&timer) >= 1.0f) {
-            tl_platform_timer_start(&timer);
-            TLDEBUG("FPS: %llu", fps);
-            fps = 0;
-        }
-    }
+    //while (true) {
+    //    fps++;
+    //
+    //    tl_platform_timer_update(&timer);
+    //    if (tl_platform_timer_seconds(&timer) >= 1.0f) {
+    //        tl_platform_timer_start(&timer);
+    //        TLDEBUG("FPS: %llu", fps);
+    //        fps = 0;
+    //    }
+    //}
 
     TLDIAGNOSTICS_POP;
     return true;
