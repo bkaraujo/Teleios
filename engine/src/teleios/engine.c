@@ -2,21 +2,36 @@
 #include "teleios/logger.h"
 #include "teleios/platform/lifecycle.h"
 #include "teleios/platform/time.h"
+#include "teleios/memory/lifecycle.h"
+#include "teleios/diagnostic/lifecycle.h"
+#include "teleios/diagnostic/stacktrace.h"
+#include "teleios/container.h"
 
 TLAPI b8 tl_engine_initialize(void) {
     if (!tl_platform_initialize()) {
-        TLERROR("Platform failed to initialize");
+        TLERROR("Failed to initialize: Platform Abstraction");
         return false;
     }
 
-    TLTRACE("tl_engine_initialize(void)");
+    if (!tl_diagnostic_initialize()) {
+        TLERROR("Failed to initialize: Diagnostics");
+        return false;
+    }
+    
+    TLDIAGNOSTICS_PUSH;
 
+    if (!tl_memory_initialize()) {
+        TLERROR("Failed to initialize: Memory Manager");
+        TLDIAGNOSTICS_POP;
+        return false;
+    }
+
+    TLDIAGNOSTICS_POP;
     return true;
 }
 
 TLAPI b8 tl_engine_run(void) {
-    TLTRACE("tl_engine_run(void)");
-
+    TLDIAGNOSTICS_PUSH;
     u32 fps = 0;
     
     TLTimer timer = { 0 }; 
@@ -33,13 +48,24 @@ TLAPI b8 tl_engine_run(void) {
         }
     }
 
+    TLDIAGNOSTICS_POP;
     return true;
 }
 
 TLAPI b8 tl_engine_terminate(void) {
-    TLTRACE("tl_engine_terminate(void)");
+    TLDIAGNOSTICS_PUSH;
+    if (!tl_memory_terminate()) {
+        TLERROR("Failed to terminate: Memory Manager");
+        return false;
+    }
+
+    if (!tl_diagnostic_terminate()) {
+        TLERROR("Failed to terminate: Diagnostics");
+        return false;
+    }
+
     if (!tl_platform_terminate()) {
-        TLERROR("Platform failed to terminate");
+        TLERROR("Failed to terminate: Platform Abstraction");
         return false;
     }
 

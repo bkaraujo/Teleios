@@ -3,7 +3,6 @@
 #include "teleios/platform/console.h"
 #include "teleios/platform/memory.h"
 #include "teleios/platform/time.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <varargs.h>
@@ -27,9 +26,9 @@ TLAPI void tl_logger_console(TLLogLevel level, const char* message, ...) {
     void* user_message = tl_platform_memory_salloc(USER_BUFFERSIZE);
     tl_platform_memory_set(user_message, USER_BUFFERSIZE, 0);
 
-    va_start(arg_ptr);
+    __va_start(&arg_ptr, message);
     vsnprintf(user_message, USER_BUFFERSIZE, message, arg_ptr);
-    va_end(arg_ptr);
+    __va_end(&arg_ptr);
     // ##############################################################################
     // 1 - Allocate 3k stack memory for the formatted final message
     // 2 - Parse the message into the allocated memory

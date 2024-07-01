@@ -3,9 +3,12 @@
 #ifdef TLPLATFORM_WINDOWS
 #include "teleios/platform/time.h"
 #include "teleios/platform/windows/w32extern.h"
+#include "teleios/diagnostic/stacktrace.h"
 
 void tl_platform_time_now(TLTime* time) {
-    if (time == NULL) return;
+    TLDIAGNOSTICS_PUSH;
+    if (time == NULL) { TLDIAGNOSTICS_POP; return; }
+
     SYSTEMTIME st; GetLocalTime(&st);
 
     time->year      = st.wYear;
@@ -15,9 +18,11 @@ void tl_platform_time_now(TLTime* time) {
     time->minute    = (u8)st.wMinute;
     time->seconds   = (u8)st.wSecond;
     time->millis    = st.wMilliseconds;
+    TLDIAGNOSTICS_POP;
 }
 
 u64 tl_platform_time_epoch(void) {
+    TLDIAGNOSTICS_PUSH;
     // #################################################################
     // Obtain the system 64bit time
     // #################################################################
@@ -35,39 +40,50 @@ u64 tl_platform_time_epoch(void) {
     // #################################################################
     // Compute the milliseconds since unix epoch
     // #################################################################
+    TLDIAGNOSTICS_POP;
     return (curr_time_as_uint64.QuadPart - unix_epoch_as_uint64.QuadPart) / 10000;
 }
 
 void tl_platform_timer_start(TLTimer* timer) {
-    if (timer == NULL) return;
-
+    TLDIAGNOSTICS_PUSH;
+    if (timer == NULL) { TLDIAGNOSTICS_POP; return; }
     LARGE_INTEGER now; QueryPerformanceCounter(&now);
     timer->start = now.QuadPart;
     timer->update = 0;
+    TLDIAGNOSTICS_POP;
 }
 
 void tl_platform_timer_update(TLTimer* timer){
-    if (timer == NULL) return;
-
+    TLDIAGNOSTICS_PUSH;
+    if (timer == NULL) { TLDIAGNOSTICS_POP; return; }
     LARGE_INTEGER now; QueryPerformanceCounter(&now);
     timer->update = now.QuadPart;
+    TLDIAGNOSTICS_POP;
 }
 
 u64 tl_platform_timer_micros(TLTimer* timer) {
-    if (timer == NULL) return 0;
+    TLDIAGNOSTICS_PUSH;
+    if (timer == NULL) { TLDIAGNOSTICS_POP; return 0; }
     u64 elapsed = timer->update - timer->start;
-    u64 elapsedMicros = elapsed * 1000000; // 100-nanos to micros
-    return elapsedMicros / frequency.QuadPart;
+    u64 elapsedMicros = (elapsed * 1000000) / frequency.QuadPart; // 100-nanos to micros
+    TLDIAGNOSTICS_POP;
+    return elapsedMicros;
 }
 
 f64 tl_platform_timer_millis(TLTimer* timer) {
-    if (timer == NULL) return 0;
-    return tl_platform_timer_micros(timer) / 1000.0f;
+    TLDIAGNOSTICS_PUSH;
+    if (timer == NULL) { TLDIAGNOSTICS_POP; return 0.0f; }
+    f64 elaspsedMillis = tl_platform_timer_micros(timer) / 1000.0f;
+    TLDIAGNOSTICS_POP;
+    return elaspsedMillis;
 }
 
 f64 tl_platform_timer_seconds(TLTimer* timer) {
-    if (timer == NULL) return 0;
-    return tl_platform_timer_millis(timer) / 1000.0f;
+    TLDIAGNOSTICS_PUSH;
+    if (timer == NULL) { TLDIAGNOSTICS_POP; return 0.0f; }
+    f64 elaspsedSeconds = tl_platform_timer_millis(timer) / 1000.0f;
+    TLDIAGNOSTICS_POP;
+    return elaspsedSeconds;
 }
 
 #endif // TLPLATFORM_WINDOWS
