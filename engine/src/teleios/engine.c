@@ -13,12 +13,15 @@
 #include "teleios/messaging/codes.h"
 
 static b8 running = true;
+static b8 paused = false;
 
 static TLMessageChain tl_engine_messaging(const u16 code, const TLMessage* message) {
     TLDIAGNOSTICS_PUSH;
 
-    if (code == TL_MESSAGE_APPLICATION_QUIT) {
-        running = false;
+    switch (code) {
+        case TL_MESSAGE_APPLICATION_PAUSE : paused  = true; break;
+        case TL_MESSAGE_APPLICATION_RESUME: paused  = false; break;
+        case TL_MESSAGE_APPLICATION_QUIT  : running = false; break;
     }
 
     TLDIAGNOSTICS_POP;
@@ -50,13 +53,14 @@ TLAPI b8 tl_engine_initialize(void) {
         return false;
     }
 
+    tl_messaging_subscribe(TL_MESSAGE_ALL_KNOWN, tl_engine_messaging);
+
     TLCreateWindowInfo info;
     info.title = "Teleios App";
     info.width = 1024;
     info.height = 768;
     tl_platform_window_create(&info);
     
-    tl_messaging_subscribe(2500, tl_engine_messaging);
 
     TLDIAGNOSTICS_POP;
     return true;
@@ -71,8 +75,10 @@ TLAPI b8 tl_engine_run(void) {
 
     tl_platform_window_show();
     while (running) {
-        fps++;
-    
+        if (!paused) {
+            fps++;
+        }
+
         tl_platform_window_update();
         tl_platform_timer_update(&timer);
         if (tl_platform_timer_seconds(&timer) >= 1.0f) {
@@ -81,6 +87,7 @@ TLAPI b8 tl_engine_run(void) {
             fps = 0;
         }
     }
+
     tl_platform_window_hide();
 
     TLDIAGNOSTICS_POP;

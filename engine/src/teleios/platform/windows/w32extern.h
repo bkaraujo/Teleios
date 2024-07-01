@@ -3,6 +3,7 @@
 
 #include "teleios/types.h"
 #include <Windows.h>
+#include <Windowsx.h>
 
 extern HINSTANCE e_hinstance;
 extern HANDLE e_hconsole;

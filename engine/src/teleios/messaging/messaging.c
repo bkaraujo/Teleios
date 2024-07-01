@@ -12,7 +12,7 @@ b8 tl_messaging_initialize(void) {
     TLDIAGNOSTICS_PUSH;
 
     of_codes = tl_list_create();
-    for (int i = 0; i < TL_MESSAGE_TOTAL; ++i) {
+    for (int i = 0; i < TL_MESSAGE_ALL_KNOWN; ++i) {
         tl_list_add(of_codes, tl_list_create());
     }
 
@@ -28,14 +28,27 @@ void tl_messaging_subscribe(const u16 code, TLMessageHandler handler) {
     // Ensure code is within capacity
     // ###########################################################################
     if (handler == NULL) TLFATAL("Message handler is NULL");
-    if (code >= TL_MESSAGE_TOTAL) TLFATAL("Message code %d beyond maximum capacity %llu", code, TL_MESSAGE_TOTAL);
+    if (code > TL_MESSAGE_ALL_KNOWN) TLFATAL("Message code %d beyond maximum capacity %llu", code, TL_MESSAGE_ALL_KNOWN);
     // ###########################################################################
     // Iterate over the of_codes list to get the desired code handling list
     // Insert the PFN into the of_listener list
     // ###########################################################################
+    if (code != TL_MESSAGE_ALL_KNOWN) {
+        TLListNode* of_listener = of_codes->head;
+        for (int i = 0; i < code; ++i) of_listener = of_listener->next;
+        tl_list_add(of_listener->payload, (void*)handler);
+
+        TLDIAGNOSTICS_POP;
+        return;
+    }
+    // ###########################################################################
+    // Register the hander for all possible messages
+    // ###########################################################################
     TLListNode* of_listener = of_codes->head;
-    for (int i = 0; i < code; ++i) of_listener = of_listener->next;
-    tl_list_add(of_listener->payload, (void*) handler);
+    for (int i = 0; i < TL_MESSAGE_ALL_KNOWN; ++i) {
+        tl_list_add(of_listener->payload, (void*)handler);
+        of_listener = of_listener->next;
+    }
 
     TLDIAGNOSTICS_POP;
 }
@@ -46,7 +59,7 @@ void tl_messaging_post(const u16 code, const TLMessage* message) {
     // ###########################################################################
     // Ensure code is within capacity
     // ###########################################################################
-    if (code >= TL_MESSAGE_TOTAL) TLFATAL("Message code %d beyond maximum capacity %llu", code, TL_MESSAGE_TOTAL);
+    if (code >= TL_MESSAGE_ALL_KNOWN) TLFATAL("Message code %d beyond maximum capacity %llu", code, TL_MESSAGE_ALL_KNOWN);
     // ###########################################################################
     // Iterate over the of_codes list to get the desired code handling list
     // ###########################################################################
