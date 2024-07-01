@@ -19,10 +19,10 @@ void tl_platform_console(u8 level, const char* message) {
     // Rollback the console color
     // ##############################################################################
     CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo(hconsole, &csbi);
-    SetConsoleTextAttribute(hconsole, levels[level]);
-    WriteConsole(hconsole, unicode, (DWORD)length, NULL, NULL);
-    SetConsoleTextAttribute(hconsole, csbi.wAttributes);
+    GetConsoleScreenBufferInfo(e_hconsole, &csbi);
+    SetConsoleTextAttribute(e_hconsole, levels[level]);
+    WriteConsole(e_hconsole, unicode, (DWORD)length, NULL, NULL);
+    SetConsoleTextAttribute(e_hconsole, csbi.wAttributes);
     // ##############################################################################
     // Destroy the wchar_t temporary object
     // ##############################################################################

@@ -6,11 +6,11 @@
 #include "teleios/platform/windows/w32extern.h"
 
 void* tl_platform_memory_halloc(u64 size) {
-    return (void*)HeapAlloc(heap, HEAP_ZERO_MEMORY, size);
+    return (void*)HeapAlloc(e_heap, HEAP_ZERO_MEMORY, size);
 }
 
 void tl_platform_memory_hfree(void* block) {
-    HeapFree(heap, HEAP_NO_SERIALIZE, block);
+    HeapFree(e_heap, HEAP_NO_SERIALIZE, block);
 }
 
 void* tl_platform_memory_salloc(u64 size) {

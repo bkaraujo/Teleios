@@ -12,6 +12,10 @@ project "Engine"
       "src"
    }
    
+   flags {
+		"MultiProcessorCompile"
+   }
+   
    defines { "TL_EXPORT", "CGLM_STATIC" }
 
    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")

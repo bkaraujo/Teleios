@@ -33,7 +33,7 @@ u64 tl_platform_time_epoch(void) {
     // #################################################################
     // Translate the extern unix_epoch to 64bit filetime
     // #################################################################
-    FILETIME utime; SystemTimeToFileTime(&unix_epoch, &utime);
+    FILETIME utime; SystemTimeToFileTime(&e_unix_epoch, &utime);
     ULARGE_INTEGER unix_epoch_as_uint64;
     unix_epoch_as_uint64.HighPart = utime.dwHighDateTime;
     unix_epoch_as_uint64.LowPart = utime.dwLowDateTime;
@@ -65,7 +65,7 @@ u64 tl_platform_timer_micros(TLTimer* timer) {
     TLDIAGNOSTICS_PUSH;
     if (timer == NULL) { TLDIAGNOSTICS_POP; return 0; }
     u64 elapsed = timer->update - timer->start;
-    u64 elapsedMicros = (elapsed * 1000000) / frequency.QuadPart; // 100-nanos to micros
+    u64 elapsedMicros = (elapsed * 1000000) / e_frequency.QuadPart; // 100-nanos to micros
     TLDIAGNOSTICS_POP;
     return elapsedMicros;
 }

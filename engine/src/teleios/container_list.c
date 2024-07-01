@@ -6,11 +6,7 @@
 TLList* tl_list_create(void) {
     TLDIAGNOSTICS_PUSH;
     TLList* list = tl_memory_alloc(TL_MEMORY_CONTAINER, sizeof(TLList));
-    if (list == NULL) {
-        TLFATAL("Failed to allocate TLList*");
-        TLDIAGNOSTICS_POP;
-        return NULL;
-    }
+    if (list == NULL) TLFATAL("Failed to allocate TLList*");
 
     list->length = 0;
 
@@ -29,11 +25,7 @@ void  tl_list_add(TLList* list, void* payload) {
 
     if (list->length == 0) {
         list->head = node;
-        list->head->next = node;
-        
         list->tail = node;
-        list->tail->previous = node;
-
         list->length++;
     
         TLDIAGNOSTICS_POP;
