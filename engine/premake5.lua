@@ -12,7 +12,7 @@ project "Engine"
       "src"
    }
    
-   defines { "TL_EXPORT" }
+   defines { "TL_EXPORT", "CGLM_STATIC" }
 
    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
    objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")

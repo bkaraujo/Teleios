@@ -29,11 +29,9 @@ void tl_diagnostics_push(TLDiagnostic* diagnostic) {
     // ########################################################################
     tl_platform_memory_copy((void*)diagnostic, (void*) (registry + length), sizeof(TLDiagnostic));
     length++;
-
 }
 
 void tl_diagnostics_pop(void) {
-    TLDiagnostic diagnostic = registry[length - 1];
     // ########################################################################
     // Create the new array
     // Copy the content from the old to the new

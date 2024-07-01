@@ -16,7 +16,7 @@ typedef enum {
 
 TLAPI void tl_logger_console(TLLogLevel level, const char* message, ...);
 
-#define TLFATAL(message, ...) { tl_logger_console(TL_LOG_LEVEL_FATAL, message, ##__VA_ARGS__); TLDIAGNOSTICS_PRINT; exit(99); }
+#define TLFATAL(message, ...) { tl_logger_console(TL_LOG_LEVEL_FATAL, message, ##__VA_ARGS__); TLDIAGNOSTICS_PUSH; TLDIAGNOSTICS_PRINT; exit(99); }
 #define TLERROR(message, ...) tl_logger_console(TL_LOG_LEVEL_ERROR, message, ##__VA_ARGS__)
 #define TLWARN(message, ...) tl_logger_console(TL_LOG_LEVEL_WARN, message, ##__VA_ARGS__)
 #define TLINFO(message, ...) tl_logger_console(TL_LOG_LEVEL_INFO, message, ##__VA_ARGS__)
