@@ -169,6 +169,10 @@ f64 tl_platform_timer_seconds(TLTimer* timer) {
 // #####################################################################################################
 static HWND e_hwnd;
 
+void* tl_platform_window_handle(void) {
+    return &e_hwnd;
+}
+
 void tl_platform_window_create(TLCreateWindowInfo* info) {
     TLDIAGNOSTICS_PUSH;
     // ##################################################
@@ -481,6 +485,10 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
 //                                           L I F E C Y C L E
 //
 // #####################################################################################################
+void* tl_platform_handle(void) {
+    return &e_hinstance;
+}
+
 b8 tl_platform_initialize(void) {
     e_hinstance = GetModuleHandle(NULL);
     e_hconsole = GetStdHandle(STD_OUTPUT_HANDLE);
