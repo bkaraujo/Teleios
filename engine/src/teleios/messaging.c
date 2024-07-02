@@ -12,7 +12,8 @@ b8 tl_messaging_initialize(void) {
 
     of_codes = tl_list_create();
     for (int i = 0; i < TL_MESSAGE_ALL_KNOWN; ++i) {
-        tl_list_add(of_codes, tl_list_create());
+        TLList* created = tl_list_create();
+        tl_list_add(of_codes, created);
     }
 
     TLDIAGNOSTICS_POP;
