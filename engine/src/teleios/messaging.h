@@ -1,7 +1,10 @@
-#ifndef TELEIOS_MESSAGING_BUS
-#define TELEIOS_MESSAGING_BUS
+#ifndef TELEIOS_MESSAGING
+#define TELEIOS_MESSAGING
 
 #include "teleios/types.h"
+
+b8 tl_messaging_initialize(void);
+b8 tl_messaging_terminate(void);
 
 typedef enum {
     TL_MESSAGE_AVALIABLE,
@@ -34,4 +37,4 @@ typedef TLMessageChain(*TLMessageHandler)(const u16 code, const TLMessage* messa
 void tl_messaging_post(const u16 code, const TLMessage* message);
 void tl_messaging_subscribe(const u16 code, TLMessageHandler handler);
 
-#endif // TELEIOS_MESSAGING_BUS
+#endif // TELEIOS_MESSAGING

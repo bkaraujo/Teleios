@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include "teleios/types.h"
-#include "teleios/diagnostic/stacktrace.h"
+#include "teleios/diagnostic.h"
 
 typedef enum {
     TL_LOG_LEVEL_FATAL,

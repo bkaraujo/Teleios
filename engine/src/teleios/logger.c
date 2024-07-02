@@ -1,8 +1,6 @@
 #include "teleios/logger.h"
+#include "teleios/platform.h"
 
-#include "teleios/platform/console.h"
-#include "teleios/platform/memory.h"
-#include "teleios/platform/time.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <varargs.h>

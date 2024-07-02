@@ -1,10 +1,9 @@
 #include "teleios/logger.h"
 #include "teleios/container.h"
-#include "teleios/messaging/lifecycle.h"
-#include "teleios/messaging/bus.h"
-#include "teleios/diagnostic/stacktrace.h"
-#include "teleios/memory/allocator.h"
-#include "teleios/messaging/codes.h"
+#include "teleios/messaging.h"
+#include "teleios/messagingcodes.h"
+#include "teleios/diagnostic.h"
+#include "teleios/memory.h"
 
 static TLList* of_codes;
 

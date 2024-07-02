@@ -1,7 +1,10 @@
-#ifndef TELEIOS_DIAGNOSTICS
-#define TELEIOS_DIAGNOSTICS
+#ifndef TELEIOS_DIAGNOSTIC
+#define TELEIOS_DIAGNOSTIC
 
 #include "teleios/types.h"
+
+b8 tl_diagnostic_initialize(void);
+b8 tl_diagnostic_terminate(void);
 
 typedef struct {
     const char* function;
@@ -32,4 +35,4 @@ void tl_diagnostics_push(const TLDiagnostic* diagnostic);
 void tl_diagnostics_pop(void);
 void tl_diagnostics_print(void);
 
-#endif // TELEIOS_DIAGNOSTICS
+#endif // TELEIOS_DIAGNOSTIC

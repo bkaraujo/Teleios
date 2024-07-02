@@ -1,17 +1,12 @@
 #include "teleios/engine.h"
 #include "teleios/logger.h"
-#include "teleios/platform/lifecycle.h"
-#include "teleios/platform/time.h"
-#include "teleios/memory/lifecycle.h"
-#include "teleios/diagnostic/lifecycle.h"
-#include "teleios/diagnostic/stacktrace.h"
+#include "teleios/memory.h"
+#include "teleios/diagnostic.h"
 #include "teleios/container.h"
-#include "teleios/messaging/lifecycle.h"
-#include "teleios/platform/window.h"
-#include "teleios/input/lifecycle.h"
-#include "teleios/messaging/bus.h"
-#include "teleios/messaging/codes.h"
-#include "teleios/input/pool.h"
+#include "teleios/input.h"
+#include "teleios/messaging.h"
+#include "teleios/messagingcodes.h"
+#include "teleios/platform.h"
 
 static u64 frame_overflow = 0;
 static u64 frame_counter = -1;

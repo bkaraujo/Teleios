@@ -1,7 +1,7 @@
 #include "teleios/container.h"
-#include "teleios/memory/allocator.h"
+#include "teleios/memory.h"
 #include "teleios/logger.h"
-#include "teleios/diagnostic/stacktrace.h"
+#include "teleios/diagnostic.h"
 
 TLList* tl_list_create(void) {
     TLDIAGNOSTICS_PUSH;

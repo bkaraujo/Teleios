@@ -1,10 +1,9 @@
-#include "teleios/input/lifecycle.h"
-#include "teleios/input/codes.h"
-#include "teleios/diagnostic/stacktrace.h"
-#include "teleios/memory/allocator.h"
-#include "teleios/messaging/bus.h"
-#include "teleios/messaging/codes.h"
-#include "teleios/input/pool.h"
+#include "teleios/input.h"
+#include "teleios/inputcodes.h"
+#include "teleios/diagnostic.h"
+#include "teleios/memory.h"
+#include "teleios/messaging.h"
+#include "teleios/messagingcodes.h"
 
 static b8 key_curr[TL_KEY_MAXIMUM];
 static b8 key_prev[TL_KEY_MAXIMUM];
@@ -25,6 +24,8 @@ static TLMessageChain tl_input_handle(const u16 code, const TLMessage* message) 
         case TL_MESSAGE_INPUT_MOUSE_MOVED: mouse_pos.x = message->i32[0]; mouse_pos.y = message->i32[1]; break;
     }
     TLDIAGNOSTICS_POP;
+
+    return TL_MESSAGE_AVALIABLE;
 }
 
 b8 tl_input_initialize(void) {

@@ -1,7 +1,10 @@
-#ifndef TELEIOS_MEMORY_ALLOCATOR
-#define TELEIOS_MEMORY_ALLOCATOR
+#ifndef TELEIOS_MEMORY
+#define TELEIOS_MEMORY
 
 #include "teleios/types.h"
+
+b8 tl_memory_initialize(void);
+b8 tl_memory_terminate(void);
 
 typedef enum {
     TL_MEMORY_CONTAINER,
@@ -15,4 +18,4 @@ void tl_memory_zero(void* pointer, u64 size);
 void tl_memory_copy(void* source, void* target, u64 size);
 void tl_memory_set(void* pointer, u64 size, i32 value);
 
-#endif // TELEIOS_MEMORY_ALLOCATOR
+#endif // TELEIOS_MEMORY

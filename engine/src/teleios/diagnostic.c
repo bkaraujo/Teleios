@@ -1,6 +1,5 @@
-#include "teleios/diagnostic/lifecycle.h"
-#include "teleios/diagnostic/stacktrace.h"
-#include "teleios/platform/memory.h"
+#include "teleios/diagnostic.h"
+#include "teleios/platform.h"
 #include "teleios/logger.h"
 
 static u16 used = 0;
