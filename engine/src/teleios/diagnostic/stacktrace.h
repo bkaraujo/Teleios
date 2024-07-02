@@ -28,7 +28,7 @@ typedef struct {
 #define TLDIAGNOSTICS_PRINT
 #endif
 
-void tl_diagnostics_push(TLDiagnostic* diagnostic);
+void tl_diagnostics_push(const TLDiagnostic* diagnostic);
 void tl_diagnostics_pop(void);
 void tl_diagnostics_print(void);
 

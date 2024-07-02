@@ -12,6 +12,8 @@
 #include "teleios/messaging/bus.h"
 #include "teleios/messaging/codes.h"
 
+static u64 frame_overflow = 0;
+static u64 frame_counter = -1;
 static b8 running = true;
 static b8 paused = false;
 
@@ -75,6 +77,12 @@ TLAPI b8 tl_engine_run(void) {
 
     tl_platform_window_show();
     while (running) {
+        frame_counter++;
+        if (frame_counter == 0) {
+            frame_overflow++;
+            TLFATAL("...");
+        }
+
         if (!paused) {
             fps++;
         }

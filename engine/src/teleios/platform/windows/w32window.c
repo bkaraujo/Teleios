@@ -171,6 +171,7 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
         case WM_SETFOCUS: {
             tl_messaging_post(TL_MESSAGE_WINDOW_FOCUS_GAINED, NULL);
 
+            TLDIAGNOSTICS_POP;
             return 0;
         } break;
 
