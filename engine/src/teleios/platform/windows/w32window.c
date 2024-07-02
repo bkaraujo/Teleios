@@ -92,7 +92,7 @@ void tl_platform_window_update() {
     
     MSG msg = { 0 };
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-        TranslateMessage(&msg);
+        // TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
     TLDIAGNOSTICS_POP;
@@ -263,9 +263,9 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
         case WM_RBUTTONDOWN: {
             TLMessage message = { 0 };
             switch (msg) {
-                case WM_LBUTTONDOWN: message.i8[0] = TL_MOUSE_BUTTON_LEFT  ; break;
-                case WM_MBUTTONDOWN: message.i8[0] = TL_MOUSE_BUTTON_MIDDLE; break;
-                case WM_RBUTTONDOWN: message.i8[0] = TL_MOUSE_BUTTON_RIGHT ; break;
+                case WM_LBUTTONDOWN: message.i8[0] = TL_MOUSE_LEFT  ; break;
+                case WM_MBUTTONDOWN: message.i8[0] = TL_MOUSE_MIDDLE; break;
+                case WM_RBUTTONDOWN: message.i8[0] = TL_MOUSE_RIGHT ; break;
             }
             
             tl_messaging_post(TL_MESSAGE_INPUT_MOUSE_PRESSED, &message);
@@ -279,9 +279,9 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
         case WM_RBUTTONUP: {
             TLMessage message = { 0 };
             switch (msg) {
-                case WM_LBUTTONDOWN: message.i8[0] = TL_MOUSE_BUTTON_LEFT  ; break;
-                case WM_MBUTTONDOWN: message.i8[0] = TL_MOUSE_BUTTON_MIDDLE; break;
-                case WM_RBUTTONDOWN: message.i8[0] = TL_MOUSE_BUTTON_RIGHT ; break;
+                case WM_LBUTTONDOWN: message.i8[0] = TL_MOUSE_LEFT  ; break;
+                case WM_MBUTTONDOWN: message.i8[0] = TL_MOUSE_MIDDLE; break;
+                case WM_RBUTTONDOWN: message.i8[0] = TL_MOUSE_RIGHT ; break;
             }
 
             tl_messaging_post(TL_MESSAGE_INPUT_MOUSE_RELEASED, &message);

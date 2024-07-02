@@ -8,9 +8,10 @@
 #include "teleios/container.h"
 #include "teleios/messaging/lifecycle.h"
 #include "teleios/platform/window.h"
-
+#include "teleios/input/lifecycle.h"
 #include "teleios/messaging/bus.h"
 #include "teleios/messaging/codes.h"
+#include "teleios/input/pool.h"
 
 static u64 frame_overflow = 0;
 static u64 frame_counter = -1;
@@ -57,6 +58,12 @@ TLAPI b8 tl_engine_initialize(void) {
 
     tl_messaging_subscribe(TL_MESSAGE_ALL_KNOWN, tl_engine_messaging);
 
+    if (!tl_input_initialize()) {
+        TLERROR("Failed to initialize: Input Manager");
+        TLDIAGNOSTICS_POP;
+        return false;
+    }
+
     TLCreateWindowInfo info;
     info.title = "Teleios App";
     info.width = 1024;
@@ -78,15 +85,16 @@ TLAPI b8 tl_engine_run(void) {
     tl_platform_window_show();
     while (running) {
         frame_counter++;
-        if (frame_counter == 0) {
-            frame_overflow++;
-            TLFATAL("...");
-        }
+        if (frame_counter == 0) { frame_overflow++; }
 
         if (!paused) {
             fps++;
+            if (tl_input_key_released(TL_KEY_ESCAPE)) {
+                running = false;
+            }
         }
 
+        tl_input_update();
         tl_platform_window_update();
         tl_platform_timer_update(&timer);
         if (tl_platform_timer_seconds(&timer) >= 1.0f) {
@@ -105,6 +113,12 @@ TLAPI b8 tl_engine_run(void) {
 TLAPI b8 tl_engine_terminate(void) {
     TLDIAGNOSTICS_PUSH;
     tl_platform_window_destroy();
+
+    if (!tl_input_terminate()) {
+        TLERROR("Failed to terminate: Input Manager");
+        TLDIAGNOSTICS_POP;
+        return false;
+    }
 
     if (!tl_messaging_terminate()) {
         TLERROR("Failed to terminate: Messaging Manager");

@@ -85,5 +85,12 @@ typedef char                b8;
 
 #define true  1
 #define false 0
+// ############################################################################
+//
+//                               GLM TYPES
+// 
+// ############################################################################
+#include "cglm/types.h"
+#include "cglm/types-struct.h"
 
 #endif // TELEIOS_TYPES

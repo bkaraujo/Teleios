@@ -2,9 +2,10 @@
 #define TELEIOS_INPUT_CODES
 
 typedef enum TLInputMouse {
-    TL_MOUSE_BUTTON_LEFT,
-    TL_MOUSE_BUTTON_MIDDLE,
-    TL_MOUSE_BUTTON_RIGHT
+    TL_MOUSE_LEFT,
+    TL_MOUSE_MIDDLE,
+    TL_MOUSE_RIGHT,
+    TL_MOUSE_MAXIMUM
 } TLInputMouse;
 
 typedef enum TLInputKey {
@@ -157,7 +158,7 @@ typedef enum TLInputKey {
     TL_KEY_BACKSLASH = TL_KEY_PIPE,
     TL_KEY_RBRACKET = 0xDD,
 
-    KEYS_MAX_KEYS = 0xFF
+    TL_KEY_MAXIMUM = 0xFF
 } TLInputKey;
 
 #endif // TELEIOS_INPUT_CODES
