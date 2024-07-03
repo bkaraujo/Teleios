@@ -126,5 +126,29 @@ typedef char                b8;
 // ############################################################################
 #include "cglm/types.h"
 #include "cglm/types-struct.h"
+// ############################################################################
+//
+//                               GLM TYPES
+// 
+// ############################################################################
+typedef struct {
+    /**
+     * Application version information
+     */
+    struct {
+        u8 major;
+        u8 minor;
+        u8 patch;
+    } version;
 
+    /**
+     * Window creation parameters
+     */
+    struct {
+        const char* title;
+        i32 width;
+        i32 height;
+    } window;
+
+} TLAppSpecification;
 #endif // TELEIOS_TYPES

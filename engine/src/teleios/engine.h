@@ -4,6 +4,7 @@
 #include "teleios/types.h"
 
 TLAPI b8 tl_engine_initialize(void);
+TLAPI b8 tl_engine_configure(TLAppSpecification* specification);
 TLAPI b8 tl_engine_run(void);
 TLAPI b8 tl_engine_terminate(void);
 

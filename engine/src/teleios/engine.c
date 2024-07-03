@@ -60,10 +60,18 @@ TLAPI b8 tl_engine_initialize(void) {
         return false;
     }
 
+    TLDIAGNOSTICS_POP;
+    return true;
+}
+
+TLAPI b8 tl_engine_configure(TLAppSpecification* specification) {
+    TLDIAGNOSTICS_PUSH;
+
     TLCreateWindowInfo info;
-    info.title = "Teleios App";
-    info.width = 1024;
-    info.height = 768;
+    info.title = specification->window.title;
+    info.width = specification->window.width;
+    info.height = specification->window.height;
+
     tl_platform_window_create(&info);
 
     if (!tl_graphics_initialize()) {
@@ -83,7 +91,11 @@ TLAPI b8 tl_engine_run(void) {
     TLTimer timer = { 0 }; 
     tl_platform_timer_start(&timer);
 
+    tl_graphics_update();
+    tl_platform_window_update();
+
     tl_platform_window_show();
+
     while (running) {
         frame_counter++;
         if (frame_counter == 0) { frame_overflow++; }
