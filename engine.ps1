@@ -8,6 +8,6 @@ $ROOTFS = $(Get-Location)
 
 .\vendor\llvm\archive.ps1 -Location "$ROOTFS" -Output "teleios.lib" -Files "$(Get-ChildItem -Path "$ROOTFS/engine/src/cglm" -Filter "*.o" -Recurse -File) $(Get-ChildItem -Path "$ROOTFS/engine/src/glad" -Filter "*.o" -Recurse -File) $(Get-ChildItem -Path "$ROOTFS/engine/src/teleios" -Filter "*.o" -Recurse -File)"
 
-.\vendor\llvm\link.ps1 -Location "$ROOTFS" -Output "sandbox.exe" -LFlags "-luser32 -lgdi32 -lopengl32 -l$ROOTFS/teleios.lib" -Files "$(Get-ChildItem -Path $SANDBOXFS -Filter "*.o" -Recurse -File)"
+.\vendor\llvm\link.ps1 -Location "$ROOTFS" -Output "sandbox.exe" -LFlags "-luser32 -lgdi32 -lopengl32 -l$ROOTFS/teleios.lib" -Files "$(Get-ChildItem -Path "$ROOTFS/sandbox/src" -Filter "*.o" -Recurse -File)"
 
 Set-Location $ROOTFS
