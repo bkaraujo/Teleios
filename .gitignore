@@ -1,7 +1,12 @@
 # Directories
 .vs/
 Binaries/
-
+.vscode
 # Files
 *.vcxproj*
 *.sln
+**/*.o
+**/*.exp
+**/*.ilk
+**/*.pdb
+**/*.lib

@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 #define USER_BUFFERSIZE 3000
 #define SYS_BUFFERSIZE 3072
@@ -15,18 +15,13 @@ TLAPI void tl_logger_console(TLLogLevel level, const char* message, ...) {
     // 1 - Allocate 3k stack memory for the formatted user message
     // 2 - Parse the message into the allocated memory
     // ##############################################################################
-#if defined(__clang__) || defined(__GNUC__)
-    __builtin_va_list arg_ptr;
-#else
-    va_list arg_ptr;
-#endif
-
     void* user_message = tl_platform_memory_salloc(USER_BUFFERSIZE);
     tl_platform_memory_set(user_message, USER_BUFFERSIZE, 0);
 
-    __va_start(&arg_ptr, message);
-    vsnprintf(user_message, USER_BUFFERSIZE, message, arg_ptr);
-    __va_end(&arg_ptr);
+    va_list ap;
+    va_start(ap, message);
+    vsnprintf(user_message, USER_BUFFERSIZE, message, ap);
+    va_end(ap);
     // ##############################################################################
     // 1 - Allocate 3k stack memory for the formatted final message
     // 2 - Parse the message into the allocated memory

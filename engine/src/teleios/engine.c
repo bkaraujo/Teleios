@@ -7,6 +7,7 @@
 #include "teleios/messaging.h"
 #include "teleios/messagingcodes.h"
 #include "teleios/platform.h"
+#include "teleios/graphics.h"
 
 static u64 frame_overflow = 0;
 static u64 frame_counter = -1;
@@ -64,7 +65,12 @@ TLAPI b8 tl_engine_initialize(void) {
     info.width = 1024;
     info.height = 768;
     tl_platform_window_create(&info);
-    
+
+    if (!tl_graphics_initialize()) {
+        TLERROR("Failed to initialize: Graphics Manager");
+        TLDIAGNOSTICS_POP;
+        return false;
+    }
 
     TLDIAGNOSTICS_POP;
     return true;
@@ -90,6 +96,7 @@ TLAPI b8 tl_engine_run(void) {
         }
 
         tl_input_update();
+        tl_graphics_update();
         tl_platform_window_update();
         tl_platform_timer_update(&timer);
         if (tl_platform_timer_seconds(&timer) >= 1.0f) {
@@ -107,6 +114,13 @@ TLAPI b8 tl_engine_run(void) {
 
 TLAPI b8 tl_engine_terminate(void) {
     TLDIAGNOSTICS_PUSH;
+
+    if (!tl_graphics_terminate()) {
+        TLERROR("Failed to terminate: Graphics Manager");
+        TLDIAGNOSTICS_POP;
+        return false;
+    }
+
     tl_platform_window_destroy();
 
     if (!tl_input_terminate()) {

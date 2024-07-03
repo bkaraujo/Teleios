@@ -49,7 +49,7 @@
 #   else
 #       define TLAPI
 #   endif // TL_EXPORT
-#elif  defined(__clang__) || defined(__GNUC__)
+#elif defined(__clang__) || defined(__GNUC__)
 #   define TLINLINE __attribute__((always_inline)) inline
 #   define TLNOINLINE __attribute__((noinline))
 #   ifdef TL_EXPORT
