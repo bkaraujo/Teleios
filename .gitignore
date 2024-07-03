@@ -10,3 +10,4 @@ Binaries/
 **/*.ilk
 **/*.pdb
 **/*.lib
+**/sandbox.exe

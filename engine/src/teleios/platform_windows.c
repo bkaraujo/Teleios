@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <windowsx.h>
 #include <malloc.h>
+#include <string.h>
 
 #include "teleios/logger.h"
 #include "teleios/input.h"
@@ -54,12 +55,6 @@ static HANDLE e_hconsole;
 void tl_platform_console(u8 level, const char* message) {
     static u8 levels[6] = { 64, 4, 6, 2, 1, 8 };
     // ##############################################################################
-    // Convert from char* to wchar_t*
-    // ##############################################################################
-    i32 length = MultiByteToWideChar(CP_OEMCP, MB_COMPOSITE, message, -1, NULL, 0);
-    void* unicode = tl_platform_memory_salloc(length * sizeof(wchar_t));
-    MultiByteToWideChar(CP_OEMCP, MB_COMPOSITE, message, -1, unicode, length);
-    // ##############################################################################
     // Change the console color
     // Write the message
     // Rollback the console color
@@ -67,12 +62,8 @@ void tl_platform_console(u8 level, const char* message) {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(e_hconsole, &csbi);
     SetConsoleTextAttribute(e_hconsole, levels[level]);
-    WriteConsole(e_hconsole, unicode, (DWORD)length, NULL, NULL);
+    WriteConsole(e_hconsole, message, (DWORD)strlen(message), NULL, NULL);
     SetConsoleTextAttribute(e_hconsole, csbi.wAttributes);
-    // ##############################################################################
-    // Destroy the wchar_t temporary object
-    // ##############################################################################
-    tl_platform_memory_sfree(unicode);
 }
 // #####################################################################################################
 //
@@ -197,19 +188,13 @@ void tl_platform_window_create(TLCreateWindowInfo* info) {
     // ##################################################
     u32 window_x = GetSystemMetrics(SM_CXSCREEN) / 2 - window_width / 2;
     u32 window_y = GetSystemMetrics(SM_CYSCREEN) / 2 - window_height / 2;
-    // ##############################################################################
-    // Convert from char* to wchar_t*
-    // ##############################################################################
-    i32 length = MultiByteToWideChar(CP_OEMCP, MB_COMPOSITE, info->title, -1, NULL, 0);
-    void* unicode = tl_platform_memory_salloc(length * sizeof(wchar_t));
-    MultiByteToWideChar(CP_OEMCP, MB_COMPOSITE, info->title, -1, unicode, length);
     // ##################################################
     // Create the window
     // ##################################################
     e_hwnd = CreateWindowEx(
         window_ex_style,                // Window style extended
-        TEXT("__teleios__"),            // Window class name
-        unicode,                        // Window title
+        "__teleios__",                  // Window class name
+        info->title,                    // Window title
         window_style,                   // Window style
         window_x, window_y,             // Window position
         window_width, window_height,    // Window size
@@ -218,12 +203,9 @@ void tl_platform_window_create(TLCreateWindowInfo* info) {
         e_hinstance,                    //
         0                               // Window parameters
     );
-
     // ##################################################
-    // Release unicode text
     // Break if failed to create window
     // ##################################################
-    tl_platform_memory_sfree(unicode);
     if (e_hwnd == 0) TLFATAL("Window creation failed!");
     TLDIAGNOSTICS_POP;
 }
@@ -510,7 +492,7 @@ b8 tl_platform_initialize(void) {
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = e_hinstance;
-    wc.lpszClassName = TEXT("__teleios__");
+    wc.lpszClassName = "__teleios__";
     wc.hIcon = LoadIcon(e_hinstance, IDI_APPLICATION);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = NULL;
