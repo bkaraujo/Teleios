@@ -1,92 +1,59 @@
 Clear-Host
 $ROOTFS = $(Get-Location)
-# ==========================================================================================
-#
-#                                           CGLM
-#
-# ==========================================================================================
-Write-Host "======= CGLM ======="
-$CGLMFS = "$ROOTFS/engine/src/cglm"
-Set-Location $CGLMFS
+function Invoke-LLVM-Compile {
+    param (
+        [string]$Location="",
+        [string]$CFlags="", 
+        [string]$IFlags="", 
+        [string]$DFlags=""
+    ) 
 
-$CFlags = "-std=c11 -g -Wall -Werror -march=x86-64"
-$IFlags = "-I$ROOTFS/engine/src"
-$DFlags = "-DCGLM_STATIC"
+    $COMPILEFS = "$ROOTFS/$Location"
+    Write-Host "Compiling $COMPILEFS"
+    Set-Location $COMPILEFS
+        
+    Get-ChildItem -Path $COMPILEFS -Filter "*.o" -Recurse -File | Remove-Item
+    $FILES = $(Get-ChildItem -Path $COMPILEFS -Filter "*.c" -Recurse -File)
+    Invoke-Expression "clang -std=c11 -Wall -Werror -march=x86-64 $CFlags $Iflags $DFlags -c $FILES"
+    
+    Set-Location $ROOTFS
+}
 
-Get-ChildItem -Path $CGLMFS -Filter "*.o" -Recurse -File | Remove-Item
-$FILES = $(Get-ChildItem -Path $CGLMFS -Filter "*.c" -Recurse -File)
-Write-Host "clang $CFlags $IFlags $DFlags -c $FILES"
-Invoke-Expression "clang $CFlags $IFlags $DFlags -c $FILES"
-# ==========================================================================================
-#
-#                                           GLAD
-#
-# ==========================================================================================
-Write-Host "======= GLAD ======="
-$GLADFS = "$ROOTFS/engine/src/glad"
-Set-Location $GLADFS
+function Invoke-LLVM-Arquive {
+    param (
+        [string]$Location="",
+        [string]$Output="", 
+        [string]$Files=""
+    ) 
+    Write-Host "Creating arquive $Output"
 
-$CFlags = "-std=c11 -g -Wall -Werror -march=x86-64"
-$IFlags = "-I$ROOTFS/engine/src"
-$DFlags = ""
+    Set-Location $Location
+    Invoke-Expression "llvm-ar rc $Output $Files"
+    
+    Set-Location $ROOTFS
+}
 
-Get-ChildItem -Path $GLADFS -Filter "*.o" -Recurse -File | Remove-Item
-$FILES = $(Get-ChildItem -Path $GLADFS -Filter "*.c" -Recurse -File)
+function Invoke-LLVM-Link {
+    param (
+        [string]$Location="",
+        [string]$Output="", 
+        [string]$LFlags="", 
+        [string]$Files=""
+    ) 
 
-Write-Host "clang $CFlags $IFlags $DFlags -c $FILES"
-Invoke-Expression "clang $CFlags $IFlags $DFlags -c $FILES"
-# ==========================================================================================
-#
-#                                           TELEIOS
-#
-# ==========================================================================================
-Write-Host "======= TELEIOS ======="
-$TELEIOSFS = "$ROOTFS/engine/src/teleios"
-Set-Location $TELEIOSFS
+    Write-Host "Linking $Output"
 
-$CFlags = "-std=c11 -g -Wall -Werror -march=x86-64 -Wno-unused-but-set-variable -fcomplete-member-pointers"
-$IFlags = "-I$ROOTFS/engine/src"
-$DFlags = "-DTL_BUILD_ALPHA -DTL_EXPORT -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
+    Set-Location $Location
+    Invoke-Expression "clang -g $LFlags $(Get-ChildItem -Path "$Location" -Filter "*.o" -Recurse -File) -o $Output"
+    
+    Set-Location $ROOTFS
+}
 
-Get-ChildItem -Path $TELEIOSFS -Filter "*.o" -Recurse -File | Remove-Item
-$FILES = $(Get-ChildItem -Path $TELEIOSFS -Filter "*.c" -Recurse -File)
+Invoke-LLVM-Compile -Location "engine/src/cglm" -Cflags "-g" -IFlags "-I$ROOTFS/engine/src" -DFlags "-DCGLM_STATIC"
+Invoke-LLVM-Compile -Location "engine/src/glad" -Cflags "-g" -IFlags "-I$ROOTFS/engine/src"
+Invoke-LLVM-Compile -Location "engine/src/teleios" -CFlags "-g -Wno-unused-but-set-variable" -IFlags "-I$ROOTFS/engine/src" -DFlags "-DTL_BUILD_ALPHA -DTL_EXPORT -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
+Invoke-LLVM-Compile -Location "sandbox/src" -CFlags "-g" -IFlags "-I$ROOTFS/engine/src -I$ROOTFS/sandbox/src" -DFlags "-DTL_BUILD_ALPHA -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
 
-Write-Host "clang $CFlags $IFlags $DFlags -c $FILES"
-Invoke-Expression "clang $CFlags $IFlags $DFlags -c $FILES"
+Invoke-LLVM-Arquive -Location "$ROOTFS" -Output "teleios.lib" -Files "$(Get-ChildItem -Path "engine/src/cglm" -Filter "*.o" -Recurse -File) $(Get-ChildItem -Path "engine/src/glad" -Filter "*.o" -Recurse -File) $(Get-ChildItem -Path "engine/src/teleios" -Filter "*.o" -Recurse -File)"
 
-Set-Location $ROOTFS
-
-Write-Host "======= llvm-ar rc engine.lib ======="
-Write-Host "llvm-ar rc teleios.lib $(Get-ChildItem -Path $TELEIOSFS -Filter "*.o" -Recurse -File) $(Get-ChildItem -Path $GLADFS -Filter "*.o" -Recurse -File)"
-Invoke-Expression "llvm-ar rc teleios.lib $(Get-ChildItem -Path $TELEIOSFS -Filter "*.o" -Recurse -File) $(Get-ChildItem -Path $GLADFS -Filter "*.o" -Recurse -File) $(Get-ChildItem -Path $CGLMFS -Filter "*.o" -Recurse -File)"
-
-# ==========================================================================================
-#
-#                                           SANDOBX
-#
-# ==========================================================================================
-Write-Host "======= SANDBOX ======="
-$SANDBOXFS = "$ROOTFS/sandbox/src"
-Set-Location $SANDBOXFS
-
-$CFlags = "-std=c11 -g -Wall -Werror -march=x86-64"
-$IFlags = "-I$ROOTFS/engine/src -I$ROOTFS/sendbox/src"
-$LFlags = "-luser32 -lgdi32 -lopengl32 -l$ROOTFS/teleios.lib"
-$DFlags = "-DTL_BUILD_ALPHA -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
-
-Get-ChildItem -Path $SANDBOXFS -Filter "*.o" -Recurse -File | Remove-Item
-$FILES = $(Get-ChildItem -Path $SANDBOXFS -Filter "*.c" -Recurse -File)
-
-Write-Host "clang $CFlags $IFlags $DFlags -c $FILES"
-Invoke-Expression "clang $CFlags $IFlags $DFlags -c $FILES"
-
-Set-Location $ROOTFS
-
-Write-Host "======= clang -o sandbox.exe ======="
-Write-Host "clang -g $LFlags $(Get-ChildItem -Path $SANDBOXFS -Filter "*.o" -Recurse -File) -o sandbox.exe"
-Invoke-Expression "clang -g $LFlags $(Get-ChildItem -Path $SANDBOXFS -Filter "*.o" -Recurse -File) -o sandbox.exe"
-
-Get-ChildItem -Path $CGLMFS -Filter "*.o" -Recurse -File | Remove-Item
-Get-ChildItem -Path $GLADFS -Filter "*.o" -Recurse -File | Remove-Item
-Get-ChildItem -Path $TELEIOSFS -Filter "*.o" -Recurse -File | Remove-Item
-Get-ChildItem -Path $SANDBOXFS -Filter "*.o" -Recurse -File | Remove-Item
+Invoke-LLVM-Link -Location "$ROOTFS" -Output "sandbox.exe" -LFlags "-luser32 -lgdi32 -lopengl32 -l$ROOTFS/teleios.lib" -Files "$(Get-ChildItem -Path $SANDBOXFS -Filter "*.o" -Recurse -File)"
