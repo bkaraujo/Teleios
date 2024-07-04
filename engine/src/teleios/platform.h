@@ -21,34 +21,6 @@ void tl_platform_memory_copy(void* source, void* target, u64 size);
 void tl_platform_console(u8 level, const char* message);
 // #####################################################################################################
 //
-//                                           C H R O N O
-//
-// #####################################################################################################
-typedef struct {
-    u16 year;
-    u8 month;
-    u8 day;
-    u8 hour;
-    u8 minute;
-    u8 seconds;
-    u16 millis;
-} TLTime;
-
-void tl_platform_time_now(TLTime* time);
-u64 tl_platform_time_epoch(void);
-
-typedef struct {
-    u64 start;
-    u64 update;
-} TLTimer;
-
-void tl_platform_timer_start(TLTimer* timer);
-void tl_platform_timer_update(TLTimer* timer);
-u64 tl_platform_timer_micros(TLTimer* timer);
-f64 tl_platform_timer_millis(TLTimer* timer);
-f64 tl_platform_timer_seconds(TLTimer* timer);
-// #####################################################################################################
-//
 //                                           W I N D O W
 //
 // #####################################################################################################

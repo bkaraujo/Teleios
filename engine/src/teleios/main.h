@@ -3,10 +3,18 @@
 
 #include "teleios/logger.h"
 #include "teleios/engine.h"
+#include "teleios/chrono.h"
 
 void tl_application_configure(TLAppSpecification* spec);
 
 int main() {
+    if (!tl_engine_pre_initialize()) {
+        TLERROR("Engine failed to initialize underlying platform");
+        return 9;
+    }
+
+    TLTimer timer; tl_chrono_timer_start(&timer);
+
     if (!tl_engine_initialize()) {
         TLERROR("Engine failed to initialize");
         if (!tl_engine_terminate()) {
@@ -19,7 +27,6 @@ int main() {
 
     TLAppSpecification specification = { 0 };
     tl_application_configure(&specification);
-
     if (!tl_engine_configure(&specification)) {
         TLERROR("Engine failed to configure");
         if (!tl_engine_terminate()) {
@@ -29,6 +36,9 @@ int main() {
 
         return 91;
     }
+
+    tl_chrono_timer_update(&timer);
+    TLINFO("Engine initialized in %.3f ms", tl_chrono_timer_millis(&timer));
 
     if (!tl_engine_run()) {
         TLERROR("Engine failed to run");

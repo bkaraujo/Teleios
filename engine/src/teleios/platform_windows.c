@@ -11,6 +11,7 @@
 #include "teleios/messaging.h"
 #include "teleios/messagingcodes.h"
 #include "teleios/diagnostic.h"
+#include "teleios/chrono.h"
 
 static HINSTANCE e_hinstance;
 // #####################################################################################################
@@ -73,7 +74,7 @@ void tl_platform_console(u8 level, const char* message) {
 static LARGE_INTEGER e_frequency;
 static SYSTEMTIME e_unix_epoch;
 
-void tl_platform_time_now(TLTime* time) {
+TLAPI void tl_chrono_time_now(TLTime* time) {
     TLDIAGNOSTICS_PUSH;
     if (time == NULL) { TLDIAGNOSTICS_POP; return; }
 
@@ -89,7 +90,7 @@ void tl_platform_time_now(TLTime* time) {
     TLDIAGNOSTICS_POP;
 }
 
-u64 tl_platform_time_epoch(void) {
+TLAPI u64 tl_chrono_time_epoch(void) {
     TLDIAGNOSTICS_PUSH;
     // #################################################################
     // Obtain the system 64bit time
@@ -112,7 +113,7 @@ u64 tl_platform_time_epoch(void) {
     return (curr_time_as_uint64.QuadPart - unix_epoch_as_uint64.QuadPart) / 10000;
 }
 
-void tl_platform_timer_start(TLTimer* timer) {
+TLAPI void tl_chrono_timer_start(TLTimer* timer) {
     TLDIAGNOSTICS_PUSH;
     if (timer == NULL) { TLDIAGNOSTICS_POP; return; }
     LARGE_INTEGER now; QueryPerformanceCounter(&now);
@@ -121,7 +122,7 @@ void tl_platform_timer_start(TLTimer* timer) {
     TLDIAGNOSTICS_POP;
 }
 
-void tl_platform_timer_update(TLTimer* timer) {
+TLAPI void tl_chrono_timer_update(TLTimer* timer) {
     TLDIAGNOSTICS_PUSH;
     if (timer == NULL) { TLDIAGNOSTICS_POP; return; }
     LARGE_INTEGER now; QueryPerformanceCounter(&now);
@@ -129,7 +130,7 @@ void tl_platform_timer_update(TLTimer* timer) {
     TLDIAGNOSTICS_POP;
 }
 
-u64 tl_platform_timer_micros(TLTimer* timer) {
+TLAPI u64 tl_chrono_timer_micros(TLTimer* timer) {
     TLDIAGNOSTICS_PUSH;
     if (timer == NULL) { TLDIAGNOSTICS_POP; return 0; }
     u64 elapsed = timer->update - timer->start;
@@ -138,18 +139,18 @@ u64 tl_platform_timer_micros(TLTimer* timer) {
     return elapsedMicros;
 }
 
-f64 tl_platform_timer_millis(TLTimer* timer) {
+TLAPI f64 tl_chrono_timer_millis(TLTimer* timer) {
     TLDIAGNOSTICS_PUSH;
     if (timer == NULL) { TLDIAGNOSTICS_POP; return 0.0f; }
-    f64 elaspsedMillis = tl_platform_timer_micros(timer) / 1000.0f;
+    f64 elaspsedMillis = tl_chrono_timer_micros(timer) / 1000.0f;
     TLDIAGNOSTICS_POP;
     return elaspsedMillis;
 }
 
-f64 tl_platform_timer_seconds(TLTimer* timer) {
+TLAPI f64 tl_chrono_timer_seconds(TLTimer* timer) {
     TLDIAGNOSTICS_PUSH;
     if (timer == NULL) { TLDIAGNOSTICS_POP; return 0.0f; }
-    f64 elaspsedSeconds = tl_platform_timer_millis(timer) / 1000.0f;
+    f64 elaspsedSeconds = tl_chrono_timer_millis(timer) / 1000.0f;
     TLDIAGNOSTICS_POP;
     return elaspsedSeconds;
 }

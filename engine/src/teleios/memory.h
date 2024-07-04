@@ -9,6 +9,7 @@ b8 tl_memory_terminate(void);
 typedef enum {
     TL_MEMORY_CONTAINER,
     TL_MEMORY_CONTAINER_NODE,
+    TL_MEMORY_GRAPHICS,
     TL_MEMORY_MAXIMUM
 } TLMemoryType;
 

@@ -1,5 +1,6 @@
 #include "teleios/logger.h"
 #include "teleios/platform.h"
+#include "teleios/chrono.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -27,7 +28,7 @@ TLAPI void tl_logger_console(TLLogLevel level, const char* message, ...) {
     // 2 - Parse the message into the allocated memory
     // 3 - Free the user formatted message
     // ##############################################################################
-    TLTime time; tl_platform_time_now(&time);
+    TLTime time; tl_chrono_time_now(&time);
 
     void* logger_message = tl_platform_memory_salloc(SYS_BUFFERSIZE);
     tl_platform_memory_set(logger_message, SYS_BUFFERSIZE, 0);
