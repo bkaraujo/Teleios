@@ -1,13 +1,28 @@
 param (
+    [string]$Target="",
     [string]$Location="",
-    [string]$Output="", 
-    [string]$Files=""
+    [string]$Output=""
 ) 
+# ##############################################################################
+# script initialization
+# Caches initial location
+# ##############################################################################
 Write-Host "Creating arquive $Output"
 $ROOTFS = Get-Location
-
-Set-Location $Location
-Invoke-Expression "llvm-ar rc $Output $Files"
-foreach ($file in $Files.Split(" ")) { Remove-Item -Path $file }
-
+# ##############################################################################
+# Creates build folder if it not exists
+# Set location to build folder
+# ##############################################################################
+if (Test-Path -Path "$ROOTFS/build/$Target" ){}
+else { New-Item -ItemType Directory "$ROOTFS/build/$Target" -Force | Out-Null }
+Set-Location "$ROOTFS/build/$Target"
+# ##############################################################################
+# Invoke the compiler
+# Remove all files that have been archived
+# ##############################################################################
+Invoke-Expression "llvm-ar rc $ROOTFS/build/$Output *.o"
+Get-ChildItem -Path "$ROOTFS/build/$Target" -Filter "*.o" -Recurse -File | Remove-Item
+# ##############################################################################
+# Restores the original location
+# ##############################################################################
 Set-Location $ROOTFS

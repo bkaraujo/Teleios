@@ -1,13 +1,8 @@
 # Directories
 .vs/
-Binaries/
+build/
 .vscode
+
 # Files
 *.vcxproj*
 *.sln
-**/*.o
-**/*.exp
-**/*.ilk
-**/*.pdb
-**/*.lib
-**/sandbox.exe
