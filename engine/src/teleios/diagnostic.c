@@ -2,8 +2,9 @@
 #include "teleios/platform.h"
 #include "teleios/logger.h"
 
-static u16 used = 0;
-static u16 length = U8MAX;
+static u8 max = 0;
+static u8 used = 0;
+static u8 length = U8MAX;
 static TLDiagnostic* registry;
 
 b8 tl_diagnostic_initialize(void) {
@@ -36,6 +37,8 @@ void tl_diagnostics_push(const TLDiagnostic* diagnostic) {
     // ########################################################################
     tl_platform_memory_copy((void*)diagnostic, (void*) (registry + used), sizeof(TLDiagnostic));
     used++;
+
+    if (used > max) max = used;
 }
 
 void tl_diagnostics_pop(void) {
@@ -54,16 +57,10 @@ void tl_diagnostics_print(void) {
 }
 
 b8 tl_diagnostic_terminate(void) {
-    TLDIAGNOSTICS_PUSH;
-    if (registry == NULL) {
-        TLDIAGNOSTICS_POP;
-        return true;
-    }
-
-    TLDIAGNOSTICS_POP;
+    TLTRACE("Diagnostic stack max depth: %d", max);
+    if (registry == NULL) { return true; }
     tl_platform_memory_hfree(registry);
     registry = NULL;
-    length = 0;
-
+    length = used = max = 0;
     return true;
 }
