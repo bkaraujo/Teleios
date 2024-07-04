@@ -31,7 +31,6 @@ foreach ($file in Get-ChildItem -Path $Location -Filter "*.c" -Recurse -File) {
     else { New-Item -ItemType File -Path $ShaFile | Out-Null }
 
     if ($Hash -ne $(Get-Content $ShaFile | Select-Object -First 1)) { 
-        Write-Host "Compiling $file"
         $Hash > $ShaFile
 
         # Perform the compilation and store the result code
