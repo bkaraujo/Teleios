@@ -38,12 +38,12 @@ void tl_platform_memory_sfree(void* block) {
 
 void tl_platform_memory_set(void* block, u64 size, i32 value) {
     if (size == 0) return;
-    memset(block, value, size);
+    FillMemory(block, size, value);
 }
 
 void tl_platform_memory_copy(void* source, void* target, u64 size) {
     if (size == 0) return;
-    memcpy(target, source, size);
+    CopyMemory(target, source, size);
 }
 // #####################################################################################################
 //
