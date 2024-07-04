@@ -21,7 +21,6 @@ Set-Location "$ROOTFS/build/$Target"
 # Remove all files that have been archived
 # ##############################################################################
 Invoke-Expression "llvm-ar rc $ROOTFS/build/$Output *.o"
-Get-ChildItem -Path "$ROOTFS/build/$Target" -Filter "*.o" -Recurse -File | Remove-Item
 # ##############################################################################
 # Restores the original location
 # ##############################################################################

@@ -23,7 +23,6 @@ Set-Location "$ROOTFS/build/$Target"
 # Remove all files that have been archived
 # ##############################################################################
 Invoke-Expression "clang -g $LFlags *.o -o $ROOTFS/build/$Output"
-Get-ChildItem -Path "$Location" -Filter "*.o" -Recurse -File | Remove-Item
 # ##############################################################################
 # Restores the original location
 # ##############################################################################
