@@ -38,7 +38,7 @@ TLAPI b8 tl_engine_pre_initialize(void) {
         TLERROR("Failed to initialize: Diagnostics");
         return false;
     }
-
+    
     return true;
 }
 
@@ -110,7 +110,7 @@ TLAPI b8 tl_engine_run(void) {
     "out vec4 FragColor;\n"
     "void main() {\n"
     "   FragColor = vec4(0f, .75f, 1.0f, 1.0f);\n"
-    "}\n\0";
+    "}\0";
 
     TLShaderSource sources[] = { vertex, fragment };
     TLShaderCreateInfo shader_spec = { 0 };
@@ -131,19 +131,19 @@ TLAPI b8 tl_engine_run(void) {
     gspec.buffers = &gbuffer;
 
     TLGeometry* geometry = tl_graphics_geometry_create(&gspec);
-    unsigned int indices[] = {
+    u32 indices[] = {
         0, 1, 3,   // first triangle
         1, 2, 3    // second triangle
     };
-    tl_graphics_geometry_elements_ui(geometry, 6, indices);
+    tl_graphics_geometry_elements_ui(geometry, TLARRLENGTH(indices, u32), indices);
     
-    float vertices[] = {
+    f32 vertices[] = {
          0.5f,  0.5f, 0.0f,  // right top
          0.5f, -0.5f, 0.0f,  // right bottom 
         -0.5f, -0.5f, 0.0f,  // left bottom 
         -0.5f,  0.5f, 0.0f   // left top
     };
-    tl_graphics_geometry_vertices(geometry, 12, vertices);
+    tl_graphics_geometry_vertices(geometry, TLARRLENGTH(vertices, f32), vertices);
 
     while (running) {
         frame_counter++;

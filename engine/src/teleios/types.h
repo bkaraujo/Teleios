@@ -68,6 +68,8 @@
 #else
 #   define TLSTASSERT static_assert
 #endif
+
+#define TLARRLENGTH(array,type) sizeof(array) / sizeof(type)
 // ############################################################################
 //
 //                               BASIC TYPES

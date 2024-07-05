@@ -18,6 +18,13 @@
 //
 // #####################################################################################################
 
+typedef struct {
+    u32 vao;
+    u32 shader;
+} TLGraphicsState;
+
+static TLGraphicsState state = { 0 };
+
 static u32 tl_parse_shader_stage(TLShaderStage stage) {
     switch (stage) {
         default: return U32MAX;
@@ -288,7 +295,10 @@ TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* info) {
 void tl_graphics_shader_bind(TLShaderProgram* program) {
     TLDIAGNOSTICS_PUSH;
     if (program == NULL) { TLWARN("TLShaderProgram is NULL"); TLDIAGNOSTICS_POP; return; }
-    glUseProgram(program->handle);
+    if (state.shader == program->handle) { TLDIAGNOSTICS_POP; return; }
+    
+    state.shader = program->handle;
+    glUseProgram(state.shader);
 	TLDIAGNOSTICS_POP;
 }
 
@@ -437,7 +447,9 @@ void tl_graphics_geometry_bind(TLGeometry* geometry) {
     TLDIAGNOSTICS_PUSH;
     
     if (geometry == NULL) { TLWARN("TLGeometry is NULL"); TLDIAGNOSTICS_POP; return; }
-    glBindVertexArray(geometry->vao);
+    if (state.vao == geometry->vao) { TLDIAGNOSTICS_POP; return; }
+    state.vao = geometry->vao;
+    glBindVertexArray(state.vao);
 
 	TLDIAGNOSTICS_POP;
 }
@@ -582,6 +594,7 @@ static TLMessageChain tl_graphics_events(const u16 code, const TLMessage* messag
     return TL_MESSAGE_AVALIABLE;
 }
 
+#if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
 static const char* tl_graphics_debug_source(u32 source) {
     switch (source) {
         case GL_DEBUG_SOURCE_API:             return "API"; 
@@ -642,7 +655,7 @@ static void APIENTRY tl_graphics_debug(GLenum source,
         message
     );
 }
-
+#endif
 b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
     TLDIAGNOSTICS_PUSH;
 	
@@ -669,13 +682,12 @@ b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
 	TLDEBUG("GL_VENDOR : %s", glGetString(GL_VENDOR));
 	TLDEBUG("GL_VERSION: %s", glGetString(GL_VERSION));
 	
-    i32 flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+#if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
         glDebugMessageCallback(tl_graphics_debug, NULL);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-    }
+#endif
 
 	if (wglSwapIntervalEXT != NULL) {
 		wglSwapIntervalEXT(0);
