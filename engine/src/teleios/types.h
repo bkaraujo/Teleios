@@ -143,6 +143,15 @@ typedef struct {
     u32 length;
 } TLList;
 
+typedef struct {
+    const char* title;
+    u32 width;
+    u32 height;
+} TLWindowCreateInfo;
+
+typedef struct {
+    vec4s clear_color;
+} TLGraphicsCreateInfo;
 
 typedef struct {
     /**
@@ -154,14 +163,8 @@ typedef struct {
         u8 patch;
     } version;
 
-    /**
-     * Window creation parameters
-     */
-    struct {
-        const char* title;
-        i32 width;
-        i32 height;
-    } window;
+    TLWindowCreateInfo window;
+    TLGraphicsCreateInfo graphics;
 
 } TLAppSpecification;
 #endif // TELEIOS_TYPES

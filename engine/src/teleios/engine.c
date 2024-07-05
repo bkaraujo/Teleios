@@ -71,15 +71,8 @@ TLAPI b8 tl_engine_initialize(void) {
 
 TLAPI b8 tl_engine_configure(TLAppSpecification* specification) {
     TLDIAGNOSTICS_PUSH;
-
-    TLCreateWindowInfo info;
-    info.title = specification->window.title;
-    info.width = specification->window.width;
-    info.height = specification->window.height;
-
-    tl_platform_window_create(&info);
-
-    if (!tl_graphics_initialize()) {
+    tl_platform_window_create(&specification->window);
+    if (!tl_graphics_initialize(&specification->graphics)) {
         TLERROR("Failed to initialize: Graphics Manager");
         TLDIAGNOSTICS_POP;
         return false;

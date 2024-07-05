@@ -8,6 +8,7 @@
 #include "teleios/memory.h"
 #include "teleios/container.h"
 #include "teleios/messaging.h"
+#include "teleios/messagingcodes.h"
 #include "glad/glad.h"
 #include "glad/wgl.h"
 
@@ -578,7 +579,20 @@ static void tl_graphics_initialize_glcontext(PIXELFORMATDESCRIPTOR* pfd) {
 	TLDIAGNOSTICS_POP;
 }
 
-b8 tl_graphics_initialize(void) {
+static TLMessageChain tl_graphics_events(const u16 code, const TLMessage* message) {
+    TLDIAGNOSTICS_PUSH;
+
+    switch (code) {
+        case TL_MESSAGE_WINDOW_RESIZED: {
+            glViewport(0, 0, message->u16[0], message->u16[1]);
+        } break;
+    }
+
+	TLDIAGNOSTICS_POP;
+    return TL_MESSAGE_AVALIABLE;
+}
+
+b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
     TLDIAGNOSTICS_PUSH;
 	
 	PIXELFORMATDESCRIPTOR pfd = { 0 };
@@ -596,8 +610,10 @@ b8 tl_graphics_initialize(void) {
 	tl_graphics_initialize_glextentions(&pfd);
 	tl_graphics_initialize_glcontext(&pfd);
 
-	if (!gladLoadGL()) TLFATAL("Could not initialize glad(core)");
-	if (!gladLoadWGL(hdc))  TLFATAL("Could not initialize glad(wgl)");
+	if (!gladLoadGL()) TLFATAL("Failed to initialize glad(gl)");
+	if (!gladLoadWGL(hdc)) TLFATAL("Failed to initialize glad(wgl)");
+
+    tl_messaging_subscribe(TL_MESSAGE_WINDOW_RESIZED, tl_graphics_events);
 
 	TLDEBUG("GL_VENDOR : %s", glGetString(GL_VENDOR));
 	TLDEBUG("GL_VERSION: %s", glGetString(GL_VERSION));
@@ -606,7 +622,12 @@ b8 tl_graphics_initialize(void) {
 		wglSwapIntervalEXT(0);
 	}
 
-	glClearColor(1.0f, 0.5f, 0.5f, 1.0f);
+	glClearColor(
+        info->clear_color.r,
+        info->clear_color.g,
+        info->clear_color.b,
+        info->clear_color.a
+    );
 	
 	TLDIAGNOSTICS_POP;
     return true;

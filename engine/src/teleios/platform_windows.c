@@ -165,7 +165,7 @@ void* tl_platform_window_handle(void) {
     return &e_hwnd;
 }
 
-void tl_platform_window_create(TLCreateWindowInfo* info) {
+void tl_platform_window_create(TLWindowCreateInfo* info) {
     TLDIAGNOSTICS_PUSH;
     // ##################################################
     // Window styles
@@ -332,29 +332,28 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
         TLMessage message = { 0 };
         message.u16[0] = GET_X_LPARAM(l_param);
         message.u16[1] = GET_Y_LPARAM(l_param);
+        
+        tl_messaging_post(TL_MESSAGE_WINDOW_RESIZED, &message);
 
         switch (w_param) {
-        case SIZE_RESTORED: {
-            if (minimized || maximized) {
-                tl_messaging_post(TL_MESSAGE_WINDOW_RESTORED, &message);
-                minimized = false;
-                maximized = false;
-            }
-            else {
-                tl_messaging_post(TL_MESSAGE_WINDOW_RESIZED, &message);
-            }
+            case SIZE_RESTORED: {
+                if (minimized || maximized) {
+                    tl_messaging_post(TL_MESSAGE_WINDOW_RESTORED, &message);
+                    minimized = false;
+                    maximized = false;
+                }
 
-        } break;
-        case SIZE_MAXIMIZED: {
-            minimized = false;
-            maximized = true;
-            tl_messaging_post(TL_MESSAGE_WINDOW_MAXIMIZED, &message);
-        } break;
-        case SIZE_MINIMIZED: {
-            minimized = true;
-            maximized = false;
-            tl_messaging_post(TL_MESSAGE_WINDOW_MINIMIZED, &message);
-        } break;
+            } break;
+            case SIZE_MAXIMIZED: {
+                minimized = false;
+                maximized = true;
+                tl_messaging_post(TL_MESSAGE_WINDOW_MAXIMIZED, &message);
+            } break;
+            case SIZE_MINIMIZED: {
+                minimized = true;
+                maximized = false;
+                tl_messaging_post(TL_MESSAGE_WINDOW_MINIMIZED, &message);
+            } break;
         }
 
         TLDIAGNOSTICS_POP;

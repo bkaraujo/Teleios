@@ -155,7 +155,7 @@ void tl_graphics_draw(TLGeometry* geometry);
 //                                           L I F E C Y C L E
 //
 // #####################################################################################################
-b8 tl_graphics_initialize(void);
+b8 tl_graphics_initialize(TLGraphicsCreateInfo* info);
 void tl_graphics_update(void);
 b8 tl_graphics_terminate(void);
 
