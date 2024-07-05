@@ -130,9 +130,21 @@ TLAPI b8 tl_engine_run(void) {
     TLShaderProgram* shader = tl_graphics_shader_create(&shader_spec);
     if (shader == NULL) { TLFATAL("ops!"); }
 
-    unsigned int VAO = 0;
-    unsigned int VBO = 0;
-    unsigned int EBO = 0;
+    TLGeometryBuffer gbuffer = { 0 };
+    gbuffer.name = "aPos";
+    gbuffer.type = TL_BUFFER_TYPE_FLOAT3;
+
+    TLGeometrySpecification gspec = { 0 };
+    gspec.type = GL_TRIANGLES;
+    gspec.buffers_length = 1;
+    gspec.buffers = &gbuffer;
+
+    TLGeometry* geometry = tl_graphics_geometry_create(&gspec);
+    unsigned int indices[] = {
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second triangle
+    };
+    tl_graphics_geometry_elements_ui(geometry, sizeof(indices) / sizeof(u32), indices);
     
     float vertices[] = {
          0.5f,  0.5f, 0.0f,  // right top
@@ -140,26 +152,7 @@ TLAPI b8 tl_engine_run(void) {
         -0.5f, -0.5f, 0.0f,  // left bottom 
         -0.5f,  0.5f, 0.0f   // left top
     };
-
-    unsigned int indices[] = {
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
-    };
-
-    {
-        glGenVertexArrays(1, &VAO);
-        glBindVertexArray(VAO);
-        
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-        glEnableVertexAttribArray(0);  
-
-        glGenBuffers(1, &EBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
-    }
+    tl_graphics_geometry_vertices(geometry, sizeof(vertices) / sizeof(f32), vertices);
 
     while (running) {
         frame_counter++;
@@ -172,8 +165,9 @@ TLAPI b8 tl_engine_run(void) {
             }
 
             tl_graphics_shader_bind(shader);
-            glBindVertexArray(VAO);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            // glBindVertexArray(VAO);
+            tl_graphics_geometry_bind(geometry);
+            glDrawElements(GL_TRIANGLES, geometry->ebo_size, GL_UNSIGNED_INT, 0);
         }
 
         tl_input_update();
@@ -189,6 +183,7 @@ TLAPI b8 tl_engine_run(void) {
 
     tl_platform_window_hide();
     tl_graphics_shader_destroy(shader);
+    tl_graphics_geometry_destroy(geometry);
 
     TLDIAGNOSTICS_POP;
     return true;

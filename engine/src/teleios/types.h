@@ -131,6 +131,19 @@ typedef char                b8;
 //                               GLM TYPES
 // 
 // ############################################################################
+typedef struct TLListNode {
+    void* payload;
+    struct TLListNode* next;
+    struct TLListNode* previous;
+} TLListNode;
+
+typedef struct {
+    struct TLListNode* head;
+    struct TLListNode* tail;
+    u32 length;
+} TLList;
+
+
 typedef struct {
     /**
      * Application version information

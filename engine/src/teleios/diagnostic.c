@@ -4,12 +4,12 @@
 
 static u8 max = 0;
 static u8 used = 0;
-static u8 length = U8MAX;
+static u8 length = 10;
 static TLDiagnostic* registry;
 
 b8 tl_diagnostic_initialize(void) {
     // ########################################################################
-    // Preallocate U8MAX positions
+    // Preallocate 10 positions
     // ########################################################################
     registry = (TLDiagnostic*) tl_platform_memory_halloc(length * sizeof(TLDiagnostic));
     return true;
