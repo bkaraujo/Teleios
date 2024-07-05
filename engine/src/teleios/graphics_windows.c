@@ -566,9 +566,13 @@ static void tl_graphics_initialize_glcontext(PIXELFORMATDESCRIPTOR* pfd) {
     if (!SetPixelFormat(hdc, pixel_format, pfd)) TLFATAL("Failed to set the OpenGL 4.6 pixel format.");
 
     int attributes[] = {
-        WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-        WGL_CONTEXT_MINOR_VERSION_ARB, 6,
-        WGL_CONTEXT_PROFILE_MASK_ARB,  WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+        WGL_CONTEXT_MAJOR_VERSION_ARB,  4,
+        WGL_CONTEXT_MINOR_VERSION_ARB,  6,
+        //WGL_CONTEXT_LAYER_PLANE_ARB, <undefined>,
+        WGL_CONTEXT_PROFILE_MASK_ARB,   WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+#if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
+        WGL_CONTEXT_FLAGS_ARB,          WGL_CONTEXT_DEBUG_BIT_ARB,
+#endif
         0,
     };
 
@@ -590,6 +594,67 @@ static TLMessageChain tl_graphics_events(const u16 code, const TLMessage* messag
 
 	TLDIAGNOSTICS_POP;
     return TL_MESSAGE_AVALIABLE;
+}
+
+static const char* tl_graphics_debug_source(u32 source) {
+    switch (source) {
+        case GL_DEBUG_SOURCE_API:             return "API"; 
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   return "Window System";
+        case GL_DEBUG_SOURCE_SHADER_COMPILER: return "Shader Compiler";
+        case GL_DEBUG_SOURCE_THIRD_PARTY:     return "Third Party";
+        case GL_DEBUG_SOURCE_APPLICATION:     return "Application";
+        case GL_DEBUG_SOURCE_OTHER:           return "Other";
+    };
+
+    return "Unknown";
+}
+
+static const char* tl_graphics_debug_type(u32 type) {
+    switch (type) {
+        case GL_DEBUG_TYPE_ERROR:               return "Error";
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return "Deprecated Behaviour";
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  return "Undefined Behaviour"; 
+        case GL_DEBUG_TYPE_PORTABILITY:         return "Portability";
+        case GL_DEBUG_TYPE_PERFORMANCE:         return "Performance";
+        case GL_DEBUG_TYPE_MARKER:              return "Marker";
+        case GL_DEBUG_TYPE_PUSH_GROUP:          return "Push Group";
+        case GL_DEBUG_TYPE_POP_GROUP:           return "Pop Group";
+        case GL_DEBUG_TYPE_OTHER:               return "Other";
+    }
+
+    return "Unknown";
+}
+
+static const char* tl_graphics_debug_severity(u32 severity) {
+    switch (severity) {
+        case GL_DEBUG_SEVERITY_HIGH:         return "high";
+        case GL_DEBUG_SEVERITY_MEDIUM:       return "medium";
+        case GL_DEBUG_SEVERITY_LOW:          return "low";
+        case GL_DEBUG_SEVERITY_NOTIFICATION: return "notification";
+    }
+
+    return "Unknown";
+}
+
+static void APIENTRY tl_graphics_debug(GLenum source, 
+                            GLenum type, 
+                            unsigned int id, 
+                            GLenum severity, 
+                            GLsizei length, 
+                            const char *message, 
+                            const void *userParam)
+{
+    // ignore non-significant error/warning codes
+    // if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 
+
+    TLDEBUG(
+        "OpenGL [%lu] :: Severity: %s, Source: %s, Type: %s, Message: %s",
+        id,
+        tl_graphics_debug_severity(severity),
+        tl_graphics_debug_source(source),
+        tl_graphics_debug_type(type),
+        message
+    );
 }
 
 b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
@@ -618,6 +683,14 @@ b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
 	TLDEBUG("GL_VENDOR : %s", glGetString(GL_VENDOR));
 	TLDEBUG("GL_VERSION: %s", glGetString(GL_VERSION));
 	
+    i32 flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
+        glDebugMessageCallback(tl_graphics_debug, NULL);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+    }
+
 	if (wglSwapIntervalEXT != NULL) {
 		wglSwapIntervalEXT(0);
 	}
