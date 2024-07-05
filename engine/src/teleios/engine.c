@@ -38,7 +38,7 @@ TLAPI b8 tl_engine_pre_initialize(void) {
         TLERROR("Failed to initialize: Diagnostics");
         return false;
     }
-    
+
     return true;
 }
 

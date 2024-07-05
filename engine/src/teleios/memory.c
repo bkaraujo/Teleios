@@ -109,10 +109,11 @@ void tl_memory_set(void* pointer, u64 size, i32 value) {
 
 static const char* tl_memory_label(TLMemoryType type) {
     switch (type) {
-    case TL_MEMORY_CONTAINER: return "TL_MEMORY_CONTAINER";
-    case TL_MEMORY_CONTAINER_NODE: return "TL_MEMORY_CONTAINER_NODE";
-    case TL_MEMORY_GRAPHICS: return "TL_MEMORY_GRAPHICS";
-    default: return "????";
+        case TL_MEMORY_CONTAINER: return "TL_MEMORY_CONTAINER";
+        case TL_MEMORY_CONTAINER_NODE: return "TL_MEMORY_CONTAINER_NODE";
+        case TL_MEMORY_GRAPHICS: return "TL_MEMORY_GRAPHICS";
+        case TL_MEMORY_FILESYSTEM: return "TL_MEMORY_FILESYSTEM";
+        default: return "????";
     }
 }
 

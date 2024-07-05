@@ -8,6 +8,7 @@
 
 #include "teleios/logger.h"
 #include "teleios/input.h"
+#include "teleios/memory.h"
 #include "teleios/messaging.h"
 #include "teleios/messagingcodes.h"
 #include "teleios/diagnostic.h"
@@ -65,6 +66,80 @@ void tl_platform_console(u8 level, const char* message) {
     SetConsoleTextAttribute(e_hconsole, levels[level]);
     WriteConsole(e_hconsole, message, (DWORD)strlen(message), NULL, NULL);
     SetConsoleTextAttribute(e_hconsole, csbi.wAttributes);
+}
+// #####################################################################################################
+//
+//                                         F I L E S Y S T E M
+//
+// #####################################################################################################
+TLFile* tl_platform_file_open(const char* path) {
+    TLDIAGNOSTICS_PUSH;
+    if (path == NULL) { TLDIAGNOSTICS_POP; return NULL; }
+
+    HANDLE handle = CreateFile(
+        path, 
+        GENERIC_READ, 
+        FILE_SHARE_READ | FILE_SHARE_WRITE, 
+        NULL, 
+        OPEN_EXISTING, 
+        FILE_ATTRIBUTE_NORMAL, 
+        NULL
+    );
+    
+    if (handle == NULL || handle == INVALID_HANDLE_VALUE) {
+        TLWARN("Failed to open file: %s", path);
+        TLDIAGNOSTICS_POP; 
+        return NULL;
+    }
+
+    TLFile* file = tl_memory_alloc(TL_MEMORY_FILESYSTEM, sizeof(TLFile));
+    file->hande = handle;
+    file->path = path;
+
+    WIN32_FILE_ATTRIBUTE_DATA attributes;
+    if(GetFileAttributesEx(path, GetFileExInfoStandard, &attributes)){
+        LARGE_INTEGER file_size = { 0 };
+        file_size.LowPart = attributes.nFileSizeLow;
+        file_size.HighPart = attributes.nFileSizeHigh;
+        *((u64*)&file->size) = file_size.QuadPart;
+    }
+
+    TLDIAGNOSTICS_POP;
+    return file;
+}
+
+void tl_platform_file_string(TLFile* file) {
+    TLDIAGNOSTICS_PUSH;
+
+    if (file == NULL) { TLWARN("TLFile"); TLDIAGNOSTICS_POP; return; }
+    if (file->path == NULL) { TLWARN("TLFile->path"); TLDIAGNOSTICS_POP; return; }
+    if (file->hande == NULL) { TLWARN("TLFile->hande"); TLDIAGNOSTICS_POP; return; }
+
+    DWORD dwPtr = SetFilePointer(file->hande, 0, 0, FILE_BEGIN);
+    if (dwPtr == INVALID_SET_FILE_POINTER) { 
+        DWORD dwError = GetLastError(); 
+        TLERROR("Failed to SetFilePointer. 0x%x", dwError);
+        TLDIAGNOSTICS_POP;
+        return;
+    }
+
+    DWORD dwBytesRead = 0;
+    file->string = tl_memory_alloc(TL_MEMORY_FILESYSTEM, file->size);
+    ReadFile(file->hande, (void*)file->string, file->size, &dwBytesRead, 0);
+
+    TLDIAGNOSTICS_POP;
+}
+
+void tl_platform_file_close(TLFile* file) {
+    TLDIAGNOSTICS_PUSH;
+
+    if (file == NULL) { TLDIAGNOSTICS_POP; return; }
+    
+    CloseHandle(file->hande);
+    if (file->string != NULL) { tl_memory_free(TL_MEMORY_FILESYSTEM, file->size, (void*)file->string); }
+    tl_memory_free(TL_MEMORY_FILESYSTEM, sizeof(TLFile), file);
+
+    TLDIAGNOSTICS_POP;
 }
 // #####################################################################################################
 //
