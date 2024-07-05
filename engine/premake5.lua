@@ -1,9 +1,9 @@
 project "Engine"
    kind "StaticLib"
    language "C"
-   cdialect "C99"
-   cppdialect "C++20"
-   targetdir "Binaries/%{cfg.buildcfg}"
+   cdialect "C11"
+   cppdialect "C++11"
+   targetdir "build/%{cfg.buildcfg}"
    staticruntime "off"
 
    files { "src/**.h", "src/**.c", "src/**.cpp" }
@@ -18,8 +18,8 @@ project "Engine"
    
    defines { "TL_EXPORT", "CGLM_STATIC" }
 
-   targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
-   objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
+   targetdir ("../build/" .. OutputDir .. "/%{prj.name}")
+   objdir ("../build/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
    filter "system:windows"
        systemversion "latest"
