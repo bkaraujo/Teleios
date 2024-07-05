@@ -89,8 +89,6 @@ TLAPI b8 tl_engine_configure(TLAppSpecification* specification) {
     return true;
 }
 
-#include "glad/glad.h"
-
 TLAPI b8 tl_engine_run(void) {
     TLDIAGNOSTICS_PUSH;
     u32 fps = 0;
@@ -135,7 +133,7 @@ TLAPI b8 tl_engine_run(void) {
     gbuffer.type = TL_BUFFER_TYPE_FLOAT3;
 
     TLGeometrySpecification gspec = { 0 };
-    gspec.type = GL_TRIANGLES;
+    gspec.mode = TL_GEOMETRY_MODE_TRIANGLES;
     gspec.buffers_length = 1;
     gspec.buffers = &gbuffer;
 
@@ -164,10 +162,10 @@ TLAPI b8 tl_engine_run(void) {
                 running = false;
             }
 
+            tl_graphics_clear();
             tl_graphics_shader_bind(shader);
-            // glBindVertexArray(VAO);
             tl_graphics_geometry_bind(geometry);
-            glDrawElements(GL_TRIANGLES, geometry->ebo_size, GL_UNSIGNED_INT, 0);
+            tl_graphics_draw(geometry);
         }
 
         tl_input_update();

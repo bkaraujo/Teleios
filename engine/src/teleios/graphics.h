@@ -108,8 +108,8 @@ void tl_graphics_shader_uniform(TLShaderProgram* program, const char* name, TLBu
 //
 // #####################################################################################################
 typedef enum {
-    TL_GEOMETRY_TRIANGLES
-} TLGeometryType;
+    TL_GEOMETRY_MODE_TRIANGLES
+} TLGeometryMode;
 
 typedef struct {
     const char* name;
@@ -117,7 +117,7 @@ typedef struct {
 } TLGeometryBuffer;
 
 typedef struct {
-    TLGeometryType type;
+    TLGeometryMode mode;
     u8 buffers_length;
     TLGeometryBuffer* buffers;
 } TLGeometrySpecification;
@@ -128,13 +128,13 @@ typedef struct {
     u32 vbo;
     u32 vbo_size;
     u32 vbo_stride;
-    
+
     u32 ebo;
     u32 ebo_size;
     TLBufferType ebo_type;
 
     TLList* indices;
-    TLGeometryType type;
+    TLGeometryMode mode;
 } TLGeometry;
 
 TLGeometry* tl_graphics_geometry_create(TLGeometrySpecification* specification);
@@ -143,7 +143,13 @@ void tl_graphics_geometry_bind(TLGeometry* geometry);
 void tl_graphics_geometry_vertices(TLGeometry* geometry, u32 lenght, f32* vertices);
 void tl_graphics_geometry_elements_ui(TLGeometry* geometry, u32 lenght, u32* elements);
 void tl_graphics_geometry_elements_us(TLGeometry* geometry, u32 lenght, u16* elements);
-
+// #####################################################################################################
+//
+//                                           R E N D E R E R
+//
+// #####################################################################################################
+void tl_graphics_clear(void);
+void tl_graphics_draw(TLGeometry* geometry);
 // #####################################################################################################
 //
 //                                           L I F E C Y C L E

@@ -178,6 +178,13 @@ static u32 tl_parse_buffer_bytes(TLBufferType type) {
         case TL_BUFFER_TYPE_DOUBLE4: return 4 * sizeof(f64);
     }    
 }
+
+static u32 tl_parse_geometry_mode(TLGeometryMode mode) {
+    switch (mode) {
+        case TL_GEOMETRY_MODE_TRIANGLES: return GL_TRIANGLES;
+    }
+}
+
 // #####################################################################################################
 //
 //                                           S H A D E R
@@ -459,7 +466,30 @@ void tl_graphics_geometry_destroy(TLGeometry* geometry) {
 
 	TLDIAGNOSTICS_POP;
 }
+// #####################################################################################################
+//
+//                                           R E N D E R E R
+//
+// #####################################################################################################
+void tl_graphics_clear(void) {
+    TLDIAGNOSTICS_PUSH;
+	
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	
+    TLDIAGNOSTICS_POP;
+}
 
+void tl_graphics_draw(TLGeometry* geometry) {
+    TLDIAGNOSTICS_PUSH;
+    
+    if (geometry == NULL) { TLWARN("TLGeometry is NULL"); TLDIAGNOSTICS_POP; return; }
+
+    u32 mode = tl_parse_geometry_mode(geometry->mode);
+    u32 type = tl_parse_buffer_type(geometry->ebo_type);
+    glDrawElements(mode, geometry->ebo_size, type, 0);
+
+	TLDIAGNOSTICS_POP;
+}
 // #####################################################################################################
 //
 //                                           L I F E C Y C L E
@@ -581,7 +611,6 @@ b8 tl_graphics_initialize(void) {
 void tl_graphics_update(void) {
     TLDIAGNOSTICS_PUSH;
 	SwapBuffers(hdc);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     TLDIAGNOSTICS_POP;
 }
 
