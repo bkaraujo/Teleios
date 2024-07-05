@@ -22,15 +22,15 @@ if ( Test-Path -Path "$ROOTFS/build") {
             # Remove build directory
             Remove-Item -Path "$ROOTFS/build/" -Recurse -Force | Out-Null
             New-Item -ItemType Directory -Path "$ROOTFS/build/" | Out-Null
-
-            # Remember current build profile
-            $Build > "$ROOTFS/build/profile"
         }
     } else {
         Remove-Item -Path "$ROOTFS/build/" -Force | Out-Null
         New-Item -ItemType Directory -Path "$ROOTFS/build/" | Out-Null
     }
 }
+
+# Remember current build profile
+$Build > "$ROOTFS/build/profile"
 
 if ($Build -eq "ALPHA"){
     .\vendor\llvm\compile.ps1 -Target "engine" -Location "$ROOTFS/engine/src" -CFlags "-g -O0 -Wno-unused-but-set-variable" -IFlags "-I$ROOTFS/engine/src" -DFlags "-DCGLM_STATIC -DTL_BUILD_$Build -DTL_EXPORT -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
@@ -40,7 +40,7 @@ if ($Build -eq "ALPHA"){
     if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
 }
 
-if ($Build -ne "BETA") {
+if ($Build -eq "BETA") {
     .\vendor\llvm\compile.ps1 -Target "engine" -Location "$ROOTFS/engine/src" -CFlags "-g -O2 -Wno-unused-but-set-variable" -IFlags "-I$ROOTFS/engine/src" -DFlags "-DCGLM_STATIC -DTL_BUILD_$Build -DTL_EXPORT -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
     if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
     
@@ -48,7 +48,7 @@ if ($Build -ne "BETA") {
     if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
 }
 
-if ($Build -ne "RELEASE") {
+if ($Build -eq "RELEASE") {
     .\vendor\llvm\compile.ps1 -Target "engine" -Location "$ROOTFS/engine/src" -CFlags "-O3 -Wno-unused-but-set-variable" -IFlags "-I$ROOTFS/engine/src" -DFlags "-DCGLM_STATIC -DTL_BUILD_$Build -DTL_EXPORT -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
     if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
     
