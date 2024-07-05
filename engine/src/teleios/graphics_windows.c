@@ -10,24 +10,20 @@
 #include "teleios/messaging.h"
 #include "glad/glad.h"
 #include "glad/wgl.h"
+
 // #####################################################################################################
 //
 //                                           H E L P E R S
 //
 // #####################################################################################################
-static u32 tl_parse_shader_stage(TLShaderStage stage) {
-    TLDIAGNOSTICS_PUSH;
-    
-    u32 result;
-    switch (stage) {
-        default: result = U32MAX; break;
-        case TL_SHADER_STAGE_COMPUTE: result = GL_COMPUTE_SHADER; break;
-        case TL_SHADER_STAGE_FRAGMENT: result = GL_FRAGMENT_SHADER; break;
-        case TL_SHADER_STAGE_VERTEX: result = GL_VERTEX_SHADER; break;
-    }
 
-    TLDIAGNOSTICS_POP;
-    return result;
+static u32 tl_parse_shader_stage(TLShaderStage stage) {
+    switch (stage) {
+        default: return U32MAX;
+        case TL_SHADER_STAGE_COMPUTE: return GL_COMPUTE_SHADER;
+        case TL_SHADER_STAGE_FRAGMENT: return GL_FRAGMENT_SHADER;
+        case TL_SHADER_STAGE_VERTEX: return GL_VERTEX_SHADER;
+    }
 }
 
 static u8 tl_parse_buffer_size(TLBufferType type) {
@@ -84,7 +80,7 @@ static u8 tl_parse_buffer_size(TLBufferType type) {
         case TL_BUFFER_TYPE_UINT4:
         case TL_BUFFER_TYPE_FLOAT4:
         case TL_BUFFER_TYPE_DOUBLE4: return 4;
-    }    
+    }
 }
 
 static u32 tl_parse_buffer_type(TLBufferType type) {
@@ -130,7 +126,7 @@ static u32 tl_parse_buffer_type(TLBufferType type) {
         case TL_BUFFER_TYPE_DOUBLE2:
         case TL_BUFFER_TYPE_DOUBLE3:
         case TL_BUFFER_TYPE_DOUBLE4: return GL_DOUBLE;
-    }    
+    }
 }
 
 static u32 tl_parse_buffer_bytes(TLBufferType type) {
@@ -176,13 +172,15 @@ static u32 tl_parse_buffer_bytes(TLBufferType type) {
         case TL_BUFFER_TYPE_DOUBLE2: return 2 * sizeof(f64);
         case TL_BUFFER_TYPE_DOUBLE3: return 3 * sizeof(f64);
         case TL_BUFFER_TYPE_DOUBLE4: return 4 * sizeof(f64);
-    }    
+    }
 }
 
 static u32 tl_parse_geometry_mode(TLGeometryMode mode) {
     switch (mode) {
         case TL_GEOMETRY_MODE_TRIANGLES: return GL_TRIANGLES;
     }
+
+    TLFATAL("Failed to parse TLGeometryMode");
 }
 
 // #####################################################################################################
@@ -340,11 +338,13 @@ void tl_graphics_shader_destroy(TLShaderProgram* program) {
 
 	TLDIAGNOSTICS_POP;
 }
+
 // #####################################################################################################
 //
 //                                            G E O M E T R Y
 //
 // #####################################################################################################
+
 TLGeometry* tl_graphics_geometry_create(TLGeometrySpecification* specification) {
     TLDIAGNOSTICS_PUSH;
     if (specification == NULL) { TLDIAGNOSTICS_POP; TLWARN("TLGeometrySpecification is NULL"); return NULL; }
@@ -466,11 +466,13 @@ void tl_graphics_geometry_destroy(TLGeometry* geometry) {
 
 	TLDIAGNOSTICS_POP;
 }
+
 // #####################################################################################################
 //
 //                                           R E N D E R E R
 //
 // #####################################################################################################
+
 void tl_graphics_clear(void) {
     TLDIAGNOSTICS_PUSH;
 	
@@ -490,11 +492,17 @@ void tl_graphics_draw(TLGeometry* geometry) {
 
 	TLDIAGNOSTICS_POP;
 }
+
 // #####################################################################################################
 //
 //                                           L I F E C Y C L E
 //
 // #####################################################################################################
+
+static HWND hwnd;
+static HGLRC context;
+static HDC hdc;
+
 static void tl_graphics_initialize_glextentions(const PIXELFORMATDESCRIPTOR* pfd) {
     TLDIAGNOSTICS_PUSH;
 
@@ -528,10 +536,6 @@ static void tl_graphics_initialize_glextentions(const PIXELFORMATDESCRIPTOR* pfd
 
 	TLDIAGNOSTICS_POP;
 }
-
-static HWND hwnd;
-static HGLRC context;
-static HDC hdc;
 
 static void tl_graphics_initialize_glcontext(PIXELFORMATDESCRIPTOR* pfd) {
     TLDIAGNOSTICS_PUSH;
@@ -624,4 +628,5 @@ b8 tl_graphics_terminate(void) {
     TLDIAGNOSTICS_POP;
     return true;
 }
+
 #endif // TELEIOS_PLATFORM_WINDOWS
