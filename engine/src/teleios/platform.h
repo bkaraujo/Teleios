@@ -21,21 +21,6 @@ void tl_platform_memory_copy(void* source, void* target, u64 size);
 void tl_platform_console(u8 level, const char* message);
 // #####################################################################################################
 //
-//                                         F I L E S Y S T E M
-//
-// #####################################################################################################
-typedef struct {
-    void* hande;
-    const char* path;
-    const u64 size;
-    const char* string;
-} TLFile;
-
-TLFile* tl_platform_file_open(const char* path);
-void tl_platform_file_close(TLFile* file);
-void tl_platform_file_string(TLFile* file);
-// #####################################################################################################
-//
 //                                           W I N D O W
 //
 // #####################################################################################################

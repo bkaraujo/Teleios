@@ -12,6 +12,7 @@
 #include "teleios/messaging.h"
 #include "teleios/messagingcodes.h"
 #include "teleios/diagnostic.h"
+#include "teleios/filesystem.h"
 #include "teleios/chrono.h"
 
 static HINSTANCE e_hinstance;
@@ -72,12 +73,39 @@ void tl_platform_console(u8 level, const char* message) {
 //                                         F I L E S Y S T E M
 //
 // #####################################################################################################
-TLFile* tl_platform_file_open(const char* path) {
+TLFile* tl_file_open(const char* path) {
     TLDIAGNOSTICS_PUSH;
     if (path == NULL) { TLDIAGNOSTICS_POP; return NULL; }
 
-    HANDLE handle = CreateFile(
-        path, 
+    WIN32_FILE_ATTRIBUTE_DATA attributes;
+    if(!GetFileAttributesEx(path, GetFileExInfoStandard, &attributes)){
+        DWORD dwError = GetLastError(); 
+        TLERROR("Failed to GetFileAttributesEx. 0x%x", dwError);
+        TLDIAGNOSTICS_POP;
+        return NULL;
+    }
+
+    TLFile* file = tl_memory_alloc(TL_MEMORY_FILESYSTEM, sizeof(TLFile));
+    file->path = path;
+
+    LARGE_INTEGER file_size = { 0 };
+    file_size.LowPart = attributes.nFileSizeLow;
+    file_size.HighPart = attributes.nFileSizeHigh;
+    *((u64*)&file->size) = file_size.QuadPart;
+
+    TLDIAGNOSTICS_POP;
+    return file;
+}
+
+void tl_file_string(TLFile* file) {
+    TLDIAGNOSTICS_PUSH;
+
+    if (file == NULL) { TLWARN("TLFile is NULL"); TLDIAGNOSTICS_POP; return; }
+    if (file->path == NULL) { TLWARN("TLFile->path is NULL"); TLDIAGNOSTICS_POP; return; }
+    if (file->size == 0) { TLWARN("TLFile->size is zero"); TLDIAGNOSTICS_POP; return; }
+
+    file->handle = CreateFile(
+        file->path, 
         GENERIC_READ, 
         FILE_SHARE_READ | FILE_SHARE_WRITE, 
         NULL, 
@@ -86,36 +114,14 @@ TLFile* tl_platform_file_open(const char* path) {
         NULL
     );
     
-    if (handle == NULL || handle == INVALID_HANDLE_VALUE) {
-        TLWARN("Failed to open file: %s", path);
+    if (file->handle == NULL || file->handle == INVALID_HANDLE_VALUE) {
+        TLWARN("Failed to open file: %s", file->path);
+        file->handle = NULL;
         TLDIAGNOSTICS_POP; 
-        return NULL;
+        return;
     }
 
-    TLFile* file = tl_memory_alloc(TL_MEMORY_FILESYSTEM, sizeof(TLFile));
-    file->hande = handle;
-    file->path = path;
-
-    WIN32_FILE_ATTRIBUTE_DATA attributes;
-    if(GetFileAttributesEx(path, GetFileExInfoStandard, &attributes)){
-        LARGE_INTEGER file_size = { 0 };
-        file_size.LowPart = attributes.nFileSizeLow;
-        file_size.HighPart = attributes.nFileSizeHigh;
-        *((u64*)&file->size) = file_size.QuadPart;
-    }
-
-    TLDIAGNOSTICS_POP;
-    return file;
-}
-
-void tl_platform_file_string(TLFile* file) {
-    TLDIAGNOSTICS_PUSH;
-
-    if (file == NULL) { TLWARN("TLFile"); TLDIAGNOSTICS_POP; return; }
-    if (file->path == NULL) { TLWARN("TLFile->path"); TLDIAGNOSTICS_POP; return; }
-    if (file->hande == NULL) { TLWARN("TLFile->hande"); TLDIAGNOSTICS_POP; return; }
-
-    DWORD dwPtr = SetFilePointer(file->hande, 0, 0, FILE_BEGIN);
+    DWORD dwPtr = SetFilePointer(file->handle, 0, 0, FILE_BEGIN);
     if (dwPtr == INVALID_SET_FILE_POINTER) { 
         DWORD dwError = GetLastError(); 
         TLERROR("Failed to SetFilePointer. 0x%x", dwError);
@@ -125,17 +131,17 @@ void tl_platform_file_string(TLFile* file) {
 
     DWORD dwBytesRead = 0;
     file->string = tl_memory_alloc(TL_MEMORY_FILESYSTEM, file->size);
-    ReadFile(file->hande, (void*)file->string, file->size, &dwBytesRead, 0);
+    ReadFile(file->handle, (void*)file->string, file->size, &dwBytesRead, 0);
+    if (dwBytesRead != file->size) { TLWARN("Read less bytes then expected: %s", file->path); }
 
     TLDIAGNOSTICS_POP;
 }
 
-void tl_platform_file_close(TLFile* file) {
+void tl_file_close(TLFile* file) {
     TLDIAGNOSTICS_PUSH;
 
     if (file == NULL) { TLDIAGNOSTICS_POP; return; }
-    
-    CloseHandle(file->hande);
+    if(file->handle != NULL) { CloseHandle(file->handle); }
     if (file->string != NULL) { tl_memory_free(TL_MEMORY_FILESYSTEM, file->size, (void*)file->string); }
     tl_memory_free(TL_MEMORY_FILESYSTEM, sizeof(TLFile), file);
 
