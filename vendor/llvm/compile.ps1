@@ -31,8 +31,10 @@ foreach ($file in Get-ChildItem -Path $Location -Filter "*.c" -Recurse -File) {
     else { New-Item -ItemType File -Path $ShaFile | Out-Null }
 
     if ($Hash -ne $(Get-Content $ShaFile | Select-Object -First 1)) { 
+        Write-Host "Compiling $file"
         $Hash > $ShaFile
 
+        "clang -std=c11 -Wall -Werror -march=x86-64 $CFlags $IFlags $DFlags -c $file" > "$ROOTFS/build/$Target/$($file.BaseName).cmd"
         # Perform the compilation and store the result code
         $global:LastExitCode = 0;
         Invoke-Expression -Command "clang -std=c11 -Wall -Werror -march=x86-64 $CFlags $IFlags $DFlags -c $file"
