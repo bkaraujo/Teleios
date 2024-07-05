@@ -128,6 +128,130 @@ typedef char                b8;
 #include "cglm/types-struct.h"
 // ############################################################################
 //
+//                                GRAPHICS TYPES
+// 
+// ############################################################################
+typedef enum {
+    TL_BUFFER_TYPE_MARIX22,
+    TL_BUFFER_TYPE_MARIX23,
+    TL_BUFFER_TYPE_MARIX24,
+
+    TL_BUFFER_TYPE_MARIX32,
+    TL_BUFFER_TYPE_MARIX33,
+    TL_BUFFER_TYPE_MARIX34,
+
+    TL_BUFFER_TYPE_MARIX42,
+    TL_BUFFER_TYPE_MARIX43,
+    TL_BUFFER_TYPE_MARIX44,
+
+    TL_BUFFER_TYPE_BYTE1,
+    TL_BUFFER_TYPE_BYTE2,
+    TL_BUFFER_TYPE_BYTE3,
+    TL_BUFFER_TYPE_BYTE4,
+
+    TL_BUFFER_TYPE_SHORT1,
+    TL_BUFFER_TYPE_SHORT2,
+    TL_BUFFER_TYPE_SHORT3,
+    TL_BUFFER_TYPE_SHORT4,
+
+    TL_BUFFER_TYPE_INT1,
+    TL_BUFFER_TYPE_INT2,
+    TL_BUFFER_TYPE_INT3,
+    TL_BUFFER_TYPE_INT4,
+
+    TL_BUFFER_TYPE_UBYTE1,
+    TL_BUFFER_TYPE_UBYTE2,
+    TL_BUFFER_TYPE_UBYTE3,
+    TL_BUFFER_TYPE_UBYTE4,
+
+    TL_BUFFER_TYPE_USHORT1,
+    TL_BUFFER_TYPE_USHORT2,
+    TL_BUFFER_TYPE_USHORT3,
+    TL_BUFFER_TYPE_USHORT4,
+
+    TL_BUFFER_TYPE_UINT1,
+    TL_BUFFER_TYPE_UINT2,
+    TL_BUFFER_TYPE_UINT3,
+    TL_BUFFER_TYPE_UINT4,
+
+    TL_BUFFER_TYPE_DOUBLE1,
+    TL_BUFFER_TYPE_DOUBLE2,
+    TL_BUFFER_TYPE_DOUBLE3,
+    TL_BUFFER_TYPE_DOUBLE4,
+
+    TL_BUFFER_TYPE_FLOAT1,
+    TL_BUFFER_TYPE_FLOAT2,
+    TL_BUFFER_TYPE_FLOAT3,
+    TL_BUFFER_TYPE_FLOAT4,
+
+    TL_BUFFER_TYPE_MAXIMUM
+} TLBufferType;
+
+typedef enum {
+    TL_SHADER_STAGE_FRAGMENT,
+    TL_SHADER_STAGE_COMPUTE,
+    TL_SHADER_STAGE_VERTEX,
+    TL_SHADER_STAGE_MAXIMUM
+} TLShaderStage;
+
+typedef struct {
+    const char* name;
+    const char* script;
+    u32 stage;
+} TLShaderSource;
+
+typedef struct {
+    const char* name;
+    TLShaderSource* sources;
+    u8 quantity;
+} TLShaderCreateInfo;
+
+typedef struct {
+    u8 row;
+    u8 column;
+    f32* values;
+} TLUniformMatrix;
+
+typedef enum {
+    TL_GEOMETRY_MODE_TRIANGLES
+} TLGeometryMode;
+
+typedef struct {
+    const char* name;
+    TLBufferType type;
+} TLGeometryBuffer;
+
+typedef struct {
+    TLGeometryMode mode;
+    u8 buffers_length;
+    TLGeometryBuffer* buffers;
+} TLGeometryCreateInfo;
+
+typedef enum {
+    CLAMP_EDGE,
+    CLAMP_BORDER,
+    REPEAT,
+    MIRROR_REPEAT
+} TLTextureWrapMode;
+
+typedef enum {
+    NEAREST,
+    NEAREST_MIPMAP_NEAREST,
+    NEAREST_MIPMAP_LINEAR,
+
+    LINEAR,
+    LINEAR_MIPMAP_LINEAR,
+    LINEAR_MIPMAP_NEAREST,
+} TLTextureFilterMode;
+
+typedef struct {
+    TLTextureWrapMode wrap_s;
+    TLTextureWrapMode wrap_t;
+    TLTextureFilterMode filter_min;
+    TLTextureFilterMode filter_mag;
+} TLTextureCreateInfo;
+// ############################################################################
+//
 //                               GLM TYPES
 // 
 // ############################################################################

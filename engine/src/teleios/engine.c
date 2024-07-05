@@ -109,11 +109,11 @@ TLAPI b8 tl_engine_run(void) {
     fragment.script = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main() {\n"
-    "   FragColor = vec4(1.0f, 0.5f, 1.0f, 1.0f);\n"
+    "   FragColor = vec4(0f, .75f, 1.0f, 1.0f);\n"
     "}\n\0";
 
     TLShaderSource sources[] = { vertex, fragment };
-    TLShaderSpecification shader_spec = { 0 };
+    TLShaderCreateInfo shader_spec = { 0 };
     shader_spec.name = "Hello Triangle";
     shader_spec.quantity = 2;
     shader_spec.sources = sources;
@@ -125,7 +125,7 @@ TLAPI b8 tl_engine_run(void) {
     gbuffer.name = "aPos";
     gbuffer.type = TL_BUFFER_TYPE_FLOAT3;
 
-    TLGeometrySpecification gspec = { 0 };
+    TLGeometryCreateInfo gspec = { 0 };
     gspec.mode = TL_GEOMETRY_MODE_TRIANGLES;
     gspec.buffers_length = 1;
     gspec.buffers = &gbuffer;
@@ -135,7 +135,7 @@ TLAPI b8 tl_engine_run(void) {
         0, 1, 3,   // first triangle
         1, 2, 3    // second triangle
     };
-    tl_graphics_geometry_elements_ui(geometry, sizeof(indices) / sizeof(u32), indices);
+    tl_graphics_geometry_elements_ui(geometry, 6, indices);
     
     float vertices[] = {
          0.5f,  0.5f, 0.0f,  // right top
@@ -143,7 +143,7 @@ TLAPI b8 tl_engine_run(void) {
         -0.5f, -0.5f, 0.0f,  // left bottom 
         -0.5f,  0.5f, 0.0f   // left top
     };
-    tl_graphics_geometry_vertices(geometry, sizeof(vertices) / sizeof(f32), vertices);
+    tl_graphics_geometry_vertices(geometry, 12, vertices);
 
     while (running) {
         frame_counter++;
