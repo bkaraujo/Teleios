@@ -217,9 +217,9 @@ TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* info) {
             TLDIAGNOSTICS_POP;
             return NULL;
         }
-        // ##############################################
+        // =================================================================
         // Ensure single script for shader stage
-        // ##############################################
+        // =================================================================
         if(stage_count[source.stage] > 1) {
             TLWARN("Duplicated shader (%s) stage", source.name);
             TLDIAGNOSTICS_POP;
@@ -227,9 +227,9 @@ TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* info) {
         }
 
         stage_count[source.stage]++;
-        // ##############################################
+        // =================================================================
         // Compile the shader source
-        // ##############################################
+        // =================================================================
         u32 shader = glCreateShader(stage);
         shaders[i] = shader;
 
@@ -252,14 +252,14 @@ TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* info) {
             return NULL;
         }
 
-        // ##############################################
+        // =================================================================
         // Attach the compiled shader to the program
-        // ###############################################
+        // =================================================================
         glAttachShader(handle, shader);
     }
-    // ##############################################
+    // =================================================================
     // Link attacked shader stages into shader program
-    // ##############################################
+    // =================================================================
     glLinkProgram(handle);
     i32 success;  glGetProgramiv(handle, GL_LINK_STATUS, &success);
     if(!success) {
@@ -274,16 +274,16 @@ TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* info) {
         TLDIAGNOSTICS_POP;
         return NULL;
     }
-    // ##############################################
+    // =================================================================
     // Delete created shader handles
-    // ##############################################
+    // =================================================================
     for (u8 i = 0 ; i < info->quantity ; ++i) {
         if (shaders[i] == 0) continue;
         glDeleteShader(shaders[i]);
     }
-    // ##############################################
+    // =================================================================
     // Build and return the API object
-    // ##############################################
+    // =================================================================
     TLShaderProgram* program = tl_memory_alloc(TL_MEMORY_GRAPHICS, sizeof(TLShaderProgram));
     program->handle = handle;
     program->name = info->name;

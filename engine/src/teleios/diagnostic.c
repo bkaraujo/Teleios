@@ -8,33 +8,33 @@ static u8 length = 10;
 static TLDiagnostic* registry;
 
 b8 tl_diagnostic_initialize(void) {
-    // ########################################################################
+    // =================================================================
     // Preallocate 10 positions
-    // ########################################################################
+    // =================================================================
     registry = (TLDiagnostic*) tl_platform_memory_halloc(length * sizeof(TLDiagnostic));
     return true;
 }
 
 void tl_diagnostics_push(const TLDiagnostic* diagnostic) {
     if (used >= length) {
-        // ########################################################################
+        // =================================================================
         // Create the new array
         // Copy the content from the old to the new
-        // ########################################################################
+        // =================================================================
         TLDiagnostic* created = (TLDiagnostic*)tl_platform_memory_halloc((length + 10) * sizeof(TLDiagnostic));
         tl_platform_memory_copy(registry, created, length * sizeof(TLDiagnostic));
-        // ########################################################################
+        // =================================================================
         // Release the old array
         // Reassing the pointer to the newly created array
-        // ########################################################################
+        // =================================================================
         tl_platform_memory_hfree(registry);
         registry = created;
         length += 10;
     }
-    // ########################################################################
+    // =================================================================
     // Append the new diagnostic to the array
     // Increase the length counter
-    // ########################################################################
+    // =================================================================
     tl_platform_memory_copy((void*)diagnostic, (void*) (registry + used), sizeof(TLDiagnostic));
     used++;
 

@@ -57,11 +57,11 @@ static HANDLE e_hconsole;
 
 void tl_platform_console(u8 level, const char* message) {
     static u8 levels[6] = { 64, 4, 6, 2, 1, 8 };
-    // ##############################################################################
+    // =================================================================
     // Change the console color
     // Write the message
     // Rollback the console color
-    // ##############################################################################
+    // =================================================================
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(e_hconsole, &csbi);
     SetConsoleTextAttribute(e_hconsole, levels[level]);
@@ -173,23 +173,23 @@ TLAPI void tl_chrono_time_now(TLTime* time) {
 
 TLAPI u64 tl_chrono_time_epoch(void) {
     TLDIAGNOSTICS_PUSH;
-    // #################################################################
+    // =================================================================
     // Obtain the system 64bit time
-    // #################################################################
+    // =================================================================
     FILETIME stime; GetSystemTimeAsFileTime(&stime);
     ULARGE_INTEGER curr_time_as_uint64;
     curr_time_as_uint64.HighPart = stime.dwHighDateTime;
     curr_time_as_uint64.LowPart = stime.dwLowDateTime;
-    // #################################################################
+    // =================================================================
     // Translate the extern unix_epoch to 64bit filetime
-    // #################################################################
+    // =================================================================
     FILETIME utime; SystemTimeToFileTime(&e_unix_epoch, &utime);
     ULARGE_INTEGER unix_epoch_as_uint64;
     unix_epoch_as_uint64.HighPart = utime.dwHighDateTime;
     unix_epoch_as_uint64.LowPart = utime.dwLowDateTime;
-    // #################################################################
+    // =================================================================
     // Compute the milliseconds since unix epoch
-    // #################################################################
+    // =================================================================
     TLDIAGNOSTICS_POP;
     return (curr_time_as_uint64.QuadPart - unix_epoch_as_uint64.QuadPart) / 10000;
 }
@@ -248,31 +248,31 @@ void* tl_platform_window_handle(void) {
 
 void tl_platform_window_create(TLWindowCreateInfo* info) {
     TLDIAGNOSTICS_PUSH;
-    // ##################################################
+    // =================================================================
     // Window styles
-    // ##################################################
+    // =================================================================
     u32 window_ex_style = WS_EX_APPWINDOW;
     u32 window_style = WS_OVERLAPPED | WS_SYSMENU | WS_CAPTION;
 
     window_style |= WS_MAXIMIZEBOX;
     window_style |= WS_MINIMIZEBOX;
     window_style |= WS_THICKFRAME;
-    // ##################################################
+    // =================================================================
     // Compute the size based on the desired content area
-    // ##################################################
+    // =================================================================
     RECT border_rect = { 0 };
     AdjustWindowRectEx(&border_rect, window_style, 0, window_ex_style);
 
     u32 window_width = info->width + (border_rect.right - border_rect.left);
     u32 window_height = info->height + (border_rect.bottom - border_rect.top);
-    // ##################################################
+    // =================================================================
     // Centralize the window
-    // ##################################################
+    // =================================================================
     u32 window_x = GetSystemMetrics(SM_CXSCREEN) / 2 - window_width / 2;
     u32 window_y = GetSystemMetrics(SM_CYSCREEN) / 2 - window_height / 2;
-    // ##################################################
+    // =================================================================
     // Create the window
-    // ##################################################
+    // =================================================================
     e_hwnd = CreateWindowEx(
         window_ex_style,                // Window style extended
         "__teleios__",                  // Window class name
@@ -285,9 +285,9 @@ void tl_platform_window_create(TLWindowCreateInfo* info) {
         e_hinstance,                    //
         0                               // Window parameters
     );
-    // ##################################################
+    // =================================================================
     // Break if failed to create window
-    // ##################################################
+    // =================================================================
     if (e_hwnd == 0) TLFATAL("Window creation failed!");
     TLDIAGNOSTICS_POP;
 }
