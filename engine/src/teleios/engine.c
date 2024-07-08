@@ -57,6 +57,12 @@ TLAPI b8 tl_engine_initialize(void) {
         return false;
     }
 
+    if (!tl_audio_initialize()) {
+        TLERROR("Failed to initialize: Audio Manager");
+        TLDIAGNOSTICS_POP;
+        return false;
+    }
+
     TLDIAGNOSTICS_POP;
     return true;
 }
@@ -182,6 +188,12 @@ TLAPI b8 tl_engine_terminate(void) {
     }
 
     tl_platform_window_destroy();
+
+    if (!tl_audio_terminate()) {
+        TLERROR("Failed to terminate: Audio Manager");
+        TLDIAGNOSTICS_POP;
+        return false;
+    }
 
     if (!tl_input_terminate()) {
         TLERROR("Failed to terminate: Input Manager");

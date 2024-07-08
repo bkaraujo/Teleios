@@ -22,7 +22,7 @@ void tl_diagnostics_push(const TLDiagnostic* diagnostic) {
         // Copy the content from the old to the new
         // =================================================================
         TLDiagnostic* created = (TLDiagnostic*)tl_platform_memory_halloc((length + 10) * sizeof(TLDiagnostic));
-        tl_platform_memory_copy(registry, created, length * sizeof(TLDiagnostic));
+        tl_platform_memory_copy(registry, length * sizeof(TLDiagnostic), created);
         // =================================================================
         // Release the old array
         // Reassing the pointer to the newly created array
@@ -35,7 +35,7 @@ void tl_diagnostics_push(const TLDiagnostic* diagnostic) {
     // Append the new diagnostic to the array
     // Increase the length counter
     // =================================================================
-    tl_platform_memory_copy((void*)diagnostic, (void*) (registry + used), sizeof(TLDiagnostic));
+    tl_platform_memory_copy((void*)diagnostic, sizeof(TLDiagnostic), (void*) (registry + used));
     used++;
 
     if (used > max) max = used;

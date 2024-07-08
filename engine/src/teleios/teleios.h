@@ -22,6 +22,7 @@
 // IO APIs
 // ==================================================
 #include "teleios/filesystem.h"
+#include "teleios/audio.h"
 #include "teleios/input.h"
 #include "teleios/inputcodes.h"
 #include "teleios/graphics.h"

@@ -38,7 +38,7 @@ void tl_platform_memory_set(void* block, u64 size, i32 value) {
     FillMemory(block, size, value);
 }
 
-void tl_platform_memory_copy(void* source, void* target, u64 size) {
+void tl_platform_memory_copy(void* source, u64 size, void* target) {
     if (size == 0) return;
     CopyMemory(target, source, size);
 }

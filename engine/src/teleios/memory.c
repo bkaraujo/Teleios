@@ -64,7 +64,7 @@ void tl_memory_zero(void* pointer, u64 size) {
     TLDIAGNOSTICS_POP;
 }
 
-void tl_memory_copy(void* source, void* target, u64 size) {
+void tl_memory_copy(void* source, u64 size, void* target) {
     TLDIAGNOSTICS_PUSH;
 
     if (size == 0) {
@@ -85,7 +85,7 @@ void tl_memory_copy(void* source, void* target, u64 size) {
         return;
     }
 
-    tl_platform_memory_copy(source, target, size);
+    tl_platform_memory_copy(source, size, target);
 
     TLDIAGNOSTICS_POP;
 }

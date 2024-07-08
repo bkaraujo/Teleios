@@ -49,8 +49,8 @@ b8 tl_input_initialize(void) {
 
 void tl_input_update(void) {
     TLDIAGNOSTICS_PUSH;
-    tl_memory_copy((void*)key_curr, (void*)key_prev, sizeof(key_curr));
-    tl_memory_copy((void*)mouse_curr, (void*)mouse_prev, sizeof(mouse_curr));
+    tl_memory_copy((void*)key_curr, sizeof(key_curr), (void*)key_prev);
+    tl_memory_copy((void*)mouse_curr, sizeof(mouse_curr), (void*)mouse_prev);
     TLDIAGNOSTICS_POP;
 }
 
