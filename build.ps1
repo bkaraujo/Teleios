@@ -5,56 +5,40 @@ param (
 Clear-Host
 Write-Host "Creating $Build Build"
 
-$ROOTFS = $(Get-Location)
-
 if ($Build -eq "ALPHA"){} 
 elseif ($Build -eq "BETA") {}
 elseif ($Build -eq "RELEASE") {}
-else { Set-Location $ROOTFS; Write-Host "Unsupported build. Use one of [ALPHA, BETA, RELEASE]" ; return 0; }
+else { Write-Host "Unsupported build. Use one of [ALPHA, BETA, RELEASE]" ; return 0; }
 
-# ####################################################################################################################
-# Clear old build if build-profile changed
-# ####################################################################################################################
+$ROOTFS = $(Get-Location)
+
 if ( Test-Path -Path "$ROOTFS/build") {
-    if ( Test-Path -Path "$ROOTFS/build/profile" ) {
-        if ( $Build -ne $(Get-Content -Path "$ROOTFS/build/profile"  | Select-Object -First 1) ) {
-            
-            # Remove build directory
-            Remove-Item -Path "$ROOTFS/build/" -Recurse -Force | Out-Null
-            New-Item -ItemType Directory -Path "$ROOTFS/build/" | Out-Null
-        }
-    } else {
-        Remove-Item -Path "$ROOTFS/build/" -Force | Out-Null
+    # Recreate the build dir if $ROOTFS/build/profile is diferent from parameter
+    if ( $Build -ne $(Get-Content -Path "$ROOTFS/build/profile"  | Select-Object -First 1) ) {
+        Remove-Item -Path "$ROOTFS/build/" -Recurse -Force | Out-Null
         New-Item -ItemType Directory -Path "$ROOTFS/build/" | Out-Null
+        New-Item -ItemType File -Path "$ROOTFS/build/profile" | Out-Null
     }
+} else {
+    # Create the build dir if necessary
+    New-Item -ItemType Directory -Path "$ROOTFS/build/" | Out-Null
+    New-Item -ItemType File -Path "$ROOTFS/build/profile" | Out-Null
 }
-
 # Remember current build profile
 $Build > "$ROOTFS/build/profile"
 
-if ($Build -eq "ALPHA"){
-    .\vendor\llvm\compile.ps1 -Target "engine" -Location "$ROOTFS/engine/src" -CFlags "-g -O0 -Wno-unused-but-set-variable" -IFlags "-I$ROOTFS/engine/src" -DFlags "-DCGLM_STATIC -DTL_BUILD_$Build -DTL_EXPORT -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
-    if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
-    
-    .\vendor\llvm\compile.ps1 -Target "sandbox" -Location "$ROOTFS/sandbox/src" -CFlags "-g -O0" -IFlags "-I$ROOTFS/engine/src -I$ROOTFS/sandbox/src" -DFlags "-DTL_BUILD_$Build"
-    if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
-}
+$EngineCFlags = ""
+$SandboxCFlags = ""
 
-if ($Build -eq "BETA") {
-    .\vendor\llvm\compile.ps1 -Target "engine" -Location "$ROOTFS/engine/src" -CFlags "-g -O2 -Wno-unused-but-set-variable" -IFlags "-I$ROOTFS/engine/src" -DFlags "-DCGLM_STATIC -DTL_BUILD_$Build -DTL_EXPORT -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
-    if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
-    
-    .\vendor\llvm\compile.ps1 -Target "sandbox" -Location "$ROOTFS/sandbox/src" -CFlags "-g -O2" -IFlags "-I$ROOTFS/engine/src -I$ROOTFS/sandbox/src" -DFlags "-DTL_BUILD_$Build"
-    if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
-}
+if ($Build -eq "ALPHA"){ $EngineCFlags = "-g -O0 -Wno-unused-but-set-variable" ; $SandboxCFlags = "-g -O0" }
+if ($Build -eq "BETA") { $EngineCFlags = "-g -O2 -Wno-unused-but-set-variable" ; $SandboxCFlags = "-g -O2" }
+if ($Build -eq "RELEASE") { $EngineCFlags = "-O3 -Wno-unused-but-set-variable" ; $SandboxCFlags = "-O3" }
 
-if ($Build -eq "RELEASE") {
-    .\vendor\llvm\compile.ps1 -Target "engine" -Location "$ROOTFS/engine/src" -CFlags "-O3 -Wno-unused-but-set-variable" -IFlags "-I$ROOTFS/engine/src" -DFlags "-DCGLM_STATIC -DTL_BUILD_$Build -DTL_EXPORT -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
-    if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
-    
-    .\vendor\llvm\compile.ps1 -Target "sandbox" -Location "$ROOTFS/sandbox/src" -CFlags "-O3" -IFlags "-I$ROOTFS/engine/src -I$ROOTFS/sandbox/src" -DFlags "-DTL_BUILD_$Build"
-    if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
-}
+.\vendor\llvm\compile.ps1 -Target "engine" -Location "$ROOTFS/engine/src" -CFlags $EngineCFlags -IFlags "-I$ROOTFS/engine/src" -DFlags "-DCGLM_STATIC -DTL_BUILD_$Build -DTL_EXPORT -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
+if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
+
+.\vendor\llvm\compile.ps1 -Target "sandbox" -Location "$ROOTFS/sandbox/src" -CFlags $SandboxCFlags -IFlags "-I$ROOTFS/engine/src -I$ROOTFS/sandbox/src"
+if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
 
 .\vendor\llvm\archive.ps1 -Target "engine" -Location "$ROOTFS" -Output "teleios.lib" 
 if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
