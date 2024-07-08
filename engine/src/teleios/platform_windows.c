@@ -6,14 +6,8 @@
 #include <malloc.h>
 #include <string.h>
 
-#include "teleios/logger.h"
-#include "teleios/input.h"
-#include "teleios/memory.h"
-#include "teleios/messaging.h"
+#include "teleios/teleios.h"
 #include "teleios/messagingcodes.h"
-#include "teleios/diagnostic.h"
-#include "teleios/filesystem.h"
-#include "teleios/chrono.h"
 
 static HINSTANCE e_hinstance;
 // #####################################################################################################

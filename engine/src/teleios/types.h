@@ -130,6 +130,106 @@ typedef char                b8;
 #include "cglm/types-struct.h"
 // ############################################################################
 //
+//                              LOGGER TYPES
+// 
+// ############################################################################
+typedef enum {
+    TL_LOG_LEVEL_FATAL,
+    TL_LOG_LEVEL_ERROR,
+    TL_LOG_LEVEL_WARN,
+    TL_LOG_LEVEL_INFO,
+    TL_LOG_LEVEL_DEBUG,
+    TL_LOG_LEVEL_TRACE
+} TLLogLevel;
+// ############################################################################
+//
+//                              CHRONO TYPES
+// 
+// ############################################################################
+typedef struct {
+    u16 year;
+    u8 month;
+    u8 day;
+    u8 hour;
+    u8 minute;
+    u8 seconds;
+    u16 millis;
+} TLTime;
+
+typedef struct {
+    u64 start;
+    u64 update;
+} TLTimer;
+// ############################################################################
+//
+//                          MESSAGING TYES
+// 
+// ############################################################################
+typedef enum {
+    TL_MESSAGE_AVALIABLE,
+    TL_MESSAGE_COMSUMED,
+    TL_MESSAGE_MAXIMUM
+} TLMessageChain;
+
+typedef union {
+    i64 i64[2];
+    u64 u64[2];
+
+    f64 f64[2];
+
+    i32 i32[4];
+    u32 u32[4];
+    f32 f32[4];
+
+    i16 i16[8];
+
+    u16 u16[8];
+
+    i8 i8[16];
+    u8 u8[16];
+
+    char c[16];
+} TLMessage;
+// ############################################################################
+//
+//                                MEMORY TYPES
+// 
+// ############################################################################
+typedef enum {
+    TL_MEMORY_CONTAINER,
+    TL_MEMORY_CONTAINER_NODE,
+    TL_MEMORY_GRAPHICS,
+    TL_MEMORY_FILESYSTEM,
+    TL_MEMORY_MAXIMUM
+} TLMemoryType;
+// ############################################################################
+//
+//                                CONTAINER TYPES
+// 
+// ############################################################################
+typedef struct TLListNode {
+    void* payload;
+    struct TLListNode* next;
+    struct TLListNode* previous;
+} TLListNode;
+
+typedef struct {
+    struct TLListNode* head;
+    struct TLListNode* tail;
+    u32 length;
+} TLList;
+// ############################################################################
+//
+//                                DIAGNOSTIC TYPES
+// 
+// ############################################################################
+typedef struct {
+    const char* function;
+    const char* filename;
+    u32 linenumber;
+} TLDiagnostic;
+// ############################################################################
+//
 //                                GRAPHICS TYPES
 // 
 // ############################################################################
@@ -209,6 +309,11 @@ typedef struct {
 } TLShaderCreateInfo;
 
 typedef struct {
+    u32 handle;
+    const char* name;
+} TLShaderProgram;
+
+typedef struct {
     u8 row;
     u8 column;
     f32* values;
@@ -228,6 +333,21 @@ typedef struct {
     u8 buffers_length;
     TLGeometryBuffer* buffers;
 } TLGeometryCreateInfo;
+
+typedef struct {
+    u32 vao;
+    
+    u32 vbo;
+    u32 vbo_length;
+    u32 vbo_stride;
+
+    u32 ebo;
+    u32 ebo_length;
+    TLBufferType ebo_type;
+
+    TLList* indices;
+    TLGeometryMode mode;
+} TLGeometry;
 
 typedef enum {
     CLAMP_EDGE,
@@ -252,22 +372,19 @@ typedef struct {
     TLTextureFilterMode filter_min;
     TLTextureFilterMode filter_mag;
 } TLTextureCreateInfo;
+
+typedef struct {
+    u32 handle;
+    const char* name;
+
+    u32 width;
+    u32 height;
+} TLTexture;
 // ############################################################################
 //
 //                               GLM TYPES
 // 
 // ############################################################################
-typedef struct TLListNode {
-    void* payload;
-    struct TLListNode* next;
-    struct TLListNode* previous;
-} TLListNode;
-
-typedef struct {
-    struct TLListNode* head;
-    struct TLListNode* tail;
-    u32 length;
-} TLList;
 
 typedef struct {
     const char* title;

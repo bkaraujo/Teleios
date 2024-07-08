@@ -1,9 +1,5 @@
-#include "teleios/logger.h"
-#include "teleios/container.h"
-#include "teleios/messaging.h"
+#include "teleios/teleios.h"
 #include "teleios/messagingcodes.h"
-#include "teleios/diagnostic.h"
-#include "teleios/memory.h"
 
 static TLList* of_codes;
 

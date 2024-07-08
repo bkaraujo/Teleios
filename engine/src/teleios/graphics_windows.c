@@ -2,12 +2,7 @@
 #ifdef TLPLATFORM_WINDOWS
 #include <Windows.h>
 
-#include "teleios/platform.h"
-#include "teleios/diagnostic.h"
-#include "teleios/logger.h"
-#include "teleios/memory.h"
-#include "teleios/container.h"
-#include "teleios/messaging.h"
+#include "teleios/teleios.h"
 #include "teleios/messagingcodes.h"
 #include "glad/glad.h"
 #include "glad/wgl.h"
@@ -626,10 +621,10 @@ static const char* tl_graphics_debug_type(u32 type) {
 
 static const char* tl_graphics_debug_severity(u32 severity) {
     switch (severity) {
-        case GL_DEBUG_SEVERITY_HIGH:         return "high";
-        case GL_DEBUG_SEVERITY_MEDIUM:       return "medium";
-        case GL_DEBUG_SEVERITY_LOW:          return "low";
-        case GL_DEBUG_SEVERITY_NOTIFICATION: return "notification";
+        case GL_DEBUG_SEVERITY_HIGH:         return "High";
+        case GL_DEBUG_SEVERITY_MEDIUM:       return "Medium";
+        case GL_DEBUG_SEVERITY_LOW:          return "Low";
+        case GL_DEBUG_SEVERITY_NOTIFICATION: return "Notification";
     }
 
     return "Unknown";
@@ -647,11 +642,11 @@ static void APIENTRY tl_graphics_debug(GLenum source,
     // if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 
 
     TLDEBUG(
-        "OpenGL [%lu] :: Severity: %s, Source: %s, Type: %s, Message: %s",
+        "OpenGL [%lu] :: %s's %s (%s) : %s",
         id,
+        tl_graphics_debug_type(type),
         tl_graphics_debug_severity(severity),
         tl_graphics_debug_source(source),
-        tl_graphics_debug_type(type),
         message
     );
 }

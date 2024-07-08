@@ -7,11 +7,6 @@
 //                                           S H A D E R
 //
 // #####################################################################################################
-typedef struct {
-    u32 handle;
-    const char* name;
-} TLShaderProgram;
-
 TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* specification);
 void tl_graphics_shader_destroy(TLShaderProgram* program);
 void tl_graphics_shader_bind(TLShaderProgram* program);
@@ -21,21 +16,6 @@ void tl_graphics_shader_uniform(TLShaderProgram* program, const char* name, TLBu
 //                                            G E O M E T R Y
 //
 // #####################################################################################################
-typedef struct {
-    u32 vao;
-    
-    u32 vbo;
-    u32 vbo_length;
-    u32 vbo_stride;
-
-    u32 ebo;
-    u32 ebo_length;
-    TLBufferType ebo_type;
-
-    TLList* indices;
-    TLGeometryMode mode;
-} TLGeometry;
-
 TLGeometry* tl_graphics_geometry_create(TLGeometryCreateInfo* specification);
 void tl_graphics_geometry_destroy(TLGeometry* geometry);
 void tl_graphics_geometry_bind(TLGeometry* geometry);
@@ -47,14 +27,6 @@ void tl_graphics_geometry_elements_us(TLGeometry* geometry, u32 lenght, u16* ele
 //                                           T E X T U R E
 //
 // #####################################################################################################
-typedef struct {
-    u32 handle;
-    const char* name;
-
-    u32 width;
-    u32 height;
-} TLTexture;
-
 TLTexture* tl_graphics_texture_create(void);
 void tl_graphics_texture_destroy(TLTexture* texture);
 void tl_graphics_texture_bind(TLTexture* texture);

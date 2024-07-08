@@ -6,12 +6,6 @@
 b8 tl_diagnostic_initialize(void);
 b8 tl_diagnostic_terminate(void);
 
-typedef struct {
-    const char* function;
-    const char* filename;
-    u32 linenumber;
-} TLDiagnostic;
-
 #if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
 #define TLDIAGNOSTICS_PUSH \
 { \

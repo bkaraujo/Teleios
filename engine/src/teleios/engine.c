@@ -1,14 +1,6 @@
 #include "teleios/engine.h"
-#include "teleios/logger.h"
-#include "teleios/memory.h"
-#include "teleios/diagnostic.h"
-#include "teleios/container.h"
-#include "teleios/input.h"
-#include "teleios/messaging.h"
+#include "teleios/teleios.h"
 #include "teleios/messagingcodes.h"
-#include "teleios/platform.h"
-#include "teleios/graphics.h"
-#include "teleios/chrono.h"
 
 static u64 frame_overflow = 0;
 static u64 frame_counter = -1;

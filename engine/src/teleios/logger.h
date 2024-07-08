@@ -5,15 +5,6 @@
 #include "teleios/types.h"
 #include "teleios/diagnostic.h"
 
-typedef enum {
-    TL_LOG_LEVEL_FATAL,
-    TL_LOG_LEVEL_ERROR,
-    TL_LOG_LEVEL_WARN,
-    TL_LOG_LEVEL_INFO,
-    TL_LOG_LEVEL_DEBUG,
-    TL_LOG_LEVEL_TRACE
-} TLLogLevel;
-
 TLAPI void tl_logger_console(TLLogLevel level, const char* message, ...);
 
 #define TLFATAL(message, ...) { tl_logger_console(TL_LOG_LEVEL_FATAL, message, ##__VA_ARGS__); TLDIAGNOSTICS_PUSH; TLDIAGNOSTICS_PRINT; exit(99); }

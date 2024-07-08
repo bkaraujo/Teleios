@@ -1,9 +1,8 @@
 #ifndef TELEIOS_MAIN
 #define TELEIOS_MAIN
 
-#include "teleios/logger.h"
 #include "teleios/engine.h"
-#include "teleios/chrono.h"
+#include "teleios/teleios.h"
 
 void tl_application_configure(TLAppSpecification* spec);
 

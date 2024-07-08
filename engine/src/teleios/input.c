@@ -1,8 +1,4 @@
-#include "teleios/input.h"
-#include "teleios/inputcodes.h"
-#include "teleios/diagnostic.h"
-#include "teleios/memory.h"
-#include "teleios/messaging.h"
+#include "teleios/teleios.h"
 #include "teleios/messagingcodes.h"
 
 static b8 key_curr[TL_KEY_MAXIMUM];

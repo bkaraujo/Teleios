@@ -1,7 +1,4 @@
-#include "teleios/memory.h"
-#include "teleios/logger.h"
-#include "teleios/diagnostic.h"
-#include "teleios/platform.h"
+#include "teleios/teleios.h"
 
 typedef struct {
     u64 allocated;
