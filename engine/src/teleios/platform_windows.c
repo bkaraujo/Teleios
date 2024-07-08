@@ -73,7 +73,7 @@ void tl_platform_console(u8 level, const char* message) {
 //                                         F I L E S Y S T E M
 //
 // #####################################################################################################
-TLFile* tl_file_open(const char* path) {
+TLFile* tl_filesystem_open(const char* path) {
     TLDIAGNOSTICS_PUSH;
     if (path == NULL) { TLDIAGNOSTICS_POP; return NULL; }
 
@@ -97,7 +97,7 @@ TLFile* tl_file_open(const char* path) {
     return file;
 }
 
-void tl_file_string(TLFile* file) {
+void tl_filesystem_string(TLFile* file) {
     TLDIAGNOSTICS_PUSH;
 
     if (file == NULL) { TLWARN("TLFile is NULL"); TLDIAGNOSTICS_POP; return; }
@@ -137,7 +137,7 @@ void tl_file_string(TLFile* file) {
     TLDIAGNOSTICS_POP;
 }
 
-void tl_file_close(TLFile* file) {
+void tl_filesystem_close(TLFile* file) {
     TLDIAGNOSTICS_PUSH;
 
     if (file == NULL) { TLDIAGNOSTICS_POP; return; }

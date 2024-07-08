@@ -17,7 +17,7 @@ typedef struct {
  * TLFile->path
  * TLFile->size
  */
-TLFile* tl_file_open(const char* path);
+TLFile* tl_filesystem_open(const char* path);
 
 /**
  * Load the entire file content into the object.
@@ -25,7 +25,7 @@ TLFile* tl_file_open(const char* path);
  * Populate the field:
  * TLFile->string
  */
-void tl_file_string(TLFile* file);
+void tl_filesystem_string(TLFile* file);
 
 /**
  * Destroy the object.
@@ -34,6 +34,6 @@ void tl_file_string(TLFile* file);
  * Close the file handle
  * Release the object
  */
-void tl_file_close(TLFile* file);
+void tl_filesystem_close(TLFile* file);
 
 #endif // TELEIOS_FILESYSTEM
