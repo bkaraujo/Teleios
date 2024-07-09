@@ -479,10 +479,12 @@ void tl_graphics_clear(void) {
 void tl_graphics_draw(TLGeometry* geometry) {
     TLDIAGNOSTICS_PUSH;
     
-    if (geometry == NULL) { TLWARN("TLGeometry is NULL"); TLDIAGNOSTICS_POP; return; }
-    u32 mode = tl_parse_geometry_mode(geometry->mode);
-    u32 type = tl_parse_buffer_type(geometry->ebo_type);
-    glDrawElements(mode, geometry->ebo_length, type, 0);
+    glDrawElements(
+        tl_parse_geometry_mode(geometry->mode), 
+        geometry->ebo_length, 
+        tl_parse_buffer_type(geometry->ebo_type), 
+        0
+    );
 
 	TLDIAGNOSTICS_POP;
 }
@@ -550,15 +552,15 @@ static void tl_graphics_initialize_glcontext(PIXELFORMATDESCRIPTOR* pfd) {
         0
     };
 
-    int pixel_format;
-    UINT num_formats;
+    i32 pixel_format;
+    u32 num_formats;
     wglChoosePixelFormatARB(hdc, pixel_format_attribs, 0, 1, &pixel_format, &num_formats);
     if (!num_formats) TLFATAL("Failed to set the OpenGL 4.6 pixel format.");
 
     DescribePixelFormat(hdc, pixel_format, sizeof(pfd), pfd);
     if (!SetPixelFormat(hdc, pixel_format, pfd)) TLFATAL("Failed to set the OpenGL 4.6 pixel format.");
 
-    int attributes[] = {
+    i32 attributes[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB,  4,
         WGL_CONTEXT_MINOR_VERSION_ARB,  6,
         //WGL_CONTEXT_LAYER_PLANE_ARB, <undefined>,
@@ -571,8 +573,8 @@ static void tl_graphics_initialize_glcontext(PIXELFORMATDESCRIPTOR* pfd) {
 
     context = wglCreateContextAttribsARB(hdc, 0, attributes);
     if (!context) TLFATAL("Failed to create OpenGL 4.6 context.");
-
     if (!wglMakeCurrent(hdc, context)) TLFATAL("Failed to activate OpenGL 4.6 rendering context.");
+    
 	TLDIAGNOSTICS_POP;
 }
 
@@ -638,6 +640,8 @@ static void APIENTRY tl_graphics_debug(GLenum source,
                             const char *message, 
                             const void *userParam)
 {
+    TLDIAGNOSTICS_PUSH;
+
     // ignore non-significant error/warning codes
     // if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 
 
@@ -649,8 +653,31 @@ static void APIENTRY tl_graphics_debug(GLenum source,
         tl_graphics_debug_source(source),
         message
     );
+
+    TLDIAGNOSTICS_POP;
 }
 #endif
+
+static void tl_graphics_initialize_glfunctions(void) {
+    TLDIAGNOSTICS_PUSH;
+
+	if (!gladLoadGL()) TLFATAL("Failed to initialize glad(gl)");
+	if (!gladLoadWGL(hdc)) TLFATAL("Failed to initialize glad(wgl)");
+	
+#if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
+        glDebugMessageCallback(tl_graphics_debug, NULL);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+#endif
+
+	TLDEBUG("GL_VENDOR : %s", glGetString(GL_VENDOR));
+	TLDEBUG("GL_VERSION: %s", glGetString(GL_VERSION));
+    
+    TLDIAGNOSTICS_POP;
+}
+
+
 b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
     TLDIAGNOSTICS_PUSH;
 	
@@ -668,21 +695,9 @@ b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
 	
 	tl_graphics_initialize_glextentions(&pfd);
 	tl_graphics_initialize_glcontext(&pfd);
-
-	if (!gladLoadGL()) TLFATAL("Failed to initialize glad(gl)");
-	if (!gladLoadWGL(hdc)) TLFATAL("Failed to initialize glad(wgl)");
+    tl_graphics_initialize_glfunctions();
 
     tl_messaging_subscribe(TL_MESSAGE_WINDOW_RESIZED, tl_graphics_events);
-
-	TLDEBUG("GL_VENDOR : %s", glGetString(GL_VENDOR));
-	TLDEBUG("GL_VERSION: %s", glGetString(GL_VERSION));
-	
-#if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
-        glDebugMessageCallback(tl_graphics_debug, NULL);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-#endif
 
 	if (wglSwapIntervalEXT != NULL) {
 		wglSwapIntervalEXT(0);

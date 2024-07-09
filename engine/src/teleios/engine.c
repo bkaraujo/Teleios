@@ -21,15 +21,8 @@ static TLMessageChain tl_engine_messaging(const u16 code, const TLMessage* messa
 }
 
 TLAPI b8 tl_engine_pre_initialize(void) {
-    if (!tl_platform_initialize()) {
-        TLERROR("Failed to initialize: Platform Abstraction");
-        return false;
-    }
-
-    if (!tl_diagnostic_initialize()) {
-        TLERROR("Failed to initialize: Diagnostics");
-        return false;
-    }
+    if (!tl_platform_initialize()) { TLERROR("Failed to initialize: Platform Abstraction"); return false; }
+    if (!tl_diagnostic_initialize()) { TLERROR("Failed to initialize: Diagnostics"); return false; }
 
     return true;
 }
@@ -37,31 +30,13 @@ TLAPI b8 tl_engine_pre_initialize(void) {
 TLAPI b8 tl_engine_initialize(void) {
     TLDIAGNOSTICS_PUSH;
 
-    if (!tl_memory_initialize()) {
-        TLERROR("Failed to initialize: Memory Manager");
-        TLDIAGNOSTICS_POP;
-        return false;
-    }
-
-    if (!tl_messaging_initialize()) {
-        TLERROR("Failed to initialize: Messaging Manager");
-        TLDIAGNOSTICS_POP;
-        return false;
-    }
+    if (!tl_memory_initialize()) { TLERROR("Failed to initialize: Memory Manager"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_messaging_initialize()) { TLERROR("Failed to initialize: Messaging Manager"); TLDIAGNOSTICS_POP; return false; }
 
     tl_messaging_subscribe(TL_MESSAGE_ALL_KNOWN, tl_engine_messaging);
 
-    if (!tl_input_initialize()) {
-        TLERROR("Failed to initialize: Input Manager");
-        TLDIAGNOSTICS_POP;
-        return false;
-    }
-
-    if (!tl_audio_initialize()) {
-        TLERROR("Failed to initialize: Audio Manager");
-        TLDIAGNOSTICS_POP;
-        return false;
-    }
+    if (!tl_input_initialize()) { TLERROR("Failed to initialize: Input Manager"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_audio_initialize()) { TLERROR("Failed to initialize: Audio Manager"); TLDIAGNOSTICS_POP; return false; }
 
     TLDIAGNOSTICS_POP;
     return true;
@@ -162,46 +137,16 @@ TLAPI b8 tl_engine_run(void) {
 TLAPI b8 tl_engine_terminate(void) {
     TLDIAGNOSTICS_PUSH;
 
-    if (!tl_graphics_terminate()) {
-        TLERROR("Failed to terminate: Graphics Manager");
-        TLDIAGNOSTICS_POP;
-        return false;
-    }
+    if (!tl_graphics_terminate()) { TLERROR("Failed to terminate: Graphics Manager"); TLDIAGNOSTICS_POP; return false; }
 
     tl_platform_window_destroy();
 
-    if (!tl_audio_terminate()) {
-        TLERROR("Failed to terminate: Audio Manager");
-        TLDIAGNOSTICS_POP;
-        return false;
-    }
-
-    if (!tl_input_terminate()) {
-        TLERROR("Failed to terminate: Input Manager");
-        TLDIAGNOSTICS_POP;
-        return false;
-    }
-
-    if (!tl_messaging_terminate()) {
-        TLERROR("Failed to terminate: Messaging Manager");
-        TLDIAGNOSTICS_POP;
-        return false;
-    }
-
-    if (!tl_memory_terminate()) {
-        TLERROR("Failed to terminate: Memory Manager");
-        return false;
-    }
-
-    if (!tl_diagnostic_terminate()) {
-        TLERROR("Failed to terminate: Diagnostics");
-        return false;
-    }
-
-    if (!tl_platform_terminate()) {
-        TLERROR("Failed to terminate: Platform Abstraction");
-        return false;
-    }
+    if (!tl_audio_terminate()) { TLERROR("Failed to terminate: Audio Manager"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_input_terminate()) { TLERROR("Failed to terminate: Input Manager"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_messaging_terminate()) { TLERROR("Failed to terminate: Messaging Manager"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_memory_terminate()) { TLERROR("Failed to terminate: Memory Manager"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_diagnostic_terminate()) { TLERROR("Failed to terminate: Diagnostics"); return false; }
+    if (!tl_platform_terminate()) { TLERROR("Failed to terminate: Platform Abstraction"); return false; }
 
     return true;
 }
