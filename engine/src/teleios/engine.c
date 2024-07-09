@@ -66,18 +66,21 @@ TLAPI b8 tl_engine_run(void) {
     TLTimer timer = { 0 }; 
     tl_chrono_timer_start(&timer);
 
-    tl_graphics_update();
-    tl_platform_window_update();
-
-    tl_platform_window_show();
-
     const char* paths[] = { "/shader/hello.vert", "/shader/hello.frag" };
     TLShaderProgram* shader = tl_resource_shader_program("hello-triangle", 2, paths);
-    if (shader == NULL) { TLERROR("Failed to create shader"); TLDIAGNOSTICS_POP; return false; }
+    if (shader == NULL) { TLERROR("Failed to create TLShaderProgram"); TLDIAGNOSTICS_POP; return false; }
     
     TLAudioBuffer* audio = tl_resource_audio("/audio/theme.ogg");
-    tl_audio_destroy_buffer(audio);
+    if (audio == NULL) { TLERROR("Failed to create TLAudioBuffer"); TLDIAGNOSTICS_POP; return false; }
+
+    TLAudioSource* source = tl_audio_source_create();
+    if (shader == NULL) { TLERROR("Failed to create TLAudioSource"); TLDIAGNOSTICS_POP; return false; }
     
+    tl_audio_source_attach(source, audio);
+    tl_audio_source_set_gain(source, 0.3f);
+    tl_audio_source_set_position(source, 0, 0, 0);
+    tl_audio_source_play(source);
+
     TLGeometryBuffer gbuffer = { 0 };
     gbuffer.name = "aPos";
     gbuffer.type = TL_BUFFER_TYPE_FLOAT3;
@@ -101,6 +104,11 @@ TLAPI b8 tl_engine_run(void) {
         -0.5f,  0.5f, 0.0f   // left top
     };
     tl_graphics_geometry_vertices(geometry, TLARRLENGTH(vertices, f32), vertices);
+
+    // Pre update so the window dont blink upon the first update    
+    tl_graphics_update();
+    tl_platform_window_update();
+    tl_platform_window_show();
 
     engine_state->running = true;
     while (engine_state->running) {
@@ -133,6 +141,9 @@ TLAPI b8 tl_engine_run(void) {
     tl_platform_window_hide();
     tl_graphics_shader_destroy(shader);
     tl_graphics_geometry_destroy(geometry);
+
+    tl_audio_buffer_destroy(audio);
+    tl_audio_source_destroy(source);
 
     TLDIAGNOSTICS_POP;
     return true;

@@ -29,7 +29,7 @@ TLAudioBuffer* tl_resource_audio(const char* path) {
 
     i32 al_error = alGetError();
     if (al_error != AL_NO_ERROR) {
-        tl_audio_destroy_buffer(buffer);
+        tl_audio_buffer_destroy(buffer);
         buffer = NULL;
         
         TLERROR("Failed upload audio to buffer. %s", alGetString(al_error));

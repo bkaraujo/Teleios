@@ -243,6 +243,12 @@ typedef struct {
     i32 sample_rate;
     const char* path;
 } TLAudioBuffer;
+
+typedef struct {
+    u32 handle;
+    enum { TL_AUDIO_PLAYING, TL_AUDIO_PAUSED, TL_AUDIO_STOPED } status;
+    TLAudioBuffer* buffer;
+} TLAudioSource;
 // ############################################################################
 //
 //                                GRAPHICS TYPES
