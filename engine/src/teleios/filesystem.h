@@ -7,7 +7,7 @@ typedef struct {
     void* handle;
     const char* path;
     const u64 size;
-    const char* string;
+    void* payload;
 } TLFile;
 
 /**
@@ -23,9 +23,9 @@ TLFile* tl_filesystem_open(const char* path);
  * Load the entire file content into the object.
  * 
  * Populate the field:
- * TLFile->string
+ * TLFile->payload
  */
-void tl_filesystem_string(TLFile* file);
+void tl_filesystem_read(TLFile* file);
 
 /**
  * Destroy the object.

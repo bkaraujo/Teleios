@@ -202,6 +202,7 @@ typedef enum {
     TL_MEMORY_FILESYSTEM,
     TL_MEMORY_RESOURCE,
     TL_MEMORY_STRING,
+    TL_MEMORY_AUDIO,
     TL_MEMORY_MAXIMUM
 } TLMemoryType;
 // ############################################################################
@@ -236,6 +237,10 @@ typedef struct {
 // 
 // ############################################################################
 typedef struct {
+    u32 handle;
+    i32 size;
+    i32 channels;
+    i32 sample_rate;
     const char* path;
 } TLAudioBuffer;
 // ############################################################################

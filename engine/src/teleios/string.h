@@ -10,5 +10,6 @@ TLAPI b8 tl_string_begin_with(const char* string, const char* desired);
 TLAPI b8 tl_string_end_with(const char* string, const char* desired);
 TLAPI const char* tl_string_join(const char* string, const char* appended);
 TLAPI void tl_string_free(const char* string);
+TLAPI const char* tl_string_clone(const char* string);
 
 #endif // TELEIOS_STRING

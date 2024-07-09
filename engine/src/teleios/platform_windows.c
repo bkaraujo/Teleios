@@ -79,7 +79,7 @@ TLFile* tl_filesystem_open(const char* path) {
     }
 
     TLFile* file = tl_memory_alloc(TL_MEMORY_FILESYSTEM, sizeof(TLFile));
-    file->path = path;
+    file->path = tl_string_clone(path);
 
     LARGE_INTEGER file_size = { 0 };
     file_size.LowPart = attributes.nFileSizeLow;
@@ -90,7 +90,7 @@ TLFile* tl_filesystem_open(const char* path) {
     return file;
 }
 
-void tl_filesystem_string(TLFile* file) {
+void tl_filesystem_read(TLFile* file) {
     TLDIAGNOSTICS_PUSH;
 
     if (file == NULL) { TLWARN("TLFile is NULL"); TLDIAGNOSTICS_POP; return; }
@@ -123,8 +123,8 @@ void tl_filesystem_string(TLFile* file) {
     }
 
     DWORD dwBytesRead = 0;
-    file->string = tl_memory_alloc(TL_MEMORY_FILESYSTEM, file->size);
-    ReadFile(file->handle, (void*)file->string, file->size, &dwBytesRead, 0);
+    file->payload = tl_memory_alloc(TL_MEMORY_FILESYSTEM, file->size);
+    ReadFile(file->handle, (void*)file->payload, file->size, &dwBytesRead, 0);
     if (dwBytesRead != file->size) { TLWARN("Read less bytes then expected: %s", file->path); }
 
     TLDIAGNOSTICS_POP;
@@ -134,8 +134,9 @@ void tl_filesystem_close(TLFile* file) {
     TLDIAGNOSTICS_PUSH;
 
     if (file == NULL) { TLDIAGNOSTICS_POP; return; }
-    if(file->handle != NULL) { CloseHandle(file->handle); }
-    if (file->string != NULL) { tl_memory_free(TL_MEMORY_FILESYSTEM, file->size, (void*)file->string); }
+    if (file->handle != NULL) { CloseHandle(file->handle); }
+    if (file->payload != NULL) { tl_memory_free(TL_MEMORY_FILESYSTEM, file->size, (void*)file->payload); }
+    tl_string_clone(file->path);
     tl_memory_free(TL_MEMORY_FILESYSTEM, sizeof(TLFile), file);
 
     TLDIAGNOSTICS_POP;

@@ -68,3 +68,14 @@ TLAPI void tl_string_free(const char* string) {
 
     TLDIAGNOSTICS_POP;
 }
+
+TLAPI const char* tl_string_clone(const char* string) {
+    TLDIAGNOSTICS_PUSH;
+    
+    u64 length = tl_string_size(string);
+    void* cloned = tl_memory_alloc(TL_MEMORY_STRING, length);
+    tl_memory_copy((void*) string, length, cloned);
+
+    TLDIAGNOSTICS_POP;
+    return cloned;
+}
