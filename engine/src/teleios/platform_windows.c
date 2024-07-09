@@ -136,7 +136,7 @@ void tl_filesystem_close(TLFile* file) {
     if (file == NULL) { TLDIAGNOSTICS_POP; return; }
     if (file->handle != NULL) { CloseHandle(file->handle); }
     if (file->payload != NULL) { tl_memory_free(TL_MEMORY_FILESYSTEM, file->size, (void*)file->payload); }
-    tl_string_clone(file->path);
+    tl_string_free(file->path);
     tl_memory_free(TL_MEMORY_FILESYSTEM, sizeof(TLFile), file);
 
     TLDIAGNOSTICS_POP;

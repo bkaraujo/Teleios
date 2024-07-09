@@ -23,6 +23,17 @@ b8 tl_audio_initialize(void) {
     return true;
 }
 
+void tl_audio_destroy_buffer(TLAudioBuffer* buffer) {
+    TLDIAGNOSTICS_PUSH;
+    if (buffer == NULL) { TLDIAGNOSTICS_POP; return; }
+
+    if (buffer->path != NULL) tl_string_free(buffer->path);
+    if (alIsBuffer(buffer->handle)) alDeleteBuffers(1, &buffer->handle);
+    tl_memory_free(TL_MEMORY_AUDIO, sizeof(TLAudioBuffer), (void*) buffer);
+
+    TLDIAGNOSTICS_POP;
+}
+
 b8 tl_audio_terminate(void) {
     TLDIAGNOSTICS_PUSH;
 

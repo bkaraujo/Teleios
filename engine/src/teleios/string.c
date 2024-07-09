@@ -1,15 +1,15 @@
 #include "teleios/teleios.h"
 #include <string.h>
 
-TLAPI u64 tl_string_size(const char* string) {
+u64 tl_string_size(const char* string) {
     return strlen(string);
 }
 
-TLAPI b8 tl_string_equal(const char* str0, const char* str1) {
+b8 tl_string_equal(const char* str0, const char* str1) {
     return strcmp(str0, str1) == 0;
 }
 
-TLAPI b8 tl_string_begin_with(const char* string, const char* desired) {
+b8 tl_string_begin_with(const char* string, const char* desired) {
     TLDIAGNOSTICS_PUSH;
     
     u64 len1 = tl_string_size(string);
@@ -27,7 +27,7 @@ TLAPI b8 tl_string_begin_with(const char* string, const char* desired) {
     return true;
 }
 
-TLAPI b8 tl_string_end_with(const char* string, const char* desired) {
+b8 tl_string_end_with(const char* string, const char* desired) {
     TLDIAGNOSTICS_PUSH;
     
     u64 len1 = tl_string_size(string);
@@ -46,7 +46,7 @@ TLAPI b8 tl_string_end_with(const char* string, const char* desired) {
     return true;
 }
 
-TLAPI const char* tl_string_join(const char* string, const char* appended) {
+const char* tl_string_join(const char* string, const char* appended) {
     TLDIAGNOSTICS_PUSH;
 
     u64 len1 = tl_string_size(string);
@@ -60,7 +60,7 @@ TLAPI const char* tl_string_join(const char* string, const char* appended) {
     return joined;
 }
 
-TLAPI void tl_string_free(const char* string) {
+void tl_string_free(const char* string) {
     TLDIAGNOSTICS_PUSH;
     
     u64 lentgh = tl_string_size(string);
@@ -69,7 +69,7 @@ TLAPI void tl_string_free(const char* string) {
     TLDIAGNOSTICS_POP;
 }
 
-TLAPI const char* tl_string_clone(const char* string) {
+const char* tl_string_clone(const char* string) {
     TLDIAGNOSTICS_PUSH;
     
     u64 length = tl_string_size(string);

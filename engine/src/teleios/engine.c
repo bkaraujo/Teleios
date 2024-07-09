@@ -76,7 +76,8 @@ TLAPI b8 tl_engine_run(void) {
     if (shader == NULL) { TLERROR("Failed to create shader"); TLDIAGNOSTICS_POP; return false; }
     
     TLAudioBuffer* audio = tl_resource_audio("/audio/theme.ogg");
-    audio = NULL;
+    tl_audio_destroy_buffer(audio);
+    
     TLGeometryBuffer gbuffer = { 0 };
     gbuffer.name = "aPos";
     gbuffer.type = TL_BUFFER_TYPE_FLOAT3;

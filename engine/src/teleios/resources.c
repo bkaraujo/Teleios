@@ -29,13 +29,10 @@ TLAudioBuffer* tl_resource_audio(const char* path) {
 
     i32 al_error = alGetError();
     if (al_error != AL_NO_ERROR) {
-        tl_string_free(buffer->path);
-        if (alIsBuffer(buffer->handle)) 
-            alDeleteBuffers(1, &buffer->handle);
-
-        tl_memory_free(TL_MEMORY_AUDIO, sizeof(TLAudioBuffer), (void*) buffer);
-        TLERROR("Failed upload audio to buffer. %s", alGetString(al_error));
+        tl_audio_destroy_buffer(buffer);
         buffer = NULL;
+        
+        TLERROR("Failed upload audio to buffer. %s", alGetString(al_error));
     }
 
     TLDIAGNOSTICS_POP;
@@ -50,19 +47,20 @@ TLShaderSource* tl_resource_shader_source(const char* path) {
     TLFile* file = tl_filesystem_open(absolute);
     if (file == NULL) { TLWARN("Failed to open %s", absolute); tl_string_free(absolute); TLDIAGNOSTICS_POP; return NULL; }
     if (file->size == 0) { TLWARN("Unexpected file %s size %d", absolute, file->size); tl_string_free(absolute); tl_filesystem_close(file); TLDIAGNOSTICS_POP; return NULL; }
+    tl_string_free(absolute); absolute = NULL;
 
     tl_filesystem_read(file);
-    if (file->payload == NULL) { TLWARN("Failed to load content %s", path); tl_string_free(absolute); tl_filesystem_close(file); TLDIAGNOSTICS_POP; return NULL; }
+    if (file->payload == NULL) { TLWARN("Failed to load content %s", path); tl_filesystem_close(file); TLDIAGNOSTICS_POP; return NULL; }
 
     TLShaderSource* source = tl_memory_alloc(TL_MEMORY_GRAPHICS, sizeof(TLShaderSource));
-    if (source == NULL) { TLWARN("Failed allocate TLShaderSource"); tl_string_free(absolute); tl_filesystem_close(file); TLDIAGNOSTICS_POP; return NULL; }
+    if (source == NULL) { TLWARN("Failed allocate TLShaderSource"); tl_filesystem_close(file); TLDIAGNOSTICS_POP; return NULL; }
 
     source->name = path;
     source->stage = U32MAX;
     if (source->stage == U32MAX && tl_string_end_with(source->name, ".vert")) source->stage = TL_SHADER_STAGE_VERTEX;
     if (source->stage == U32MAX && tl_string_end_with(source->name, ".frag")) source->stage = TL_SHADER_STAGE_FRAGMENT;
     if (source->stage == U32MAX) {
-        tl_string_free(absolute);
+        
         tl_filesystem_close(file);
         tl_memory_free(TL_MEMORY_GRAPHICS, sizeof(TLShaderSource), source);
         TLDIAGNOSTICS_POP;
@@ -72,8 +70,6 @@ TLShaderSource* tl_resource_shader_source(const char* path) {
     source->size = file->size;
     source->script = tl_memory_alloc(TL_MEMORY_GRAPHICS, file->size);
     tl_memory_copy(file->payload, file->size, (void*)source->script);
-
-    tl_string_free(absolute);
     tl_filesystem_close(file);
 
     TLDIAGNOSTICS_POP;
