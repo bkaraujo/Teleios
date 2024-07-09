@@ -1,19 +1,19 @@
 #include "teleios/engine.h"
 #include "teleios/teleios.h"
 #include "teleios/messagingcodes.h"
+#include "teleios/state.h"
 
+TLEngineState* engine_state;
 static u64 frame_overflow = 0;
 static u64 frame_counter = -1;
-static b8 running = true;
-static b8 paused = false;
 
 static TLMessageChain tl_engine_messaging(const u16 code, const TLMessage* message) {
     TLDIAGNOSTICS_PUSH;
 
     switch (code) {
-        case TL_MESSAGE_APPLICATION_PAUSE : paused  = true; break;
-        case TL_MESSAGE_APPLICATION_RESUME: paused  = false; break;
-        case TL_MESSAGE_APPLICATION_QUIT  : running = false; break;
+        case TL_MESSAGE_APPLICATION_PAUSE : engine_state->paused = true; break;
+        case TL_MESSAGE_APPLICATION_RESUME: engine_state->paused = false; break;
+        case TL_MESSAGE_APPLICATION_QUIT  : engine_state->running = false; break;
     }
 
     TLDIAGNOSTICS_POP;
@@ -23,6 +23,10 @@ static TLMessageChain tl_engine_messaging(const u16 code, const TLMessage* messa
 TLAPI b8 tl_engine_pre_initialize(void) {
     if (!tl_platform_initialize()) { TLERROR("Failed to initialize: Platform Abstraction"); return false; }
     if (!tl_diagnostic_initialize()) { TLERROR("Failed to initialize: Diagnostics"); return false; }
+
+    engine_state = tl_platform_memory_halloc(sizeof(TLEngineState));
+    engine_state->running = false;
+    engine_state->paused = false;
 
     return true;
 }
@@ -44,12 +48,12 @@ TLAPI b8 tl_engine_initialize(void) {
 
 TLAPI b8 tl_engine_configure(TLAppSpecification* specification) {
     TLDIAGNOSTICS_PUSH;
+    
+    engine_state->rootfs = tl_memory_alloc(TL_MEMORY_RESOURCE, tl_string_size(specification->rootfs));
+    tl_memory_copy((void*)specification->rootfs, tl_string_size(specification->rootfs), (void*)engine_state->rootfs);
+
     tl_platform_window_create(&specification->window);
-    if (!tl_graphics_initialize(&specification->graphics)) {
-        TLERROR("Failed to initialize: Graphics Manager");
-        TLDIAGNOSTICS_POP;
-        return false;
-    }
+    if (!tl_graphics_initialize(&specification->graphics)) { TLERROR("Failed to initialize: Graphics Manager"); TLDIAGNOSTICS_POP; return false; }
 
     TLDIAGNOSTICS_POP;
     return true;
@@ -67,13 +71,9 @@ TLAPI b8 tl_engine_run(void) {
 
     tl_platform_window_show();
 
-    const char* paths[] = {
-        "X:/c/Teleios/sandbox/assets/hello.vert",
-        "X:/c/Teleios/sandbox/assets/hello.frag"
-    };
-
+    const char* paths[] = { "/hello.vert", "/hello.frag" };
     TLShaderProgram* shader = tl_resource_shader_program("hello-triangle", 2, paths);
-    if (shader == NULL) TLFATAL("Failed to create shader");
+    if (shader == NULL) { TLERROR("Failed to create shader"); TLDIAGNOSTICS_POP; return false; }
     
     TLGeometryBuffer gbuffer = { 0 };
     gbuffer.name = "aPos";
@@ -99,14 +99,15 @@ TLAPI b8 tl_engine_run(void) {
     };
     tl_graphics_geometry_vertices(geometry, TLARRLENGTH(vertices, f32), vertices);
 
-    while (running) {
+    engine_state->running = true;
+    while (engine_state->running) {
         frame_counter++;
         if (frame_counter == 0) { frame_overflow++; }
 
-        if (!paused) {
+        if (!engine_state->paused) {
             fps++;
             if (tl_input_key_released(TL_KEY_ESCAPE)) {
-                running = false;
+                engine_state->running = false;
             }
 
             tl_graphics_clear();
@@ -136,6 +137,8 @@ TLAPI b8 tl_engine_run(void) {
 
 TLAPI b8 tl_engine_terminate(void) {
     TLDIAGNOSTICS_PUSH;
+
+    tl_memory_free(TL_MEMORY_RESOURCE, tl_string_size(engine_state->rootfs), (void*) engine_state->rootfs);
 
     if (!tl_graphics_terminate()) { TLERROR("Failed to terminate: Graphics Manager"); TLDIAGNOSTICS_POP; return false; }
 

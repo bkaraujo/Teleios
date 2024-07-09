@@ -1,6 +1,8 @@
 #include "teleios/main.h"
 
 void tl_application_configure(TLAppSpecification* spec) {
+    spec->rootfs = "X:/c/Teleios/sandbox/assets";
+    
     spec->window.title = "SRzé";
     spec->window.width = 1024;
     spec->window.height = 768;

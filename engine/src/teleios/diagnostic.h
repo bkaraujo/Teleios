@@ -28,5 +28,6 @@ b8 tl_diagnostic_terminate(void);
 void tl_diagnostics_push(const TLDiagnostic* diagnostic);
 void tl_diagnostics_pop(void);
 void tl_diagnostics_print(void);
+TLDiagnostic* tl_diagnostics_peek(void);
 
 #endif // TELEIOS_DIAGNOSTIC

@@ -41,6 +41,10 @@ void tl_diagnostics_push(const TLDiagnostic* diagnostic) {
     if (used > max) max = used;
 }
 
+TLDiagnostic* tl_diagnostics_peek(void) {
+    return &registry[used - 1];
+}
+
 void tl_diagnostics_pop(void) {
     used--;
     tl_platform_memory_set((void*)(registry + used), sizeof(TLDiagnostic), 0);
@@ -57,6 +61,7 @@ void tl_diagnostics_print(void) {
 }
 
 b8 tl_diagnostic_terminate(void) {
+    TLDIAGNOSTICS_PUSH;
     TLTRACE("Diagnostic stack max depth: %d", max);
     if (registry == NULL) { return true; }
     tl_platform_memory_hfree(registry);

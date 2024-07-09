@@ -201,6 +201,7 @@ typedef enum {
     TL_MEMORY_GRAPHICS,
     TL_MEMORY_FILESYSTEM,
     TL_MEMORY_RESOURCE,
+    TL_MEMORY_STRING,
     TL_MEMORY_MAXIMUM
 } TLMemoryType;
 // ############################################################################
@@ -407,16 +408,20 @@ typedef struct {
 } TLGraphicsCreateInfo;
 
 typedef struct {
-    /**
-     * Application version information
-     */
+    /** Application version information */
     struct {
         u8 major;
         u8 minor;
         u8 patch;
     } version;
 
+    /** Asset lookup folder */
+    const char* rootfs;
+
+    /** Window creating parameters */
     TLWindowCreateInfo window;
+
+    /** Graphics API configuraiton parameters */
     TLGraphicsCreateInfo graphics;
 
 } TLAppSpecification;
