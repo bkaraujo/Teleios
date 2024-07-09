@@ -18,6 +18,8 @@
 #include "teleios/container.h"
 #include "teleios/chrono.h"
 #include "teleios/memory.h"
+#include "teleios/resource.h"
+#include "teleios/string.h"
 // ==================================================
 // IO APIs
 // ==================================================

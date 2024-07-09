@@ -4,7 +4,6 @@
 #include <Windows.h>
 #include <windowsx.h>
 #include <malloc.h>
-#include <string.h>
 
 #include "teleios/teleios.h"
 #include "teleios/messagingcodes.h"
@@ -59,7 +58,7 @@ void tl_platform_console(u8 level, const char* message) {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(e_hconsole, &csbi);
     SetConsoleTextAttribute(e_hconsole, levels[level]);
-    WriteConsole(e_hconsole, message, (DWORD)strlen(message), NULL, NULL);
+    WriteConsole(e_hconsole, message, (DWORD)tl_string_size(message), NULL, NULL);
     SetConsoleTextAttribute(e_hconsole, csbi.wAttributes);
 }
 // #####################################################################################################

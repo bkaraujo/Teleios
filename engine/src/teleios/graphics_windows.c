@@ -204,31 +204,31 @@ TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* info) {
 
     u32 handle = glCreateProgram();
     for (u8 i = 0 ; i < info->quantity ; ++i) {
-        TLShaderSource source = info->sources[i];
+        TLShaderSource* source = info->sources[i];
         
-        u32 stage = tl_parse_shader_stage(source.stage);
+        u32 stage = tl_parse_shader_stage(source->stage);
         if (stage == U32MAX) {
-            TLWARN("Invalid shader (%s) stage", source.name);
+            TLWARN("Invalid shader (%s) stage", source->name);
             TLDIAGNOSTICS_POP;
             return NULL;
         }
         // =================================================================
         // Ensure single script for shader stage
         // =================================================================
-        if(stage_count[source.stage] > 1) {
-            TLWARN("Duplicated shader (%s) stage", source.name);
+        if(stage_count[source->stage] > 1) {
+            TLWARN("Duplicated shader (%s) stage", source->name);
             TLDIAGNOSTICS_POP;
             return NULL;
         }
 
-        stage_count[source.stage]++;
+        stage_count[source->stage]++;
         // =================================================================
         // Compile the shader source
         // =================================================================
         u32 shader = glCreateShader(stage);
         shaders[i] = shader;
 
-        glShaderSource(shader, 1, &source.script, NULL);
+        glShaderSource(shader, 1, &source->script, NULL);
         glCompileShader(shader);
 
         i32 success; 
@@ -236,7 +236,7 @@ TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* info) {
         if (!success) {
             char message[1024];
             glGetShaderInfoLog(shader, 1024, NULL, message);
-            TLWARN("Failed to compile shader (%s): %s", source.name, message);
+            TLWARN("Failed to compile shader (%s): %s", source->name, message);
 
             for (u8 i = 0 ; i < info->quantity ; ++i) {
                 if (shaders[i] == 0) continue;

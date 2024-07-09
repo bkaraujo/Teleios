@@ -110,6 +110,7 @@ static const char* tl_memory_label(TLMemoryType type) {
         case TL_MEMORY_CONTAINER_NODE: return "TL_MEMORY_CONTAINER_NODE";
         case TL_MEMORY_GRAPHICS: return "TL_MEMORY_GRAPHICS";
         case TL_MEMORY_FILESYSTEM: return "TL_MEMORY_FILESYSTEM";
+        case TL_MEMORY_RESOURCE: return "TL_MEMORY_RESOURCE";
         default: return "????";
     }
 }

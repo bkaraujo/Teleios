@@ -92,33 +92,14 @@ TLAPI b8 tl_engine_run(void) {
 
     tl_platform_window_show();
 
-    TLShaderSource vertex = { 0 };
-    vertex.name = "vertext";
-    vertex.stage = TL_SHADER_STAGE_VERTEX;
-    vertex.script = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main() {\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
+    const char* paths[] = {
+        "X:/c/Teleios/sandbox/assets/hello.vert",
+        "X:/c/Teleios/sandbox/assets/hello.frag"
+    };
 
-    TLShaderSource fragment = { 0 };
-    fragment.name = "vertext";
-    fragment.stage = TL_SHADER_STAGE_FRAGMENT;
-    fragment.script = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main() {\n"
-    "   FragColor = vec4(0f, .75f, 1.0f, 1.0f);\n"
-    "}\0";
-
-    TLShaderSource sources[] = { vertex, fragment };
-    TLShaderCreateInfo shader_spec = { 0 };
-    shader_spec.name = "Hello Triangle";
-    shader_spec.quantity = 2;
-    shader_spec.sources = sources;
-
-    TLShaderProgram* shader = tl_graphics_shader_create(&shader_spec);
-    if (shader == NULL) { TLFATAL("ops!"); }
-
+    TLShaderProgram* shader = tl_resource_shader_program("hello-triangle", 2, paths);
+    if (shader == NULL) TLFATAL("Failed to create shader");
+    
     TLGeometryBuffer gbuffer = { 0 };
     gbuffer.name = "aPos";
     gbuffer.type = TL_BUFFER_TYPE_FLOAT3;

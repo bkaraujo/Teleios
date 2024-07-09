@@ -200,6 +200,7 @@ typedef enum {
     TL_MEMORY_CONTAINER_NODE,
     TL_MEMORY_GRAPHICS,
     TL_MEMORY_FILESYSTEM,
+    TL_MEMORY_RESOURCE,
     TL_MEMORY_MAXIMUM
 } TLMemoryType;
 // ############################################################################
@@ -228,6 +229,14 @@ typedef struct {
     const char* filename;
     u32 linenumber;
 } TLDiagnostic;
+// ############################################################################
+//
+//                                AUDIo TYPES
+// 
+// ############################################################################
+typedef struct {
+    const char* path;
+} TLAudioBuffer;
 // ############################################################################
 //
 //                                GRAPHICS TYPES
@@ -299,12 +308,13 @@ typedef enum {
 typedef struct {
     const char* name;
     const char* script;
+    u64 size;
     u32 stage;
 } TLShaderSource;
 
 typedef struct {
     const char* name;
-    TLShaderSource* sources;
+    TLShaderSource** sources;
     u8 quantity;
 } TLShaderCreateInfo;
 
