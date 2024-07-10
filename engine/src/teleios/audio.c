@@ -50,6 +50,7 @@ void tl_audio_source_attach(TLAudioSource* source, TLAudioBuffer* buffer) {
     
     source->status = TL_AUDIO_STOPED;
     source->buffer = buffer;
+    TLTRACE("[AUDIO][Source %d] Attaching buffer %d", source->handle, buffer->handle);
     alSourcei(source->handle, AL_BUFFER, buffer->handle);
 
     TLDIAGNOSTICS_POP;

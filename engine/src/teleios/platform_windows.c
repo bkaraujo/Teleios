@@ -165,27 +165,19 @@ TLAPI void tl_chrono_time_now(TLTime* time) {
     TLDIAGNOSTICS_POP;
 }
 
-TLAPI u64 tl_chrono_time_epoch(void) {
+TLAPI u64 tl_chrono_time_epoch_micros(void) {
     TLDIAGNOSTICS_PUSH;
-    // =================================================================
-    // Obtain the system 64bit time
-    // =================================================================
-    FILETIME stime; GetSystemTimeAsFileTime(&stime);
-    ULARGE_INTEGER curr_time_as_uint64;
-    curr_time_as_uint64.HighPart = stime.dwHighDateTime;
-    curr_time_as_uint64.LowPart = stime.dwLowDateTime;
-    // =================================================================
-    // Translate the extern unix_epoch to 64bit filetime
-    // =================================================================
-    FILETIME utime; SystemTimeToFileTime(&e_unix_epoch, &utime);
-    ULARGE_INTEGER unix_epoch_as_uint64;
-    unix_epoch_as_uint64.HighPart = utime.dwHighDateTime;
-    unix_epoch_as_uint64.LowPart = utime.dwLowDateTime;
-    // =================================================================
-    // Compute the milliseconds since unix epoch
-    // =================================================================
+    FILETIME ft; GetSystemTimeAsFileTime(&ft);
+    u64 micros = ((u64)ft.dwHighDateTime << 32 | (u64)ft.dwLowDateTime <<  0) / 10 - 11644473600000000ULL;
     TLDIAGNOSTICS_POP;
-    return (curr_time_as_uint64.QuadPart - unix_epoch_as_uint64.QuadPart) / 10000;
+    return micros;
+}
+
+TLAPI u64 tl_chrono_time_epoch_millis(void) {
+    TLDIAGNOSTICS_PUSH;
+    u64 millis = tl_chrono_time_epoch_micros() / 1000;
+    TLDIAGNOSTICS_PUSH;
+    return millis;
 }
 
 TLAPI void tl_chrono_timer_start(TLTimer* timer) {
