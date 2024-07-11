@@ -9,7 +9,7 @@
 #include "teleios/messaging.h"
 #include "teleios/logger.h"
 // ==================================================
-// Debugging APIs
+// Development APIs
 // ==================================================
 #include "teleios/diagnostic.h"
 // ==================================================
@@ -27,6 +27,9 @@
 #include "teleios/audio.h"
 #include "teleios/input.h"
 #include "teleios/inputcodes.h"
+// ==================================================
+// Rendering APIs
+// ==================================================
 #include "teleios/graphics.h"
 
 #endif // TELEIOS

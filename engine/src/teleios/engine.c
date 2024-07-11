@@ -49,8 +49,8 @@ TLAPI b8 tl_engine_initialize(void) {
 TLAPI b8 tl_engine_configure(TLAppSpecification* specification) {
     TLDIAGNOSTICS_PUSH;
     
-    engine_state->rootfs = tl_memory_alloc(TL_MEMORY_RESOURCE, tl_string_size(specification->rootfs));
-    tl_memory_copy((void*)specification->rootfs, tl_string_size(specification->rootfs), (void*)engine_state->rootfs);
+    engine_state->rootfs = tl_memory_alloc(TL_MEMORY_RESOURCE, tl_string_length(specification->rootfs));
+    tl_memory_copy((void*)specification->rootfs, tl_string_length(specification->rootfs), (void*)engine_state->rootfs);
 
     tl_platform_window_create(&specification->window);
     if (!tl_graphics_initialize(&specification->graphics)) { TLERROR("Failed to initialize: Graphics Manager"); TLDIAGNOSTICS_POP; return false; }
@@ -70,17 +70,6 @@ TLAPI b8 tl_engine_run(void) {
     TLShaderProgram* shader = tl_resource_shader_program("hello-triangle", 2, paths);
     if (shader == NULL) { TLERROR("Failed to create TLShaderProgram"); TLDIAGNOSTICS_POP; return false; }
     
-    TLAudioBuffer* audio = tl_resource_audio("/audio/theme.ogg");
-    if (audio == NULL) { TLERROR("Failed to create TLAudioBuffer"); TLDIAGNOSTICS_POP; return false; }
-
-    TLAudioSource* source = tl_audio_source_create();
-    if (shader == NULL) { TLERROR("Failed to create TLAudioSource"); TLDIAGNOSTICS_POP; return false; }
-    
-    tl_audio_source_attach(source, audio);
-    tl_audio_source_set_gain(source, 0.3f);
-    tl_audio_source_set_position(source, 0, 0, 0);
-    tl_audio_source_play(source);
-
     TLGeometryBuffer gbuffer = { 0 };
     gbuffer.name = "aPos";
     gbuffer.type = TL_BUFFER_TYPE_FLOAT3;
@@ -133,7 +122,7 @@ TLAPI b8 tl_engine_run(void) {
         tl_chrono_timer_update(&timer);
         if (tl_chrono_timer_seconds(&timer) >= 1.0f) {
             tl_chrono_timer_start(&timer);
-            TLDEBUG("FPS: %llu", fps);
+            TLDEBUG("FPS: %u", fps);
             fps = 0;
         }
     }
@@ -142,9 +131,6 @@ TLAPI b8 tl_engine_run(void) {
     tl_graphics_shader_destroy(shader);
     tl_graphics_geometry_destroy(geometry);
 
-    tl_audio_buffer_destroy(audio);
-    tl_audio_source_destroy(source);
-
     TLDIAGNOSTICS_POP;
     return true;
 }
@@ -152,7 +138,7 @@ TLAPI b8 tl_engine_run(void) {
 TLAPI b8 tl_engine_terminate(void) {
     TLDIAGNOSTICS_PUSH;
 
-    tl_memory_free(TL_MEMORY_RESOURCE, tl_string_size(engine_state->rootfs), (void*) engine_state->rootfs);
+    tl_memory_free(TL_MEMORY_RESOURCE, tl_string_length(engine_state->rootfs), (void*) engine_state->rootfs);
 
     if (!tl_graphics_terminate()) { TLERROR("Failed to terminate: Graphics Manager"); TLDIAGNOSTICS_POP; return false; }
 

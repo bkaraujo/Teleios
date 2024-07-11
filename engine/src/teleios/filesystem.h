@@ -36,4 +36,10 @@ void tl_filesystem_read(TLFile* file);
  */
 void tl_filesystem_close(TLFile* file);
 
+/**
+ * Assuming that path is a NULL terminated string create a pointer
+ * to the last path separator onward.
+ */
+const char* tl_filesystem_get_filename(const char* path);
+
 #endif // TELEIOS_FILESYSTEM
