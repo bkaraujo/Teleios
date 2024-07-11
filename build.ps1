@@ -43,7 +43,7 @@ if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
 .\vendor\llvm\archive.ps1 -Target "engine" -Location "$ROOTFS" -Output "teleios.lib" 
 if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
 
-.\vendor\llvm\link.ps1  -Target "sandbox" -Location "$ROOTFS" -Output "sandbox.exe" -LFlags "-luser32 -lgdi32 -lopengl32 -l$ROOTFS/engine/lib/OpenAL32.lib -l$ROOTFS/build/teleios.lib"
+.\vendor\llvm\link.ps1  -Target "sandbox" -Location "$ROOTFS" -Output "sandbox.exe" -LFlags "-luser32 -lgdi32 -lopengl32 -ladvapi32 -l$ROOTFS/engine/lib/OpenAL32.lib -l$ROOTFS/build/teleios.lib"
 if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
 
 Set-Location $ROOTFS

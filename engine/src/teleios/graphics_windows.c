@@ -3,6 +3,7 @@
 #include <Windows.h>
 
 #include "teleios/teleios.h"
+#include "teleios/platform.h"
 #include "teleios/messagingcodes.h"
 #include "glad/glad.h"
 #include "glad/wgl.h"

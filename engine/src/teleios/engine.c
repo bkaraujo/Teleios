@@ -2,6 +2,7 @@
 #include "teleios/teleios.h"
 #include "teleios/messagingcodes.h"
 #include "teleios/state.h"
+#include "teleios/platform.h"
 
 TLEngineState* engine_state;
 static u64 frame_overflow = 0;
@@ -41,6 +42,7 @@ TLAPI b8 tl_engine_initialize(void) {
 
     if (!tl_input_initialize()) { TLERROR("Failed to initialize: Input Manager"); TLDIAGNOSTICS_POP; return false; }
     if (!tl_audio_initialize()) { TLERROR("Failed to initialize: Audio Manager"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_ecs_initialize()) { TLERROR("Failed to initialize: ECS System"); TLDIAGNOSTICS_POP; return false; }
 
     TLDIAGNOSTICS_POP;
     return true;
@@ -63,36 +65,55 @@ TLAPI b8 tl_engine_run(void) {
     TLDIAGNOSTICS_PUSH;
     u32 fps = 0;
     
+    const char* entity ;
+    {
+        entity = tl_ecs_entity_create();
+        tl_ecs_entity_attach(entity, TLNameComponentID);
+        TLNameComponent* nc = (TLNameComponent*) tl_ecs_entity_component(entity, TLNameComponentID);
+        nc->name = "My Component";
+    } 
+    
     TLTimer timer = { 0 }; 
     tl_chrono_timer_start(&timer);
-
-    const char* paths[] = { "/shader/hello.vert", "/shader/hello.frag" };
-    TLShaderProgram* shader = tl_resource_shader_program("hello-triangle", 2, paths);
-    if (shader == NULL) { TLERROR("Failed to create TLShaderProgram"); TLDIAGNOSTICS_POP; return false; }
     
-    TLGeometryBuffer gbuffer = { 0 };
-    gbuffer.name = "aPos";
-    gbuffer.type = TL_BUFFER_TYPE_FLOAT3;
+    {
+        TLNameComponent* nc = (TLNameComponent*) tl_ecs_entity_component(entity, TLNameComponentID);
+        TLINFO("TLNameComponent->name = %s", nc->name);
+    }
 
-    TLGeometryCreateInfo gspec = { 0 };
-    gspec.mode = TL_GEOMETRY_MODE_TRIANGLES;
-    gspec.buffers_length = 1;
-    gspec.buffers = &gbuffer;
+    TLShaderProgram* shader = NULL;
+    {
+        const char* paths[] = { "/shader/hello.vert", "/shader/hello.frag" };
+        shader = tl_resource_shader_program("hello-triangle", 2, paths);
+        if (shader == NULL) { TLERROR("Failed to create TLShaderProgram"); TLDIAGNOSTICS_POP; return false; }
+    }
 
-    TLGeometry* geometry = tl_graphics_geometry_create(&gspec);
-    u32 indices[] = {
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
-    };
-    tl_graphics_geometry_elements_ui(geometry, TLARRLENGTH(indices, u32), indices);
-    
-    f32 vertices[] = {
-         0.5f,  0.5f, 0.0f,  // right top
-         0.5f, -0.5f, 0.0f,  // right bottom 
-        -0.5f, -0.5f, 0.0f,  // left bottom 
-        -0.5f,  0.5f, 0.0f   // left top
-    };
-    tl_graphics_geometry_vertices(geometry, TLARRLENGTH(vertices, f32), vertices);
+    TLGeometry* geometry = NULL;
+    {
+        TLGeometryBuffer gbuffer = { 0 };
+        gbuffer.name = "aPos";
+        gbuffer.type = TL_BUFFER_TYPE_FLOAT3;
+
+        TLGeometryCreateInfo gspec = { 0 };
+        gspec.mode = TL_GEOMETRY_MODE_TRIANGLES;
+        gspec.buffers_length = 1;
+        gspec.buffers = &gbuffer;
+
+        geometry = tl_graphics_geometry_create(&gspec);
+        u32 indices[] = {
+            0, 1, 3,   // first triangle
+            1, 2, 3    // second triangle
+        };
+        tl_graphics_geometry_elements_ui(geometry, TLARRLENGTH(indices, u32), indices);
+        
+        f32 vertices[] = {
+            0.5f,  0.5f, 0.0f,  // right top
+            0.5f, -0.5f, 0.0f,  // right bottom 
+            -0.5f, -0.5f, 0.0f,  // left bottom 
+            -0.5f,  0.5f, 0.0f   // left top
+        };
+        tl_graphics_geometry_vertices(geometry, TLARRLENGTH(vertices, f32), vertices);
+    }
 
     // Pre update so the window dont blink upon the first update    
     tl_graphics_update();
@@ -144,6 +165,7 @@ TLAPI b8 tl_engine_terminate(void) {
 
     tl_platform_window_destroy();
 
+    if (!tl_ecs_terminate()) { TLERROR("Failed to terminate: ECS System"); TLDIAGNOSTICS_POP; return false; }
     if (!tl_audio_terminate()) { TLERROR("Failed to terminate: Audio Manager"); TLDIAGNOSTICS_POP; return false; }
     if (!tl_input_terminate()) { TLERROR("Failed to terminate: Input Manager"); TLDIAGNOSTICS_POP; return false; }
     if (!tl_messaging_terminate()) { TLERROR("Failed to terminate: Messaging Manager"); TLDIAGNOSTICS_POP; return false; }

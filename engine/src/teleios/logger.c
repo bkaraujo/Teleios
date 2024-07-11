@@ -1,4 +1,5 @@
 #include "teleios/teleios.h"
+#include "teleios/platform.h"
 
 #include <stdlib.h>
 #include <stdio.h>

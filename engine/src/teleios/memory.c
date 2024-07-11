@@ -1,4 +1,5 @@
 #include "teleios/teleios.h"
+#include "teleios/platform.h"
 
 typedef struct {
     u64 allocated;
@@ -113,6 +114,9 @@ static const char* tl_memory_label(TLMemoryType type) {
         case TL_MEMORY_RESOURCE: return "TL_MEMORY_RESOURCE";
         case TL_MEMORY_STRING: return "TL_MEMORY_STRING";
         case TL_MEMORY_AUDIO: return "TL_MEMORY_AUDIO";
+        case TL_MEMORY_ULID: return "TL_MEMORY_ULID";
+        case TL_MEMORY_ECS_ENTITY: return "TL_MEMORY_ECS_ENTITY";
+        case TL_MEMORY_ECS_COMPONENT: return "TL_MEMORY_ECS_COMPONENT";
         
         default: return "????";
     }

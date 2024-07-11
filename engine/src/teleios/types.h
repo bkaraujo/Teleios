@@ -75,10 +75,10 @@
 //                               BASIC TYPES
 // 
 // ############################################################################
-typedef unsigned char       u8;
-typedef unsigned short      u16;
-typedef unsigned int        u32;
-typedef unsigned long long  u64;
+typedef unsigned char       u8;  // 0 to 255
+typedef unsigned short      u16; // 0 to 65_535
+typedef unsigned int        u32; // 0 to 429_4967_295
+typedef unsigned long long  u64; // 0 to 18_446_744_073_709_551_615
 
 TLSTASSERT(sizeof(u8) == 1, "Expected u8 to be 1 byte.");
 TLSTASSERT(sizeof(u16) == 2, "Expected u16 to be 2 bytes.");
@@ -90,10 +90,10 @@ TLSTASSERT(sizeof(u64) == 8, "Expected u64 to be 8 bytes.");
 #define U32MAX              4294967295
 #define U64MAX              18446744073709551615
 
-typedef signed char         i8;
-typedef signed short        i16;
-typedef signed int          i32;
-typedef signed long long    i64;
+typedef signed char         i8;  // -128 to 127
+typedef signed short        i16; // -32_768 to 32_767
+typedef signed int          i32; // -2_147_483_648 to 2_147_483_647
+typedef signed long long    i64; // -9_223_372_036_854_775_808 to 9_223_372_036_854_775_807
 
 #define I8MAX               127
 #define I16MAX              32767
@@ -105,7 +105,7 @@ typedef signed long long    i64;
 #define I32MIN              -2147483648
 #define I64MIN              -9223372036854775808
 
-TLSTASSERT(sizeof(i8) == 1, "Expected i8 to be 1 byte.");
+TLSTASSERT(sizeof(i8 ) == 1, "Expected i8 to be 1 byte.");
 TLSTASSERT(sizeof(i16) == 2, "Expected i16 to be 2 bytes.");
 TLSTASSERT(sizeof(i32) == 4, "Expected i32 to be 4 bytes.");
 TLSTASSERT(sizeof(i64) == 8, "Expected i64 to be 8 bytes.");
@@ -119,8 +119,9 @@ TLSTASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 typedef int                 b32;
 typedef char                b8;
 
-#define true  1
-#define false 0
+#define true                1
+#define false               0
+#define TL_NONE             0
 // ############################################################################
 //
 //                               GLM TYPES
@@ -196,6 +197,7 @@ typedef union {
 // 
 // ############################################################################
 typedef enum {
+    TL_MEMORY_ULID,
     TL_MEMORY_CONTAINER,
     TL_MEMORY_CONTAINER_NODE,
     TL_MEMORY_GRAPHICS,
@@ -203,6 +205,8 @@ typedef enum {
     TL_MEMORY_RESOURCE,
     TL_MEMORY_STRING,
     TL_MEMORY_AUDIO,
+    TL_MEMORY_ECS_ENTITY,
+    TL_MEMORY_ECS_COMPONENT,
     TL_MEMORY_MAXIMUM
 } TLMemoryType;
 // ############################################################################
