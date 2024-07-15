@@ -122,6 +122,10 @@ typedef char                b8;
 #define true                1
 #define false               0
 #define TL_NONE             0
+
+typedef struct {
+    char ulid[27];
+} TLUlid;
 // ############################################################################
 //
 //                               GLM TYPES
@@ -225,6 +229,13 @@ typedef struct {
     struct TLListNode* tail;
     u32 length;
 } TLList;
+
+typedef TLList TLMap;
+
+typedef struct {
+    TLUlid* handle;
+    TLList* values;
+} TLMapEntry;
 // ############################################################################
 //
 //                                DIAGNOSTIC TYPES

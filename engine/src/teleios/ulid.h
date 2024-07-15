@@ -3,7 +3,9 @@
 
 #include "teleios/types.h"
 
-const char* tl_ulid_generate(void);
-void tl_ulid_destroy(const char* ulid);
+TLUlid* tl_ulid_generate(void);
+TLUlid* tl_ulid_wrap(const char*);
+void tl_ulid_destroy(TLUlid* ulid);
+b8 tl_ulid_equals(TLUlid* first, TLUlid* second);
 
 #endif // TELEIOS_ULID

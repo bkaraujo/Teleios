@@ -5,7 +5,7 @@ u64 tl_string_length(const char* string) {
     return strlen(string);
 }
 
-b8 tl_string_equal(const char* str0, const char* str1) {
+b8 tl_string_equals(const char* str0, const char* str1) {
     return strcmp(str0, str1) == 0;
 }
 

@@ -4,7 +4,7 @@
 #include "teleios/types.h"
 
 u64 tl_string_length(const char* string);
-b8 tl_string_equal(const char* str0, const char* str1);
+b8 tl_string_equals(const char* str0, const char* str1);
 b8 tl_string_begin_with(const char* string, const char* desired);
 b8 tl_string_end_with(const char* string, const char* desired);
 const char* tl_string_join(const char* string, const char* appended);
