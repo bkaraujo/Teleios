@@ -65,21 +65,8 @@ TLAPI b8 tl_engine_run(void) {
     TLDPUSH;
     u32 fps = 0;
     
-    const char* entity ;
-    {
-        entity = tl_ecs_entity_create();
-        tl_ecs_entity_attach(entity, TLNameComponentID);
-        TLNameComponent* nc = (TLNameComponent*) tl_ecs_entity_component(entity, TLNameComponentID);
-        nc->name = "My Component";
-    } 
-    
     TLTimer timer = { 0 }; 
     tl_chrono_timer_start(&timer);
-    
-    {
-        TLNameComponent* nc = (TLNameComponent*) tl_ecs_entity_component(entity, TLNameComponentID);
-        TLINFO("TLNameComponent->name = %s", nc->name);
-    }
 
     TLShaderProgram* shader = NULL;
     {
@@ -151,9 +138,6 @@ TLAPI b8 tl_engine_run(void) {
     tl_platform_window_hide();
     tl_graphics_shader_destroy(shader);
     tl_graphics_geometry_destroy(geometry);
-    
-    tl_ecs_entity_detach(entity, TLNameComponentID);
-    tl_ecs_entity_destroy(entity);
 
     TLDPOP;
     return true;

@@ -119,8 +119,19 @@ void tl_map_destroy(TLMap* map, b8 (*purger)(void*)) {
 
     if (map == NULL) TLDWRE("TLMap is NULL");
     if (purger == NULL) TLDWRE("purger is NULL");
-    
-    tl_map_destroy(map, purger);
+
+    if (map->capacity == 0) {
+        tl_memory_free(TL_MEMORY_CONTAINER_MAP, sizeof(TLMap), (void*) map);
+        TLDRE;
+    }
+
+    for(u16 i = 0 ; i < map->length ; ++i) {
+        tl_list_destroy(map->entries[i].values, purger);
+        map->entries[i].values = NULL;
+    }
+
+    tl_memory_free(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry) * map->capacity, (void*) map->entries);
+    tl_memory_free(TL_MEMORY_CONTAINER_MAP, sizeof(TLMap), (void*) map);    
 
     TLDRE;
 }
