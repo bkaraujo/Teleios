@@ -10,7 +10,7 @@ static ivec2s mouse_pos;
 static i8 mouse_scroll;
 
 static TLMessageChain tl_input_handle(const u16 code, const TLMessage* message) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     switch (code) {
         case TL_MESSAGE_INPUT_KEY_PRESSED: key_curr[message->u16[0]] = true; break;
         case TL_MESSAGE_INPUT_KEY_RELEASED: key_curr[message->u16[0]] = false; break;
@@ -19,13 +19,13 @@ static TLMessageChain tl_input_handle(const u16 code, const TLMessage* message) 
         case TL_MESSAGE_INPUT_MOUSE_WHELLED: mouse_scroll = message->i8[0]; break;
         case TL_MESSAGE_INPUT_MOUSE_MOVED: mouse_pos.x = message->i32[0]; mouse_pos.y = message->i32[1]; break;
     }
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 
     return TL_MESSAGE_AVALIABLE;
 }
 
 b8 tl_input_initialize(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     tl_memory_zero((void*)key_curr, sizeof(key_curr));
     tl_memory_zero((void*)key_prev, sizeof(key_curr));
 
@@ -43,15 +43,15 @@ b8 tl_input_initialize(void) {
     mouse_scroll = 0;
     tl_memory_zero((void*)&mouse_pos, sizeof(mouse_pos));
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return true;
 }
 
 void tl_input_update(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     tl_memory_copy((void*)key_curr, sizeof(key_curr), (void*)key_prev);
     tl_memory_copy((void*)mouse_curr, sizeof(mouse_curr), (void*)mouse_prev);
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 b8 tl_input_key_active(const TLInputKey key) { return key_curr[key]; }
@@ -65,13 +65,13 @@ b8 tl_input_mouse_pressed(const TLInputMouse button) { return !mouse_prev[button
 b8 tl_input_mouse_released(const TLInputMouse button) { return mouse_prev[button] && !mouse_curr[button]; }
 
 b8 tl_input_terminate(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     mouse_scroll = 0;
     tl_memory_zero((void*)key_curr, sizeof(key_curr));
     tl_memory_zero((void*)key_prev, sizeof(key_curr));
     tl_memory_zero((void*)mouse_curr, sizeof(mouse_curr));
     tl_memory_zero((void*)key_prev, sizeof(mouse_curr));
     tl_memory_zero((void*)&mouse_pos, sizeof(mouse_pos));
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return true;
 }

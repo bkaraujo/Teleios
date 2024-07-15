@@ -9,7 +9,7 @@ static u64 frame_overflow = 0;
 static u64 frame_counter = -1;
 
 static TLMessageChain tl_engine_messaging(const u16 code, const TLMessage* message) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     switch (code) {
         case TL_MESSAGE_APPLICATION_PAUSE : engine_state->paused = true; break;
@@ -17,7 +17,7 @@ static TLMessageChain tl_engine_messaging(const u16 code, const TLMessage* messa
         case TL_MESSAGE_APPLICATION_QUIT  : engine_state->running = false; break;
     }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return TL_MESSAGE_AVALIABLE;
 }
 
@@ -33,36 +33,36 @@ TLAPI b8 tl_engine_pre_initialize(void) {
 }
 
 TLAPI b8 tl_engine_initialize(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
-    if (!tl_memory_initialize()) { TLERROR("Failed to initialize: Memory Manager"); TLDIAGNOSTICS_POP; return false; }
-    if (!tl_messaging_initialize()) { TLERROR("Failed to initialize: Messaging Manager"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_memory_initialize()) { TLERROR("Failed to initialize: Memory Manager"); TLDPOP; return false; }
+    if (!tl_messaging_initialize()) { TLERROR("Failed to initialize: Messaging Manager"); TLDPOP; return false; }
 
     tl_messaging_subscribe(TL_MESSAGE_ALL_KNOWN, tl_engine_messaging);
 
-    if (!tl_input_initialize()) { TLERROR("Failed to initialize: Input Manager"); TLDIAGNOSTICS_POP; return false; }
-    if (!tl_audio_initialize()) { TLERROR("Failed to initialize: Audio Manager"); TLDIAGNOSTICS_POP; return false; }
-    if (!tl_ecs_initialize()) { TLERROR("Failed to initialize: ECS System"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_input_initialize()) { TLERROR("Failed to initialize: Input Manager"); TLDPOP; return false; }
+    if (!tl_audio_initialize()) { TLERROR("Failed to initialize: Audio Manager"); TLDPOP; return false; }
+    if (!tl_ecs_initialize()) { TLERROR("Failed to initialize: ECS System"); TLDPOP; return false; }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return true;
 }
 
 TLAPI b8 tl_engine_configure(TLAppSpecification* specification) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     
     engine_state->rootfs = tl_memory_alloc(TL_MEMORY_RESOURCE, tl_string_length(specification->rootfs));
     tl_memory_copy((void*)specification->rootfs, tl_string_length(specification->rootfs), (void*)engine_state->rootfs);
 
     tl_platform_window_create(&specification->window);
-    if (!tl_graphics_initialize(&specification->graphics)) { TLERROR("Failed to initialize: Graphics Manager"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_graphics_initialize(&specification->graphics)) { TLERROR("Failed to initialize: Graphics Manager"); TLDPOP; return false; }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return true;
 }
 
 TLAPI b8 tl_engine_run(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     u32 fps = 0;
     
     const char* entity ;
@@ -85,7 +85,7 @@ TLAPI b8 tl_engine_run(void) {
     {
         const char* paths[] = { "/shader/hello.vert", "/shader/hello.frag" };
         shader = tl_resource_shader_program("hello-triangle", 2, paths);
-        if (shader == NULL) { TLERROR("Failed to create TLShaderProgram"); TLDIAGNOSTICS_POP; return false; }
+        if (shader == NULL) { TLERROR("Failed to create TLShaderProgram"); TLDPOP; return false; }
     }
 
     TLGeometry* geometry = NULL;
@@ -151,25 +151,28 @@ TLAPI b8 tl_engine_run(void) {
     tl_platform_window_hide();
     tl_graphics_shader_destroy(shader);
     tl_graphics_geometry_destroy(geometry);
+    
+    tl_ecs_entity_detach(entity, TLNameComponentID);
+    tl_ecs_entity_destroy(entity);
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return true;
 }
 
 TLAPI b8 tl_engine_terminate(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     tl_memory_free(TL_MEMORY_RESOURCE, tl_string_length(engine_state->rootfs), (void*) engine_state->rootfs);
 
-    if (!tl_graphics_terminate()) { TLERROR("Failed to terminate: Graphics Manager"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_graphics_terminate()) { TLERROR("Failed to terminate: Graphics Manager"); TLDPOP; return false; }
 
     tl_platform_window_destroy();
 
-    if (!tl_ecs_terminate()) { TLERROR("Failed to terminate: ECS System"); TLDIAGNOSTICS_POP; return false; }
-    if (!tl_audio_terminate()) { TLERROR("Failed to terminate: Audio Manager"); TLDIAGNOSTICS_POP; return false; }
-    if (!tl_input_terminate()) { TLERROR("Failed to terminate: Input Manager"); TLDIAGNOSTICS_POP; return false; }
-    if (!tl_messaging_terminate()) { TLERROR("Failed to terminate: Messaging Manager"); TLDIAGNOSTICS_POP; return false; }
-    if (!tl_memory_terminate()) { TLERROR("Failed to terminate: Memory Manager"); TLDIAGNOSTICS_POP; return false; }
+    if (!tl_ecs_terminate()) { TLERROR("Failed to terminate: ECS System"); TLDPOP; return false; }
+    if (!tl_audio_terminate()) { TLERROR("Failed to terminate: Audio Manager"); TLDPOP; return false; }
+    if (!tl_input_terminate()) { TLERROR("Failed to terminate: Input Manager"); TLDPOP; return false; }
+    if (!tl_messaging_terminate()) { TLERROR("Failed to terminate: Messaging Manager"); TLDPOP; return false; }
+    if (!tl_memory_terminate()) { TLERROR("Failed to terminate: Memory Manager"); TLDPOP; return false; }
     if (!tl_diagnostic_terminate()) { TLERROR("Failed to terminate: Diagnostics"); return false; }
     if (!tl_platform_terminate()) { TLERROR("Failed to terminate: Platform Abstraction"); return false; }
 

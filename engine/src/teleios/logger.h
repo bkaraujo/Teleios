@@ -7,7 +7,7 @@
 
 TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenumber, const char* message, ...);
 
-#define TLFATAL(message, ...) { tl_logger_console(TL_LOG_LEVEL_FATAL, __FILE__, __LINE__, message, ##__VA_ARGS__); TLDIAGNOSTICS_PUSH; TLDIAGNOSTICS_PRINT; exit(99); }
+#define TLFATAL(message, ...) { tl_logger_console(TL_LOG_LEVEL_FATAL, __FILE__, __LINE__, message, ##__VA_ARGS__); TLDPUSH; TLDPRINT; exit(99); }
 #define TLERROR(message, ...) tl_logger_console(TL_LOG_LEVEL_ERROR, __FILE__, __LINE__, message, ##__VA_ARGS__)
 #define TLWARN(message, ...) tl_logger_console(TL_LOG_LEVEL_WARN, __FILE__, __LINE__, message, ##__VA_ARGS__)
 #define TLINFO(message, ...) tl_logger_console(TL_LOG_LEVEL_INFO, __FILE__, __LINE__, message, ##__VA_ARGS__)

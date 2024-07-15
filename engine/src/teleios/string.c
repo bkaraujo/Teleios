@@ -10,7 +10,7 @@ b8 tl_string_equals(const char* str0, const char* str1) {
 }
 
 b8 tl_string_begin_with(const char* string, const char* desired) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     
     u64 len1 = tl_string_length(string);
     u64 len2 = tl_string_length(desired);
@@ -18,17 +18,17 @@ b8 tl_string_begin_with(const char* string, const char* desired) {
 
     for (u32 i = 0 ; i < len2; ++i) {
         if (string[i] != desired[i]) {
-            TLDIAGNOSTICS_POP;
+            TLDPOP;
             return false;
         }
     }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return true;
 }
 
 b8 tl_string_end_with(const char* string, const char* desired) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     
     u64 len1 = tl_string_length(string);
     u64 len2 = tl_string_length(desired);
@@ -37,17 +37,17 @@ b8 tl_string_end_with(const char* string, const char* desired) {
     u32 index = len1 - len2;
     for (u32 i = 0 ; i < len2; ++i) {
         if (string[index++] != desired[i]) {
-            TLDIAGNOSTICS_POP;
+            TLDPOP;
             return false;
         }
     }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return true;
 }
 
 const char* tl_string_join(const char* string, const char* appended) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     u64 len1 = tl_string_length(string);
     u64 len2 = tl_string_length(appended);
@@ -56,45 +56,45 @@ const char* tl_string_join(const char* string, const char* appended) {
     strcat(joined, string);
     strcat(joined, appended);
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return joined;
 }
 
 void tl_string_free(const char* string) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     
     u64 lentgh = tl_string_length(string);
     tl_memory_free(TL_MEMORY_STRING, lentgh, (void*)string);
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 const char* tl_string_clone(const char* string) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     
     u64 length = tl_string_length(string);
     void* cloned = tl_memory_alloc(TL_MEMORY_STRING, length);
     tl_memory_copy((void*) string, length, cloned);
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return cloned;
 }
 
 i32 tl_string_index_of(const char* str, char c) {
-    TLDIAGNOSTICS_PUSH;
-    if (str == NULL) { TLDIAGNOSTICS_POP; return -1; }
+    TLDPUSH;
+    if (str == NULL) { TLDPOP; return -1; }
 
     u64 length = tl_string_length(str);
-    if (length == 0) { TLDIAGNOSTICS_POP; return -1; }
-    if (str[0] == '\0') { TLDIAGNOSTICS_POP; return -1; }
+    if (length == 0) { TLDPOP; return -1; }
+    if (str[0] == '\0') { TLDPOP; return -1; }
     
     for (i32 i = 0; i < length; ++i) {
         if (str[i] == c) {
-            TLDIAGNOSTICS_POP;
+            TLDPOP;
             return i;
         }
     }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return -1;
 }

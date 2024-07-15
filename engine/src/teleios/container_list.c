@@ -1,17 +1,17 @@
 #include "teleios/teleios.h"
 
 TLList* tl_list_create(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
-    TLList* list = tl_memory_alloc(TL_MEMORY_CONTAINER, sizeof(TLList));
+    TLList* list = tl_memory_alloc(TL_MEMORY_CONTAINER_LIST, sizeof(TLList));
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return list;
 }
 
 void  tl_list_add(TLList* list, void* payload) {
-    TLDIAGNOSTICS_PUSH;
-    if (list == NULL) { TLWARN("List is NULl"); TLDIAGNOSTICS_POP; return; }
+    TLDPUSH;
+    if (list == NULL) { TLWARN("List is NULl"); TLDPOP; return; }
 
     TLListNode* node = tl_memory_alloc(TL_MEMORY_CONTAINER_NODE, sizeof(TLListNode));
     node->payload = payload;
@@ -23,7 +23,7 @@ void  tl_list_add(TLList* list, void* payload) {
         list->tail = node;
         list->length++;
     
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return;
     }
 
@@ -32,12 +32,12 @@ void  tl_list_add(TLList* list, void* payload) {
     list->tail = node;
     list->length++;
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 void tl_list_rem(TLList* list, void* payload) {
-    TLDIAGNOSTICS_PUSH;
-    if (list == NULL) { TLWARN("List is NULl"); TLDIAGNOSTICS_POP; return; }
+    TLDPUSH;
+    if (list == NULL) { TLWARN("List is NULl"); TLDPOP; return; }
  
     TLListNode* node = list->head;
     while (node != NULL) {
@@ -52,7 +52,7 @@ void tl_list_rem(TLList* list, void* payload) {
                 list->tail = NULL;
             }
 
-            TLDIAGNOSTICS_POP;
+            TLDPOP;
             return;
         }
 
@@ -60,12 +60,12 @@ void tl_list_rem(TLList* list, void* payload) {
     }
 
     TLWARN("Payload %p not found", payload);
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 void  tl_list_destroy(TLList* list, b8(*purger)(void*)) {
-    TLDIAGNOSTICS_PUSH;
-    if (list == NULL) { TLWARN("List is NULl"); TLDIAGNOSTICS_POP; return; }
+    TLDPUSH;
+    if (list == NULL) { TLWARN("List is NULl"); TLDPOP; return; }
 
     if (list->length > 0) {
         if (purger == NULL) { TLFATAL("Impossible to destroy a populated list without a purger function"); }
@@ -78,8 +78,8 @@ void  tl_list_destroy(TLList* list, b8(*purger)(void*)) {
         }
     }
  
-    tl_memory_free(TL_MEMORY_CONTAINER, sizeof(TLList), list);
-    TLDIAGNOSTICS_POP;
+    tl_memory_free(TL_MEMORY_CONTAINER_LIST, sizeof(TLList), list);
+    TLDPOP;
 }
 
 b8 tl_list_purger_noop(void* pointer) {

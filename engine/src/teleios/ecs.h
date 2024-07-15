@@ -5,23 +5,22 @@
 
 b8 tl_ecs_initialize(void);
 
-#define TLNameComponentID 1
+#define TLNameComponentID "01J2T24PCWQ3166J2GR9NWAPJM"
 
 typedef struct {
-    const u16 type;
-    const char* owner;
+    TLUlid* handle;
+    TLUlid* owner;
 
     const char* name;
 } TLNameComponent;
 
-const char* tl_ecs_entity_create(void);
-void tl_ecs_entity_attach(const char* entity, u16 component_id);
-void tl_ecs_entity_detach(const char* entity, u16 component_id);
-void* tl_ecs_entity_component(const char* entity, u16 component_id);
-TLList* tl_ecs_entity_components(const char* entity);
-void tl_ecs_entity_destroy(const char* entity);
-
-TLList* tl_ecs_components(u16 component_id);
+TLUlid* tl_ecs_entity_create(void);
+b8 tl_ecs_entity_exists(TLUlid* entity);
+void tl_ecs_entity_attach(TLUlid* entity, const char* component);
+void tl_ecs_entity_detach(TLUlid* entity, const char* component);
+void* tl_ecs_entity_component(TLUlid* entity, const char* component);
+TLList* tl_ecs_entity_components(TLUlid* entity);
+void tl_ecs_entity_destroy(TLUlid* entity);
 
 b8 tl_ecs_terminate(void);
 

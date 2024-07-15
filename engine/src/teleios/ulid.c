@@ -16,7 +16,7 @@ typedef struct  {
 TLUlidGenerator generator = { 0 };
 
 void tl_ulid_encode(char str[27], const unsigned char ulid[16]) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     static const char set[256] = {
         0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
         0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46,
@@ -78,11 +78,11 @@ void tl_ulid_encode(char str[27], const unsigned char ulid[16]) {
     str[24] = set[(ulid[14] << 3 | ulid[15] >> 5) & 0x1f];
     str[25] = set[ ulid[15] >> 0];
     str[26] = 0;
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 i32 tl_ulid_decode(unsigned char ulid[16], const char *s) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     static const signed char v[] = {
           -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
           -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
@@ -119,13 +119,13 @@ i32 tl_ulid_decode(unsigned char ulid[16], const char *s) {
     };
     
     if (v[(int)s[0]] > 7) {
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 1;
     }
     
     for (int i = 0; i < 26; i++) {
         if (v[(int)s[i]] == -1) {
-            TLDIAGNOSTICS_POP;
+            TLDPOP;
             return 2;
         }
     }
@@ -147,24 +147,24 @@ i32 tl_ulid_decode(unsigned char ulid[16], const char *s) {
     ulid[14] = v[(int)s[22]] << 7 | v[(int)s[23]] << 2 | v[(int)s[24]] >> 3;
     ulid[15] = v[(int)s[24]] << 5 | v[(int)s[25]] >> 0;
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return 0;
 }
 
 TLUlid* tl_ulid_wrap(const char* desired) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     
     TLUlid* ulid = tl_memory_alloc(TL_MEMORY_ULID, sizeof(TLUlid));
     if (tl_string_length(desired) != 27) TLFATAL("String length missmatch, expected 27 got %u", tl_string_length(desired));
 
     tl_memory_copy((void*)desired, sizeof(TLUlid), (void*)&ulid);
     
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return ulid;
 }
 
 TLUlid* tl_ulid_generate(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     // ===================================
     // Initialize the TLUlidGenerator
@@ -254,21 +254,21 @@ TLUlid* tl_ulid_generate(void) {
     TLUlid* ulid = (TLUlid*) tl_memory_alloc(TL_MEMORY_ULID, sizeof(TLUlid));
     tl_ulid_encode(ulid->ulid, generator.last);
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return ulid;
 }
 
 b8 tl_ulid_equals(TLUlid* first, TLUlid* second) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     
     b8 equals = tl_string_equals(first->ulid, second->ulid);
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return equals;
 }
 
 void tl_ulid_destroy(TLUlid* ulid) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     tl_memory_free(TL_MEMORY_ULID, sizeof(TLUlid), (void*) ulid);
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }

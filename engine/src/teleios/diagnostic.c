@@ -61,7 +61,7 @@ void tl_diagnostics_print(void) {
 }
 
 b8 tl_diagnostic_terminate(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     TLTRACE("Diagnostic stack max depth: %d", max);
     if (registry == NULL) { return true; }
     tl_platform_memory_hfree(registry);

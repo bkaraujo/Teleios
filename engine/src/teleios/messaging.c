@@ -4,7 +4,7 @@
 static TLList* of_codes;
 
 b8 tl_messaging_initialize(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     of_codes = tl_list_create();
     for (int i = 0; i < TL_MESSAGE_ALL_KNOWN; ++i) {
@@ -12,12 +12,12 @@ b8 tl_messaging_initialize(void) {
         tl_list_add(of_codes, created);
     }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return true;
 }
 
 void tl_messaging_subscribe(const u16 code, TLMessageHandler handler) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     // =================================================================
     // Ensure the handler function exists
@@ -34,7 +34,7 @@ void tl_messaging_subscribe(const u16 code, TLMessageHandler handler) {
         for (int i = 0; i < code; ++i) of_listener = of_listener->next;
         tl_list_add(of_listener->payload, (void*)handler);
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return;
     }
     // =================================================================
@@ -46,11 +46,11 @@ void tl_messaging_subscribe(const u16 code, TLMessageHandler handler) {
         of_listener = of_listener->next;
     }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 void tl_messaging_post(const u16 code, const TLMessage* message) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     // =================================================================
     // Ensure code is within capacity
@@ -72,11 +72,11 @@ void tl_messaging_post(const u16 code, const TLMessage* message) {
         node = node->next;
     }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 b8 tl_messaging_terminate(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     if (of_codes != NULL) {
         TLListNode* node = of_codes->head;
@@ -88,6 +88,6 @@ b8 tl_messaging_terminate(void) {
         tl_list_destroy(of_codes, tl_list_purger_noop);
     }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return true;
 }

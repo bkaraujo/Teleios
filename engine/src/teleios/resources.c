@@ -5,18 +5,18 @@
 #include "stb/vorbis.h"
 
 TLAudioBuffer* tl_resource_audio(const char* path) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
-    if (path == NULL) { TLWARN("path is NULL"); TLDIAGNOSTICS_POP; return NULL; }
+    if (path == NULL) { TLWARN("path is NULL"); TLDPOP; return NULL; }
     const char* absolute = tl_string_join(engine_state->rootfs, path);
     
     TLFile* file = tl_filesystem_open(absolute);
-    if (file == NULL) { TLWARN("Failed to open %s", absolute); tl_string_free(absolute); TLDIAGNOSTICS_POP; return NULL; }
-    if (file->size == 0) { TLWARN("Unexpected file %s size %d", absolute, file->size); tl_string_free(absolute); tl_filesystem_close(file); TLDIAGNOSTICS_POP; return NULL; }
+    if (file == NULL) { TLWARN("Failed to open %s", absolute); tl_string_free(absolute); TLDPOP; return NULL; }
+    if (file->size == 0) { TLWARN("Unexpected file %s size %d", absolute, file->size); tl_string_free(absolute); tl_filesystem_close(file); TLDPOP; return NULL; }
     tl_string_free(absolute); absolute = NULL;
     
     TLAudioBuffer* buffer = tl_memory_alloc(TL_MEMORY_AUDIO, sizeof(TLAudioBuffer));
-    if (buffer == NULL) { TLWARN("Failed to allocate TLAudioBuffer"); tl_filesystem_close(file); TLDIAGNOSTICS_POP; return NULL; }
+    if (buffer == NULL) { TLWARN("Failed to allocate TLAudioBuffer"); tl_filesystem_close(file); TLDPOP; return NULL; }
     alGenBuffers(1, &buffer->handle);
     buffer->path = tl_string_clone(file->path);
 
@@ -35,25 +35,25 @@ TLAudioBuffer* tl_resource_audio(const char* path) {
         TLERROR("Failed upload audio to buffer. %s", alGetString(al_error));
     }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return buffer;
 }
 
 TLShaderSource* tl_resource_shader_source(const char* path) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
-    if (path == NULL) { TLWARN("path is NULL"); TLDIAGNOSTICS_POP; return NULL; }
+    if (path == NULL) { TLWARN("path is NULL"); TLDPOP; return NULL; }
     const char* absolute = tl_string_join(engine_state->rootfs, path);
     TLFile* file = tl_filesystem_open(absolute);
-    if (file == NULL) { TLWARN("Failed to open %s", absolute); tl_string_free(absolute); TLDIAGNOSTICS_POP; return NULL; }
-    if (file->size == 0) { TLWARN("Unexpected file %s size %d", absolute, file->size); tl_string_free(absolute); tl_filesystem_close(file); TLDIAGNOSTICS_POP; return NULL; }
+    if (file == NULL) { TLWARN("Failed to open %s", absolute); tl_string_free(absolute); TLDPOP; return NULL; }
+    if (file->size == 0) { TLWARN("Unexpected file %s size %d", absolute, file->size); tl_string_free(absolute); tl_filesystem_close(file); TLDPOP; return NULL; }
     tl_string_free(absolute); absolute = NULL;
 
     tl_filesystem_read(file);
-    if (file->payload == NULL) { TLWARN("Failed to load content %s", path); tl_filesystem_close(file); TLDIAGNOSTICS_POP; return NULL; }
+    if (file->payload == NULL) { TLWARN("Failed to load content %s", path); tl_filesystem_close(file); TLDPOP; return NULL; }
 
     TLShaderSource* source = tl_memory_alloc(TL_MEMORY_GRAPHICS, sizeof(TLShaderSource));
-    if (source == NULL) { TLWARN("Failed allocate TLShaderSource"); tl_filesystem_close(file); TLDIAGNOSTICS_POP; return NULL; }
+    if (source == NULL) { TLWARN("Failed allocate TLShaderSource"); tl_filesystem_close(file); TLDPOP; return NULL; }
 
     source->name = path;
     source->stage = U32MAX;
@@ -63,7 +63,7 @@ TLShaderSource* tl_resource_shader_source(const char* path) {
         
         tl_filesystem_close(file);
         tl_memory_free(TL_MEMORY_GRAPHICS, sizeof(TLShaderSource), source);
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return NULL;
     }
 
@@ -72,12 +72,12 @@ TLShaderSource* tl_resource_shader_source(const char* path) {
     tl_memory_copy(file->payload, file->size, (void*)source->script);
     tl_filesystem_close(file);
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return source;
 }
 
 TLShaderProgram* tl_resource_shader_program(const char* name, u8 length, const char** path) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     if (length == 0) { TLWARN("Invalid array length"); return NULL; }
 
     TLShaderSource** sources = tl_memory_alloc(TL_MEMORY_GRAPHICS, length * sizeof(TLShaderSource));
@@ -86,7 +86,7 @@ TLShaderProgram* tl_resource_shader_program(const char* name, u8 length, const c
         if (sources[i] == NULL) {
             tl_memory_free(TL_MEMORY_GRAPHICS, length * sizeof(TLShaderSource), sources);
             TLWARN("Failed to read shader source %d", i);
-            TLDIAGNOSTICS_POP;
+            TLDPOP;
             return NULL;
         }
     }
@@ -103,8 +103,8 @@ TLShaderProgram* tl_resource_shader_program(const char* name, u8 length, const c
     }
     
     tl_memory_free(TL_MEMORY_GRAPHICS, length * sizeof(TLShaderSource), sources);
-    if (shader == NULL) { TLERROR("Failed to create shader program");  TLDIAGNOSTICS_POP; return NULL; }
+    if (shader == NULL) { TLERROR("Failed to create shader program");  TLDPOP; return NULL; }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return shader;
 }

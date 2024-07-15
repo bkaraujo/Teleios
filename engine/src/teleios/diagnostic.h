@@ -2,12 +2,13 @@
 #define TELEIOS_DIAGNOSTIC
 
 #include "teleios/types.h"
+#include "teleios/logger.h"
 
 b8 tl_diagnostic_initialize(void);
 b8 tl_diagnostic_terminate(void);
 
 #if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
-#define TLDIAGNOSTICS_PUSH \
+#define TLDPUSH \
 { \
     TLDiagnostic diagnostic; \
     diagnostic.filename = __FILE__; \
@@ -17,17 +18,32 @@ b8 tl_diagnostic_terminate(void);
 }
 
 
-#define TLDIAGNOSTICS_POP tl_diagnostics_pop()
-#define TLDIAGNOSTICS_PRINT tl_diagnostics_print()
+#define TLDPOP tl_diagnostics_pop()
+#define TLDPRINT tl_diagnostics_print()
 #else
-#define TLDIAGNOSTICS_PUSH
-#define TLDIAGNOSTICS_POP
-#define TLDIAGNOSTICS_PRINT
+#define TLDPUSH
+#define TLDPOP
+#define TLDPRINT
 #endif
 
 void tl_diagnostics_push(const TLDiagnostic* diagnostic);
 void tl_diagnostics_pop(void);
 void tl_diagnostics_print(void);
 TLDiagnostic* tl_diagnostics_peek(void);
+
+#define TLDRE { TLDPOP; return;  }
+#define TLDRV(value) { TLDPOP; return value; }
+
+#define TLDERE(message) { TLERROR(message); TLDRE; }
+#define TLDWRE(message) { TLWARN(message); TLDRE; }
+#define TLDIRE(message) { TLINFO(message); TLDRE; }
+#define TLDDRE(message) { TLDEBUG(message); TLDRE; }
+#define TLDTRE(message) { TLTRACE(message); TLDRE; }
+
+#define TLDERV(message, value) { TLERROR(message); TLDRV(value); }
+#define TLDWRV(message, value) { TLWARN (message); TLDRV(value); }
+#define TLDIRV(message, value) { TLINFO (message); TLDRV(value); }
+#define TLDDRV(message, value) { TLDEBUG(message); TLDRV(value); }
+#define TLDTRV(message, value) { TLTRACE(message); TLDRV(value); }
 
 #endif // TELEIOS_DIAGNOSTIC

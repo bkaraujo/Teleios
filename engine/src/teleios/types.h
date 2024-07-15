@@ -202,7 +202,8 @@ typedef union {
 // ############################################################################
 typedef enum {
     TL_MEMORY_ULID,
-    TL_MEMORY_CONTAINER,
+    TL_MEMORY_CONTAINER_LIST,
+    TL_MEMORY_CONTAINER_MAP,
     TL_MEMORY_CONTAINER_NODE,
     TL_MEMORY_GRAPHICS,
     TL_MEMORY_FILESYSTEM,
@@ -230,12 +231,17 @@ typedef struct {
     u32 length;
 } TLList;
 
-typedef TLList TLMap;
-
 typedef struct {
     TLUlid* handle;
     TLList* values;
 } TLMapEntry;
+
+typedef struct {
+    b8 (*comparator)(void* first, void* second);
+    TLMapEntry* entries;
+    u16 length;
+    u16 capacity;
+} TLMap;
 // ############################################################################
 //
 //                                DIAGNOSTIC TYPES

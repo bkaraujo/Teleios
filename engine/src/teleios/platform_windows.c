@@ -76,14 +76,14 @@ i32 tl_platform_entropy(void* buffer, i32 length) {
 //
 // #####################################################################################################
 TLFile* tl_filesystem_open(const char* path) {
-    TLDIAGNOSTICS_PUSH;
-    if (path == NULL) { TLDIAGNOSTICS_POP; return NULL; }
+    TLDPUSH;
+    if (path == NULL) { TLDPOP; return NULL; }
 
     WIN32_FILE_ATTRIBUTE_DATA attributes;
     if(!GetFileAttributesEx(path, GetFileExInfoStandard, &attributes)){
         DWORD dwError = GetLastError(); 
         TLERROR("Failed to GetFileAttributesEx. 0x%x", dwError);
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return NULL;
     }
 
@@ -95,16 +95,16 @@ TLFile* tl_filesystem_open(const char* path) {
     file_size.HighPart = attributes.nFileSizeHigh;
     *((u64*)&file->size) = file_size.QuadPart;
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return file;
 }
 
 void tl_filesystem_read(TLFile* file) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
-    if (file == NULL) { TLWARN("TLFile is NULL"); TLDIAGNOSTICS_POP; return; }
-    if (file->path == NULL) { TLWARN("TLFile->path is NULL"); TLDIAGNOSTICS_POP; return; }
-    if (file->size == 0) { TLWARN("TLFile->size is zero"); TLDIAGNOSTICS_POP; return; }
+    if (file == NULL) { TLWARN("TLFile is NULL"); TLDPOP; return; }
+    if (file->path == NULL) { TLWARN("TLFile->path is NULL"); TLDPOP; return; }
+    if (file->size == 0) { TLWARN("TLFile->size is zero"); TLDPOP; return; }
 
     file->handle = CreateFile(
         file->path, 
@@ -119,7 +119,7 @@ void tl_filesystem_read(TLFile* file) {
     if (file->handle == NULL || file->handle == INVALID_HANDLE_VALUE) {
         TLWARN("Failed to open file: %s", file->path);
         file->handle = NULL;
-        TLDIAGNOSTICS_POP; 
+        TLDPOP; 
         return;
     }
 
@@ -127,7 +127,7 @@ void tl_filesystem_read(TLFile* file) {
     if (dwPtr == INVALID_SET_FILE_POINTER) { 
         DWORD dwError = GetLastError(); 
         TLERROR("Failed to SetFilePointer. 0x%x", dwError);
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return;
     }
 
@@ -136,19 +136,19 @@ void tl_filesystem_read(TLFile* file) {
     ReadFile(file->handle, (void*)file->payload, file->size, &dwBytesRead, 0);
     if (dwBytesRead != file->size) { TLWARN("Read less bytes then expected: %s", file->path); }
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 void tl_filesystem_close(TLFile* file) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
-    if (file == NULL) { TLDIAGNOSTICS_POP; return; }
+    if (file == NULL) { TLDPOP; return; }
     if (file->handle != NULL) { CloseHandle(file->handle); }
     if (file->payload != NULL) { tl_memory_free(TL_MEMORY_FILESYSTEM, file->size, (void*)file->payload); }
     tl_string_free(file->path);
     tl_memory_free(TL_MEMORY_FILESYSTEM, sizeof(TLFile), file);
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 // #####################################################################################################
 //
@@ -159,8 +159,8 @@ static LARGE_INTEGER e_frequency;
 static SYSTEMTIME e_unix_epoch;
 
 TLAPI void tl_chrono_time_now(TLTime* time) {
-    TLDIAGNOSTICS_PUSH;
-    if (time == NULL) { TLDIAGNOSTICS_POP; return; }
+    TLDPUSH;
+    if (time == NULL) { TLDPOP; return; }
 
     SYSTEMTIME st; GetLocalTime(&st);
 
@@ -171,63 +171,63 @@ TLAPI void tl_chrono_time_now(TLTime* time) {
     time->minute = (u8)st.wMinute;
     time->seconds = (u8)st.wSecond;
     time->millis = st.wMilliseconds;
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 TLAPI u64 tl_chrono_time_epoch_micros(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     FILETIME ft; GetSystemTimeAsFileTime(&ft);
     u64 micros = ((u64)ft.dwHighDateTime << 32 | (u64)ft.dwLowDateTime <<  0) / 10 - 11644473600000000ULL;
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return micros;
 }
 
 TLAPI u64 tl_chrono_time_epoch_millis(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     u64 millis = tl_chrono_time_epoch_micros() / 1000;
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     return millis;
 }
 
 TLAPI void tl_chrono_timer_start(TLTimer* timer) {
-    TLDIAGNOSTICS_PUSH;
-    if (timer == NULL) { TLDIAGNOSTICS_POP; return; }
+    TLDPUSH;
+    if (timer == NULL) { TLDPOP; return; }
     LARGE_INTEGER now; QueryPerformanceCounter(&now);
     timer->start = now.QuadPart;
     timer->update = 0;
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 TLAPI void tl_chrono_timer_update(TLTimer* timer) {
-    TLDIAGNOSTICS_PUSH;
-    if (timer == NULL) { TLDIAGNOSTICS_POP; return; }
+    TLDPUSH;
+    if (timer == NULL) { TLDPOP; return; }
     LARGE_INTEGER now; QueryPerformanceCounter(&now);
     timer->update = now.QuadPart;
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 TLAPI u64 tl_chrono_timer_micros(TLTimer* timer) {
-    TLDIAGNOSTICS_PUSH;
-    if (timer == NULL) { TLDIAGNOSTICS_POP; return 0; }
+    TLDPUSH;
+    if (timer == NULL) { TLDPOP; return 0; }
     u64 elapsed = timer->update - timer->start;
     u64 elapsedMicros = (elapsed * 1000000) / e_frequency.QuadPart; // 100-nanos to micros
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return elapsedMicros;
 }
 
 TLAPI f64 tl_chrono_timer_millis(TLTimer* timer) {
-    TLDIAGNOSTICS_PUSH;
-    if (timer == NULL) { TLDIAGNOSTICS_POP; return 0.0f; }
+    TLDPUSH;
+    if (timer == NULL) { TLDPOP; return 0.0f; }
     f64 elaspsedMillis = tl_chrono_timer_micros(timer) / 1000.0f;
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return elaspsedMillis;
 }
 
 TLAPI f64 tl_chrono_timer_seconds(TLTimer* timer) {
-    TLDIAGNOSTICS_PUSH;
-    if (timer == NULL) { TLDIAGNOSTICS_POP; return 0.0f; }
+    TLDPUSH;
+    if (timer == NULL) { TLDPOP; return 0.0f; }
     f64 elaspsedSeconds = tl_chrono_timer_millis(timer) / 1000.0f;
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return elaspsedSeconds;
 }
 // #####################################################################################################
@@ -242,7 +242,7 @@ void* tl_platform_window_handle(void) {
 }
 
 void tl_platform_window_create(TLWindowCreateInfo* info) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
     // =================================================================
     // Window styles
     // =================================================================
@@ -284,40 +284,40 @@ void tl_platform_window_create(TLWindowCreateInfo* info) {
     // Break if failed to create window
     // =================================================================
     if (e_hwnd == 0) TLFATAL("Window creation failed!");
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 void tl_platform_window_destroy() {
-    TLDIAGNOSTICS_PUSH;
-    if (e_hwnd == 0) { TLDIAGNOSTICS_POP;  return; }
+    TLDPUSH;
+    if (e_hwnd == 0) { TLDPOP;  return; }
     DestroyWindow(e_hwnd);
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 void tl_platform_window_show() {
-    TLDIAGNOSTICS_PUSH;
-    if (e_hwnd == 0) { TLDIAGNOSTICS_POP;  return; }
+    TLDPUSH;
+    if (e_hwnd == 0) { TLDPOP;  return; }
     ShowWindow(e_hwnd, SW_SHOW);
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 void tl_platform_window_hide() {
-    TLDIAGNOSTICS_PUSH;
-    if (e_hwnd == 0) { TLDIAGNOSTICS_POP;  return; }
+    TLDPUSH;
+    if (e_hwnd == 0) { TLDPOP;  return; }
     ShowWindow(e_hwnd, SW_HIDE);
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 void tl_platform_window_update() {
-    TLDIAGNOSTICS_PUSH;
-    if (e_hwnd == 0) { TLDIAGNOSTICS_POP;  return; }
+    TLDPUSH;
+    if (e_hwnd == 0) { TLDPOP;  return; }
 
     MSG msg = { 0 };
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
         // TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 static b8 minimized = false;
@@ -353,7 +353,7 @@ static TLInputKey tl_platform_parse_key(WPARAM w_param, LPARAM l_param) {
 }
 
 LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     switch (msg) {
     case WM_COMPACTING: TLFATAL("System memory low");
@@ -361,14 +361,14 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
 
     case WM_ERASEBKGND: {
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 1;
     }
 
     case WM_CLOSE: {
         tl_messaging_post(TL_MESSAGE_APPLICATION_QUIT, NULL);
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
     } break;
 
@@ -376,7 +376,7 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
         PostQuitMessage(0);
         e_hwnd = 0;
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
     }
 
@@ -386,21 +386,21 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
         message.u16[1] = HIWORD(l_param);
         tl_messaging_post(TL_MESSAGE_WINDOW_MOVED, &message);
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
     } break;
 
     case WM_SETFOCUS: {
         tl_messaging_post(TL_MESSAGE_WINDOW_FOCUS_GAINED, NULL);
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
     } break;
 
     case WM_KILLFOCUS: {
         tl_messaging_post(TL_MESSAGE_WINDOW_FOCUS_LOST, NULL);
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
     } break;
 
@@ -432,7 +432,7 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
             } break;
         }
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
     } break;
 
@@ -455,19 +455,19 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
 
         tl_messaging_post(TL_MESSAGE_INPUT_MOUSE_MOVED, &message);
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
     } break;
 
     case WM_MOUSEWHEEL: {
         i32 z_delta = GET_WHEEL_DELTA_WPARAM(w_param);
-        if (z_delta == 0) { TLDIAGNOSTICS_POP; return 0; }
+        if (z_delta == 0) { TLDPOP; return 0; }
 
         TLMessage message = { 0 };
         message.i8[0] = (z_delta < 0) ? -1 : 1;
         tl_messaging_post(TL_MESSAGE_INPUT_MOUSE_WHELLED, &message);
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
     } break;
 
@@ -475,7 +475,7 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
         tl_messaging_post(TL_MESSAGE_INPUT_MOUSE_LEFT, NULL);
         mouse_inside = false;
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
 
     } break;
@@ -492,7 +492,7 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
 
         tl_messaging_post(TL_MESSAGE_INPUT_MOUSE_PRESSED, &message);
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
     } break;
 
@@ -508,7 +508,7 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
 
         tl_messaging_post(TL_MESSAGE_INPUT_MOUSE_RELEASED, &message);
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
     } break;
 
@@ -518,7 +518,7 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
         message.u16[0] = tl_platform_parse_key(w_param, l_param);
         tl_messaging_post(TL_MESSAGE_INPUT_KEY_PRESSED, &message);
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
 
     }
@@ -529,13 +529,13 @@ LRESULT CALLBACK tl_platform_window_function(HWND hwnd, u32 msg, WPARAM w_param,
         tl_messaging_post(TL_MESSAGE_INPUT_KEY_RELEASED, &message);
 
 
-        TLDIAGNOSTICS_POP;
+        TLDPOP;
         return 0;
     }
     }
 
     LRESULT result = DefWindowProc(hwnd, msg, w_param, l_param);
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return result;
 }
 // #####################################################################################################

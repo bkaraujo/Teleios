@@ -1,8 +1,8 @@
 #include "teleios/teleios.h"
 
 const char* tl_filesystem_get_filename(const char* path) {
-    TLDIAGNOSTICS_PUSH;
-    if (path == NULL) { TLDIAGNOSTICS_POP; return NULL; }
+    TLDPUSH;
+    if (path == NULL) { TLDPOP; return NULL; }
     
     u64 length = tl_string_length(path);
     char* filename = (char*)(path + length);
@@ -16,6 +16,6 @@ const char* tl_filesystem_get_filename(const char* path) {
     }
 
     filename++;
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return filename;
 }

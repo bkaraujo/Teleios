@@ -19,7 +19,7 @@ static HGLRC context;
 static HDC hdc;
 
 static void tl_graphics_initialize_glextentions(const PIXELFORMATDESCRIPTOR* pfd) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     WNDCLASS wc = { 0 };
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -49,11 +49,11 @@ static void tl_graphics_initialize_glextentions(const PIXELFORMATDESCRIPTOR* pfd
     ReleaseDC(hwnd, hdc);
     DestroyWindow(hwnd);
 
-	TLDIAGNOSTICS_POP;
+	TLDPOP;
 }
 
 static void tl_graphics_initialize_glcontext(PIXELFORMATDESCRIPTOR* pfd) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 	
 	hwnd = *((HWND*)tl_platform_window_handle());
 	hdc = GetDC(hwnd);
@@ -94,11 +94,11 @@ static void tl_graphics_initialize_glcontext(PIXELFORMATDESCRIPTOR* pfd) {
     if (!context) TLFATAL("Failed to create OpenGL 4.6 context.");
     if (!wglMakeCurrent(hdc, context)) TLFATAL("Failed to activate OpenGL 4.6 rendering context.");
     
-	TLDIAGNOSTICS_POP;
+	TLDPOP;
 }
 
 static TLMessageChain tl_graphics_events(const u16 code, const TLMessage* message) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     switch (code) {
         case TL_MESSAGE_WINDOW_RESIZED: {
@@ -106,7 +106,7 @@ static TLMessageChain tl_graphics_events(const u16 code, const TLMessage* messag
         } break;
     }
 
-	TLDIAGNOSTICS_POP;
+	TLDPOP;
     return TL_MESSAGE_AVALIABLE;
 }
 
@@ -159,7 +159,7 @@ static void APIENTRY tl_graphics_debug(GLenum source,
                             const char *message, 
                             const void *userParam)
 {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     // ignore non-significant error/warning codes
     // if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return; 
@@ -173,12 +173,12 @@ static void APIENTRY tl_graphics_debug(GLenum source,
         message
     );
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 #endif
 
 static void tl_graphics_initialize_glfunctions(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
 	if (!gladLoadGL()) TLFATAL("Failed to initialize glad(gl)");
 	if (!gladLoadWGL(hdc)) TLFATAL("Failed to initialize glad(wgl)");
@@ -193,12 +193,12 @@ static void tl_graphics_initialize_glfunctions(void) {
 	TLDEBUG("GL_VENDOR : %s", glGetString(GL_VENDOR));
 	TLDEBUG("GL_VERSION: %s", glGetString(GL_VERSION));
     
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 
 b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 	
 	PIXELFORMATDESCRIPTOR pfd = { 0 };
 	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
@@ -229,24 +229,24 @@ b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
         info->clear_color.a
     );
 	
-	TLDIAGNOSTICS_POP;
+	TLDPOP;
     return true;
 }
 
 void tl_graphics_update(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 	SwapBuffers(hdc);
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
 }
 
 b8 tl_graphics_terminate(void) {
-    TLDIAGNOSTICS_PUSH;
+    TLDPUSH;
 
     wglMakeCurrent(hdc, 0);
     wglDeleteContext(context);
     ReleaseDC(hwnd, hdc);
 
-    TLDIAGNOSTICS_POP;
+    TLDPOP;
     return true;
 }
 
