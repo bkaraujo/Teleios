@@ -31,7 +31,7 @@ void tl_diagnostics_pop(void);
 void tl_diagnostics_print(void);
 TLDiagnostic* tl_diagnostics_peek(void);
 
-#define TLDRE { TLDPOP; return;  }
+#define TLDRE { TLDPOP; return; }
 #define TLDRV(value) { TLDPOP; return value; }
 
 #define TLDERE(message) { TLERROR(message); TLDRE; }

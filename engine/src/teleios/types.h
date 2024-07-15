@@ -232,7 +232,7 @@ typedef struct {
 } TLList;
 
 typedef struct {
-    TLUlid* handle;
+    void* handle;
     TLList* values;
 } TLMapEntry;
 

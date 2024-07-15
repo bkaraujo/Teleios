@@ -147,8 +147,7 @@ i32 tl_ulid_decode(unsigned char ulid[16], const char *s) {
     ulid[14] = v[(int)s[22]] << 7 | v[(int)s[23]] << 2 | v[(int)s[24]] >> 3;
     ulid[15] = v[(int)s[24]] << 5 | v[(int)s[25]] >> 0;
 
-    TLDPOP;
-    return 0;
+    TLDRV(0);
 }
 
 TLUlid* tl_ulid_wrap(const char* desired) {
@@ -159,8 +158,7 @@ TLUlid* tl_ulid_wrap(const char* desired) {
 
     tl_memory_copy((void*)desired, sizeof(TLUlid), (void*)&ulid);
     
-    TLDPOP;
-    return ulid;
+    TLDRV(ulid);
 }
 
 TLUlid* tl_ulid_generate(void) {
@@ -254,21 +252,20 @@ TLUlid* tl_ulid_generate(void) {
     TLUlid* ulid = (TLUlid*) tl_memory_alloc(TL_MEMORY_ULID, sizeof(TLUlid));
     tl_ulid_encode(ulid->ulid, generator.last);
 
-    TLDPOP;
-    return ulid;
+    TLDRV(ulid);
 }
 
 b8 tl_ulid_equals(TLUlid* first, TLUlid* second) {
     TLDPUSH;
-    
+
+    if (first == NULL || second == NULL) TLDRV(false);
     b8 equals = tl_string_equals(first->ulid, second->ulid);
 
-    TLDPOP;
-    return equals;
+    TLDRV(equals);
 }
 
 void tl_ulid_destroy(TLUlid* ulid) {
     TLDPUSH;
     tl_memory_free(TL_MEMORY_ULID, sizeof(TLUlid), (void*) ulid);
-    TLDPOP;
+    TLDRE;
 }

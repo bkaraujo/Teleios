@@ -16,22 +16,56 @@ void tl_map_put(TLMap* map, void* key, void* payload) {
     if (map == NULL) TLDWRE("TLMap is NULL");
     if (key == NULL) TLDWRE("key is NULL");
     if (payload == NULL) TLDWRE("payload is NULL");
+    
+    // =======================================================================
+    // Firt insertion
+    // =======================================================================
+    if (map->capacity == 0) {
+        map->capacity = 1;
+        map->entries = tl_memory_alloc(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry) * map->capacity);
 
-    if (map->length >= map->capacity) {
-        u16 extended = (u16) map->capacity * 0.75f + 1;
-        TLMapEntry* entries = tl_memory_alloc(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry) * extended);
-        tl_memory_copy((void*)map->entries, sizeof(TLMapEntry) * map->capacity, (void*)entries);
-        tl_memory_free(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry) * map->capacity, (void*) map->entries);
-        map->entries = entries;
-        map->capacity = extended;
+        TLMapEntry* entry = map->entries;
+        entry[0].handle = key;
+        entry[0].values = tl_list_create();
+        tl_list_add(entry[0].values, payload);
+        map->length++;
+
+        TLDRE;
     }
-
+    // =======================================================================
+    // Append to a known entry
+    // =======================================================================
     for (u16 i = 0 ; i < map->length ; ++i) {
         TLMapEntry entry = map->entries[i];
         if (!map->comparator(entry.handle, key)) { continue; }
         tl_list_add(entry.values, payload);
+        map->length++;
         TLDRE;
     }
+    // =======================================================================
+    // Append to a avaliable entry
+    // =======================================================================
+    if (map->length < map->capacity) {
+        TLMapEntry entry = map->entries[map->length - 1];
+        tl_list_add(entry.values, payload);
+        map->length++;
+        TLDRE;
+    }
+    // =======================================================================
+    // Append to a new entry
+    // =======================================================================
+    u16 extended = (u16) map->capacity * 1.75f + 1;
+    TLMapEntry* entries = tl_memory_alloc(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry) * extended);
+    tl_memory_copy((void*)map->entries, sizeof(TLMapEntry) * map->capacity, (void*)entries);
+    tl_memory_free(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry) * map->capacity, (void*) map->entries);
+    map->entries = entries;
+    map->capacity = extended;
+    
+    TLMapEntry entry = map->entries[map->length];
+    entry.handle = key;
+    entry.values = tl_list_create();
+    tl_list_add(entry.values, payload);
+    map->length++;
 }
 
 b8 tl_map_contains(TLMap* map, void* key) {
@@ -62,7 +96,7 @@ void tl_map_del(TLMap* map, void* key, void* payload) {
         TLMapEntry entry = map->entries[i];
         if (!map->comparator(entry.handle, key)) { continue; }
         tl_list_rem(map->entries[i].values, payload);
-        break;
+        TLDRE;
     }
 
     TLDWRE("Map key not found");
