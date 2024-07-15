@@ -9,14 +9,14 @@ param (
 # script initialization
 # Caches initial location
 # ##############################################################################
-Write-Host "Linking $Output"
+Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")] Linking $Output"
 $ROOTFS = Get-Location
 # ##############################################################################
 # Creates build folder if it not exists
 # Set location to build folder
 # ##############################################################################
 if (Test-Path -Path "$ROOTFS/build" ){}
-else { Write-Host "Link source folder $ROOTFS/build/$Target not found" ; return 1 }
+else { Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")] Link source folder $ROOTFS/build/$Target not found" ; return 1 }
 
 Set-Location "$ROOTFS/build/$Target"
 # ##############################################################################

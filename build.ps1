@@ -3,7 +3,7 @@ param (
 ) 
 
 Clear-Host
-Write-Host "Creating $Build Build"
+Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")] Creating $Build Build"
 
 if ($Build -eq "ALPHA"){} 
 elseif ($Build -eq "BETA") {}
@@ -47,4 +47,4 @@ if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
 if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }
 
 Set-Location $ROOTFS
-Write-Host "Successfuly Completed"
+Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")] Successfuly Completed"

@@ -9,7 +9,7 @@ param (
 # script initialization
 # Caches initial location
 # ##############################################################################
-Write-Host "Compiling $Location"
+Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")] Compiling $Location"
 $ROOTFS = Get-Location
 # ##############################################################################
 # Creates build folder if it not exists
@@ -31,7 +31,7 @@ foreach ($file in Get-ChildItem -Path $Location -Filter "*.c" -Recurse -File) {
     else { New-Item -ItemType File -Path $ShaFile | Out-Null }
 
     if ($Hash -ne $(Get-Content $ShaFile | Select-Object -First 1)) { 
-        Write-Host "Compiling $file"
+        Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")] Compiling $file"
         $Hash > $ShaFile
 
         "clang -std=c11 -Wall -Werror -march=x86-64 $CFlags $IFlags $DFlags -c $file" > "$ROOTFS/build/$Target/$($file.BaseName).cmd"

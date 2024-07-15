@@ -7,7 +7,7 @@ param (
 # script initialization
 # Caches initial location
 # ##############################################################################
-Write-Host "Creating arquive $Output"
+Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")] Creating arquive $Output"
 $ROOTFS = Get-Location
 # ##############################################################################
 # Creates build folder if it not exists
