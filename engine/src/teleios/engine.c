@@ -152,7 +152,6 @@ TLAPI b8 tl_engine_run(void) {
     tl_graphics_shader_destroy(shader);
     tl_graphics_geometry_destroy(geometry);
     
-    tl_ecs_entity_detach(entity, TLNameComponentID);
     tl_ecs_entity_destroy(entity);
 
     TLDPOP;

@@ -30,9 +30,9 @@ $Build > "$ROOTFS/build/profile"
 $EngineCFlags = ""
 $SandboxCFlags = ""
 
-if ($Build -eq "ALPHA"){ $EngineCFlags = "-g -O0 -Wno-unused-but-set-variable" ; $SandboxCFlags = "-g -O0" }
-if ($Build -eq "BETA") { $EngineCFlags = "-g -O2 -Wno-unused-but-set-variable" ; $SandboxCFlags = "-g -O2" }
-if ($Build -eq "RELEASE") { $EngineCFlags = "-O3 -Wno-unused-but-set-variable" ; $SandboxCFlags = "-O3" }
+if ($Build -eq "ALPHA"){ $EngineCFlags = "-g -O0 -Wno-unused-function" ; $SandboxCFlags = "-g -O0" }
+if ($Build -eq "BETA") { $EngineCFlags = "-g -O2 -Wno-unused-function" ; $SandboxCFlags = "-g -O2" }
+if ($Build -eq "RELEASE") { $EngineCFlags = "-O3 -Wno-unused-function" ; $SandboxCFlags = "-O3" }
 
 .\vendor\llvm\compile.ps1 -Target "engine" -Location "$ROOTFS/engine/src" -CFlags $EngineCFlags -IFlags "-I$ROOTFS/engine/src" -DFlags "-DCGLM_STATIC -DTL_BUILD_$Build -DTL_EXPORT -DTL_TARGET_WINDOWS -D_CRT_SECURE_NO_WARNINGS"
 if( $LastExitCode -ne 0) { Set-Location $ROOTFS; return 0; }

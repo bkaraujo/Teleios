@@ -1,152 +1,123 @@
 #include "teleios/teleios.h"
 
-TLMap* tl_map_create(b8 (*comparator)(void* first, void* second)) {
+TLMap* tl_map_create() {
     TLDPUSH;
-
-    if (comparator == NULL) TLDWRV("comparator is NULL", NULL);
     TLMap* map = tl_memory_alloc(TL_MEMORY_CONTAINER_MAP, sizeof(TLMap));
-    map->comparator = comparator;
-
     TLDRV(map);
 }
 
-void tl_map_put(TLMap* map, void* key, void* payload) {
+static TLOVERLOAD TLMapEntry* tl_map_entry(TLMap* map, u16 key) {
     TLDPUSH;
 
-    if (map == NULL) TLDWRE("TLMap is NULL");
-    if (key == NULL) TLDWRE("key is NULL");
-    if (payload == NULL) TLDWRE("payload is NULL");
+    if (map == NULL) TLDWRV("TLMap is NULL", NULL);
     
-    // =======================================================================
-    // Firt insertion
-    // =======================================================================
-    if (map->capacity == 0) {
-        map->capacity = 1;
-        map->entries = tl_memory_alloc(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry) * map->capacity);
+    TLListNode* node = map->head;
+    while (node != NULL) {
+        TLMapEntry* entry = node->payload;
+        if (entry->handle.u16 == key) TLDRV(entry);
+        node = node->next;
+    }
 
-        TLMapEntry* entry = map->entries;
-        entry[0].handle = key;
-        entry[0].values = tl_list_create();
-        tl_list_add(entry[0].values, payload);
-        map->length++;
-
-        TLDRE;
-    }
-    // =======================================================================
-    // Append to a known entry
-    // =======================================================================
-    for (u16 i = 0 ; i < map->length ; ++i) {
-        TLMapEntry entry = map->entries[i];
-        if (!map->comparator(entry.handle, key)) { continue; }
-        tl_list_add(entry.values, payload);
-        map->length++;
-        TLDRE;
-    }
-    // =======================================================================
-    // Append to a avaliable entry
-    // =======================================================================
-    if (map->length < map->capacity) {
-        TLMapEntry entry = map->entries[map->length - 1];
-        tl_list_add(entry.values, payload);
-        map->length++;
-        TLDRE;
-    }
-    // =======================================================================
-    // Append to a new entry
-    // =======================================================================
-    u16 extended = (u16) map->capacity * 1.75f + 1;
-    TLMapEntry* entries = tl_memory_alloc(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry) * extended);
-    tl_memory_copy((void*)map->entries, sizeof(TLMapEntry) * map->capacity, (void*)entries);
-    tl_memory_free(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry) * map->capacity, (void*) map->entries);
-    map->entries = entries;
-    map->capacity = extended;
-    
-    TLMapEntry entry = map->entries[map->length];
-    entry.handle = key;
-    entry.values = tl_list_create();
-    tl_list_add(entry.values, payload);
-    map->length++;
+    TLDRV(NULL);
 }
 
-b8 tl_map_contains(TLMap* map, void* key) {
-    TLDPUSH;
-
-    if (map == NULL) TLDWRV("TLMap is NULL", false);
-    if (key == NULL) TLDWRV("key is NULL", false);
-    if (map->length == 0) TLDWRV("TLMap is empty", false);
-    
-    for (u16 i = 0 ; i < map->length ; ++i) {
-        TLMapEntry entry = map->entries[i];
-        if (!map->comparator(entry.handle, key)) { continue; }
-        TLDRV(true);
-    }
-
-    TLDRV(false);
-}
-
-void tl_map_del(TLMap* map, void* key, void* payload) {
-    TLDPUSH;
-
-    if (map == NULL) TLDWRE("TLMap is NULL");
-    if (key == NULL) TLDWRE("key is NULL");
-    if (payload == NULL) TLDWRE("payload is NULL");
-    if (map->length == 0) TLDWRE("TLMap is empty");
-    
-    for (u16 i = 0 ; i < map->length ; ++i) {
-        TLMapEntry entry = map->entries[i];
-        if (!map->comparator(entry.handle, key)) { continue; }
-        tl_list_rem(map->entries[i].values, payload);
-        TLDRE;
-    }
-
-    TLDWRE("Map key not found");
-}
-
-void tl_map_rem(TLMap* map, void* key) {
-    TLDPUSH;
-
-    if (map == NULL) TLDWRE("TLMap is NULL");
-    if (key == NULL) TLDWRE("key is NULL");
-    if (map->length == 0) TLDWRE("TLMap is empty");
-    for (u16 i = 0 ; i < map->length ; ++i) {
-        TLMapEntry entry = map->entries[i];
-        if (!map->comparator(entry.handle, key)) { continue; }
-
-        tl_list_destroy(map->entries[i].values, tl_list_purger_noop);
-#if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
-        // visual debug aid
-        tl_memory_zero((void*) &map->entries[i], sizeof(TLMapEntry));
-#endif
-        if (map->length == 1) { map->length--; break; }
-        if (i == map->length - 1) { map->length--; break; }
-
-        tl_memory_copy(
-            (void*) &map->entries[i + 1],
-            sizeof(TLMapEntry) * (map->capacity - map->length),
-            (void*) &map->entries[i]
-        );
-
-        break;
-    }
-
-    TLDWRE("Map key not found");
-}
-
-TLList* tl_map_values(TLMap* map, void* key) {
+static TLOVERLOAD TLMapEntry* tl_map_entry(TLMap* map, TLUlid* key) {
     TLDPUSH;
 
     if (map == NULL) TLDWRV("TLMap is NULL", NULL);
     if (key == NULL) TLDWRV("key is NULL", NULL);
-    if (map->length == 0) { TLDPOP; return NULL; };
-
-    for (u16 i = 0 ; i < map->length ; ++i) {
-        TLMapEntry entry = map->entries[i];
-        if (!map->comparator(entry.handle, key)) { continue; }
-        TLDRV(entry.values);
+    
+    TLListNode* node = map->head;
+    while (node != NULL) {
+        TLMapEntry* entry = node->payload;
+        if (tl_ulid_equals(entry->handle.ulid, key)) TLDRV(entry);
+        node = node->next;
     }
 
-    TLDWRV("Map key not found", NULL);
+    TLDRV(NULL);
 }
+
+
+TLOVERLOAD void tl_map_put(TLMap* map, u16 key, void* payload) {
+    TLDPUSH;
+
+    if (map == NULL) TLDWRE("TLMap is NULL");
+    if (payload == NULL) TLDWRE("payload is NULL");
+    
+    TLMapEntry* entry = tl_map_entry(map, key);
+    if (entry == NULL) {
+        entry = tl_memory_alloc(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry));
+        entry->handle.u16 = key;
+        entry->values = tl_list_create();
+        tl_list_add(map, entry);
+    }
+
+    tl_list_add(entry->values, payload);
+    TLDRE;
+}
+
+TLOVERLOAD void tl_map_put(TLMap* map, TLUlid* key, void* payload) {
+    TLDPUSH;
+
+    if (map == NULL) TLDWRE("TLMap is NULL");
+    if (key == NULL) TLDWRE("key is NULL");
+    if (payload == NULL) TLDWRE("payload is NULL");
+    
+    TLMapEntry* entry = tl_map_entry(map, key);
+    if (entry == NULL) {
+        entry = tl_memory_alloc(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry));
+        entry->handle.ulid = key;
+        entry->values = tl_list_create();
+        tl_list_add(map, entry);
+    }
+
+    tl_list_add(entry->values, payload);
+    TLDRE;
+}
+
+#define TLMAPCONTAINS(map,key) {                            \
+    TLDPUSH;                                                \
+    b8 found = tl_map_entry(map, key) != NULL;              \
+    TLDRV(found);                                           \
+}
+
+TLOVERLOAD b8 tl_map_contains(TLMap* map, u16 key) { TLMAPCONTAINS(map, key); }
+TLOVERLOAD b8 tl_map_contains(TLMap* map, TLUlid* key) { TLMAPCONTAINS(map, key); }
+
+#define TLMAPDEL(map,key,payload) {                             \
+    TLDPUSH;                                                    \
+    TLMapEntry* entry = tl_map_entry(map, key);                 \
+    if (entry == NULL) TLDWRE("Key not found");                 \
+    if (payload == NULL) TLDWRE("payload is NULL");             \
+    tl_list_rem(entry->values, payload);                        \
+    if (entry->values->length == 0) { tl_map_rem(map, key); }   \
+    TLDRE;                                                      \
+} 
+
+TLOVERLOAD void tl_map_del(TLMap* map, u16 key, void* payload) { TLMAPDEL(map, key, payload); }
+TLOVERLOAD void tl_map_del(TLMap* map, TLUlid* key, void* payload) { TLMAPDEL(map, key, payload); }
+
+#define TLMAPREM(map,key) {                                 \
+    TLDPUSH;                                                \
+    TLMapEntry* entry = tl_map_entry(map, key);             \
+    if (entry == NULL) TLDWRE("Key not found");             \
+    tl_list_destroy(entry->values, tl_list_purger_noop);    \
+    tl_list_rem(map, entry);                                \
+    TLDRE;                                                  \
+}
+
+TLOVERLOAD void tl_map_rem(TLMap* map, u16 key) { TLMAPREM(map, key); }
+TLOVERLOAD void tl_map_rem(TLMap* map, TLUlid* key) { TLMAPREM(map, key); }
+
+#define TLMAPVALUES(map,key) {                              \
+    TLDPUSH;                                                \
+    TLMapEntry* entry = tl_map_entry(map, key);             \
+    if (entry == NULL) TLDWRV("Key not found", NULL);       \
+    TLDRV(entry->values);                                   \
+}
+
+TLOVERLOAD TLList* tl_map_values(TLMap* map, u16 key) { TLMAPVALUES(map, key); }
+TLOVERLOAD TLList* tl_map_values(TLMap* map, TLUlid* key) { TLMAPVALUES(map, key); }
 
 void tl_map_destroy(TLMap* map, b8 (*purger)(void*)) {
     TLDPUSH;
@@ -154,18 +125,13 @@ void tl_map_destroy(TLMap* map, b8 (*purger)(void*)) {
     if (map == NULL) TLDWRE("TLMap is NULL");
     if (purger == NULL) TLDWRE("purger is NULL");
 
-    if (map->capacity == 0) {
-        tl_memory_free(TL_MEMORY_CONTAINER_MAP, sizeof(TLMap), (void*) map);
-        TLDRE;
+    TLListNode* node = map->head;
+    while (node != NULL) {
+        TLMapEntry* entry = node->payload;
+        tl_list_destroy(entry->values, purger);
+        node = node->next;
     }
 
-    for(u16 i = 0 ; i < map->length ; ++i) {
-        tl_list_destroy(map->entries[i].values, purger);
-        map->entries[i].values = NULL;
-    }
-
-    tl_memory_free(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry) * map->capacity, (void*) map->entries);
-    tl_memory_free(TL_MEMORY_CONTAINER_MAP, sizeof(TLMap), (void*) map);    
-
+    tl_list_destroy(map, tl_list_purger_noop);
     TLDRE;
-}
+};

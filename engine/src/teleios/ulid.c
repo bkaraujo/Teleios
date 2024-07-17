@@ -184,7 +184,7 @@ TLUlid* tl_ulid_generate(void) {
      * often than generating fresh random bytes.
      */
 
-    int initstyle = 1;
+    // int initstyle = 1;
     unsigned char key[256] = {0};
     if (!tl_platform_entropy(key, 256)) {
         /* Mix entropy into the RC4 state. */
@@ -194,7 +194,7 @@ TLUlid* tl_ulid_generate(void) {
             generator.s[i] = generator.s[j];
             generator.s[j] = tmp;
         }
-        initstyle = 0;
+        // initstyle = 0;
     } else if (!(generator.flags & ULID_SECURE)) {
         /* Failed to read entropy from OS, so generate some. */
         u32 n = 0;

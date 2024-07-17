@@ -19,7 +19,7 @@ static TLMap* of_components;
 //                                           C O M P O N E N T
 //
 // #####################################################################################################
-static void* tl_ecs_component_allocator(const u16 type, const TLUlid* owner) {
+static void* tl_ecs_component_allocator(u16 type, TLUlid* owner) {
     TLDPUSH;
     
     switch (type) {
@@ -35,7 +35,7 @@ static void* tl_ecs_component_allocator(const u16 type, const TLUlid* owner) {
     TLDWRV("Unknown component type", NULL);
 }
 
-static void tl_ecs_component_dealocator(const u16 type, void* component) {
+static void tl_ecs_component_dealocator(u16 type, void* component) {
     TLDPUSH;
 
     switch (type) {
@@ -59,7 +59,7 @@ TLUlid* tl_ecs_entity_create(void){
     TLDRV(entity);
 }
 
-b8 tl_ecs_entity_exists(const TLUlid* entity){
+b8 tl_ecs_entity_exists(TLUlid* entity){
     TLDPUSH;
 
     TLListNode* node = entities->head;
@@ -72,7 +72,7 @@ b8 tl_ecs_entity_exists(const TLUlid* entity){
     TLDRV(false);
 }
 
-void tl_ecs_entity_attach(const TLUlid* entity, const u16 type){
+void tl_ecs_entity_attach(TLUlid* entity, u16 type){
     TLDPUSH;
 
     if(!tl_ecs_entity_exists(entity)) TLDWRE("Entity not found");
@@ -80,24 +80,24 @@ void tl_ecs_entity_attach(const TLUlid* entity, const u16 type){
     void* component = tl_ecs_component_allocator(type, entity);
     if (component == NULL) TLDWRE("Failed to allocate component");
 
-    tl_map_put(of_entities, (void*) entity, component);
-    tl_map_put(of_components, (void*) &type, component);
+    tl_map_put(of_entities, entity, component);
+    tl_map_put(of_components, type, component);
 
     TLDRE;
 }
 
-void tl_ecs_entity_detach(const TLUlid* entity, const u16 type){
+void tl_ecs_entity_detach(TLUlid* entity, u16 type){
     TLDPUSH;
 
-    TLList* values = tl_map_values(of_entities, (void*)entity);
+    TLList* values = tl_map_values(of_entities, entity);
     if (values == NULL) TLDWRE("Entity not foud");
 
     TLListNode* node = values->head;
     while (node != NULL) {
         u16 component; tl_memory_copy(node->payload, sizeof(u16), (void*)&component);
         if (type == component) {
-            tl_map_del(of_entities, (void*) entity, node->payload);
-            tl_map_del(of_components, (void*) &type, node->payload);
+            tl_map_del(of_entities, entity, node->payload);
+            tl_map_del(of_components, type, node->payload);
             tl_ecs_component_dealocator(type, node->payload);
 
             TLDRE;
@@ -109,10 +109,10 @@ void tl_ecs_entity_detach(const TLUlid* entity, const u16 type){
     TLDWRE("Component not found");
 }
 
-void* tl_ecs_entity_component(const TLUlid* entity, const u16 type){
+void* tl_ecs_entity_component(TLUlid* entity, u16 type){
     TLDPUSH;
 
-    TLList* values = tl_map_values(of_entities, (void*)entity);
+    TLList* values = tl_map_values(of_entities, entity);
     if (values == NULL) TLDWRV("Entity not foud", NULL);
 
     TLListNode* node = values->head;
@@ -125,9 +125,9 @@ void* tl_ecs_entity_component(const TLUlid* entity, const u16 type){
     TLDRV(NULL);
 }
 
-TLList* tl_ecs_entity_components(const TLUlid* entity){
+TLList* tl_ecs_entity_components(TLUlid* entity){
     TLDPUSH;
-    TLList* values = tl_map_values(of_entities, (void*)entity);
+    TLList* values = tl_map_values(of_entities, entity);
     TLDRV(values);
 }
 
@@ -159,14 +159,19 @@ void tl_ecs_entity_destroy(TLUlid* entity){
         TLList* values = tl_map_values(of_entities, entity);
         TLListNode* node = values->head;
         while (node != NULL) {
-            u16 type; tl_memory_copy(node->payload, sizeof(u16), (void*)&type);
-            tl_map_del(of_components, &type, node->payload);
-            tl_ecs_component_dealocator(type, node->payload);
+            u16 component; tl_memory_copy(node->payload, sizeof(u16), (void*)&component);
+            tl_map_del(of_components, component, node->payload);
+            tl_ecs_component_dealocator(component, node->payload);
             node = node->next;
         }
 
         tl_map_rem(of_entities, entity);
     }
+    // ========================================================
+    // Dealocate entity handle
+    // ========================================================
+    tl_ulid_destroy(entity);
+
     TLDRE;
 }
 // #####################################################################################################
@@ -175,24 +180,12 @@ void tl_ecs_entity_destroy(TLUlid* entity){
 //
 // #####################################################################################################
 
-static b8 tl_ecs_compare_u16(void* first, void* second) {
-    TLDPUSH;
-    b8 result = *(u16*)first == *(u16*)second;
-    TLDRV(result);
-}
-
-static b8 tl_ecs_compare_ulid(void* first, void* second) {
-    TLDPUSH;
-    b8 result = tl_ulid_equals((TLUlid*) first, (TLUlid*) second);
-    TLDRV(result);
-}
-
 b8 tl_ecs_initialize(void) {
     TLDPUSH;
 
     entities = tl_list_create();
-    of_entities = tl_map_create(tl_ecs_compare_ulid);
-    of_components = tl_map_create(tl_ecs_compare_u16);
+    of_entities = tl_map_create();
+    of_components = tl_map_create();
 
     TLDRV(true);
 }

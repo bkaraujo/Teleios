@@ -1,7 +1,38 @@
 #ifndef TELEIOS_TYPES
 #define TELEIOS_TYPES
 
+#ifndef __clang__
+#   error "Expected CLANG compiler"
+#endif
+
+#if __STDC_VERSION__ < 201112L
+#   error "C11 not supported"
+#endif
+
 #include "stddef.h"
+#include "stdbool.h"
+#include "stdint.h"
+
+// ############################################################################
+//
+//                               COMPILER MACROS
+// 
+// ############################################################################
+#define TLSTASSERT _Static_assert
+#define TLINLINE     __attribute__((always_inline)) inline
+#define TLNOINLINE   __attribute__((noinline))
+#define TLOVERLOAD   __attribute__((overloadable))
+#ifdef TL_EXPORT
+#    define TLAPI    __attribute__((visibility("default")))
+#else
+#    define TLAPI
+#endif // TL_EXPORT
+
+#if defined(__clang__) || defined(__GNUC__)
+#   define TLSTASSERT _Static_assert
+#else
+#   define TLSTASSERT static_assert
+#endif
 // ############################################################################
 //
 //                               PLATFORM DETECTOR
@@ -38,72 +69,23 @@
 #endif
 // ############################################################################
 //
-//                               BASIC MACROS
-// 
-// ############################################################################
-#ifdef _MSC_VER
-#   define TLINLINE __forceinline
-#   define TLNOINLINE __declspec(noinline)
-#   ifdef TL_EXPORT
-#       define TLAPI __declspec(dllexport)
-#   else
-#       define TLAPI
-#   endif // TL_EXPORT
-#elif defined(__clang__) || defined(__GNUC__)
-#   define TLINLINE __attribute__((always_inline)) inline
-#   define TLNOINLINE __attribute__((noinline))
-#   ifdef TL_EXPORT
-#       define TLAPI __attribute__((visibility("default")))
-#   else
-#       define TLAPI
-#   endif // TL_EXPORT
-#else
-#   define TLAPI
-#   define TLINLINE static inline
-#   define TLNOINLINE
-#endif
-
-#if defined(__clang__) || defined(__GNUC__)
-#   define TLSTASSERT _Static_assert
-#else
-#   define TLSTASSERT static_assert
-#endif
-
-#define TLARRLENGTH(array,type) sizeof(array) / sizeof(type)
-// ############################################################################
-//
 //                               BASIC TYPES
 // 
 // ############################################################################
-typedef unsigned char       u8;  // 0 to 255
-typedef unsigned short      u16; // 0 to 65_535
-typedef unsigned int        u32; // 0 to 429_4967_295
-typedef unsigned long long  u64; // 0 to 18_446_744_073_709_551_615
+typedef uint8_t             u8;  // 0 to 255
+typedef uint16_t            u16; // 0 to 65_535
+typedef uint32_t            u32; // 0 to 429_4967_295
+typedef uint64_t            u64; // 0 to 18_446_744_073_709_551_615
 
 TLSTASSERT(sizeof(u8) == 1, "Expected u8 to be 1 byte.");
 TLSTASSERT(sizeof(u16) == 2, "Expected u16 to be 2 bytes.");
 TLSTASSERT(sizeof(u32) == 4, "Expected u32 to be 4 bytes.");
 TLSTASSERT(sizeof(u64) == 8, "Expected u64 to be 8 bytes.");
 
-#define U8MAX               255
-#define U16MAX              65535
-#define U32MAX              4294967295
-#define U64MAX              18446744073709551615
-
-typedef signed char         i8;  // -128 to 127
-typedef signed short        i16; // -32_768 to 32_767
-typedef signed int          i32; // -2_147_483_648 to 2_147_483_647
-typedef signed long long    i64; // -9_223_372_036_854_775_808 to 9_223_372_036_854_775_807
-
-#define I8MAX               127
-#define I16MAX              32767
-#define I32MAX              2147483647
-#define I64MAX              9223372036854775807
-
-#define I8MIN               -128
-#define I16MIN              -32768
-#define I32MIN              -2147483648
-#define I64MIN              -9223372036854775808
+typedef int8_t              i8;  // -128 to 127
+typedef int16_t             i16; // -32_768 to 32_767
+typedef int32_t             i32; // -2_147_483_648 to 2_147_483_647
+typedef int64_t             i64; // -9_223_372_036_854_775_808 to 9_223_372_036_854_775_807
 
 TLSTASSERT(sizeof(i8 ) == 1, "Expected i8 to be 1 byte.");
 TLSTASSERT(sizeof(i16) == 2, "Expected i16 to be 2 bytes.");
@@ -117,15 +99,32 @@ TLSTASSERT(sizeof(f32) == 4, "Expected f32 to be 4 bytes.");
 TLSTASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 
 typedef int                 b32;
-typedef char                b8;
+typedef bool                b8;
 
-#define true                1
-#define false               0
+typedef struct { char ulid[27]; } TLUlid;
+// ############################################################################
+//
+//                               BASIC MACROS
+// 
+// ############################################################################
 #define TL_NONE             0
 
-typedef struct {
-    char ulid[27];
-} TLUlid;
+#define U8MAX               UINT8_MAX
+#define U16MAX              UINT16_MAX
+#define U32MAX              UINT32_MAX
+#define U64MAX              UINT64_MAX
+
+#define I8MAX               INT8_MAX
+#define I16MAX              INT16_MAX
+#define I32MAX              INT32_MAX
+#define I64MAX              INT64_MAX
+
+#define I8MIN               INT8_MIN
+#define I16MIN              INT16_MIN
+#define I32MIN              INT32_MIN
+#define I64MIN              INT64_MIN
+
+#define TLARRLENGTH(array,type) sizeof(array) / sizeof(type)
 // ############################################################################
 //
 //                               GLM TYPES
@@ -231,17 +230,18 @@ typedef struct {
     u32 length;
 } TLList;
 
-typedef struct {
-    void* handle;
-    TLList* values;
-} TLMapEntry;
+typedef union {
+    TLUlid* ulid;
+    u16 u16;
+} TLMapKey;
 
 typedef struct {
-    b8 (*comparator)(void* first, void* second);
-    TLMapEntry* entries;
-    u16 length;
-    u16 capacity;
-} TLMap;
+    TLMapKey handle;
+    TLList* values;
+    b8 foo;
+} TLMapEntry;
+
+typedef TLList TLMap;
 // ############################################################################
 //
 //                                DIAGNOSTIC TYPES
