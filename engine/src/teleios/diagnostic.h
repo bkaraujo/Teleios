@@ -7,24 +7,22 @@
 b8 tl_diagnostic_initialize(void);
 b8 tl_diagnostic_terminate(void);
 
-#if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
-#define TLDPUSH \
-{ \
-    TLDiagnostic diagnostic; \
-    diagnostic.filename = __FILE__; \
-    diagnostic.linenumber = __LINE__; \
-    diagnostic.function = __FUNCTION__; \
-    tl_diagnostics_push(&diagnostic); \
-}
-
-
-#define TLDPOP tl_diagnostics_pop()
-#define TLDPRINT tl_diagnostics_print()
+#if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
+#   define TLDPOP tl_diagnostics_pop()
+#   define TLDPRINT tl_diagnostics_print()
+#   define TLDPUSH \
+    { \
+        TLDiagnostic diagnostic; \
+        diagnostic.filename = __FILE__; \
+        diagnostic.linenumber = __LINE__; \
+        diagnostic.function = __FUNCTION__; \
+        tl_diagnostics_push(&diagnostic); \
+    }
 #else
-#define TLDPUSH
-#define TLDPOP
-#define TLDPRINT
-#endif
+#   define TLDPUSH
+#   define TLDPOP
+#   define TLDPRINT
+#endif // defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
 
 void tl_diagnostics_push(const TLDiagnostic* diagnostic);
 void tl_diagnostics_pop(void);

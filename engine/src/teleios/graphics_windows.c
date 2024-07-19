@@ -84,9 +84,9 @@ static void tl_graphics_initialize_glcontext(PIXELFORMATDESCRIPTOR* pfd) {
         WGL_CONTEXT_MINOR_VERSION_ARB,  6,
         //WGL_CONTEXT_LAYER_PLANE_ARB, <undefined>,
         WGL_CONTEXT_PROFILE_MASK_ARB,   WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-#if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
+#if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
         WGL_CONTEXT_FLAGS_ARB,          WGL_CONTEXT_DEBUG_BIT_ARB,
-#endif
+#endif // defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
         0,
     };
 
@@ -110,7 +110,7 @@ static TLMessageChain tl_graphics_events(const u16 code, const TLMessage* messag
     return TL_MESSAGE_AVALIABLE;
 }
 
-#if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
+#if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
 static const char* tl_graphics_debug_source(u32 source) {
     switch (source) {
         case GL_DEBUG_SOURCE_API:             return "API"; 
@@ -175,7 +175,7 @@ static void APIENTRY tl_graphics_debug(GLenum source,
 
     TLDPOP;
 }
-#endif
+#endif // defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
 
 static void tl_graphics_initialize_glfunctions(void) {
     TLDPUSH;
@@ -183,12 +183,12 @@ static void tl_graphics_initialize_glfunctions(void) {
 	if (!gladLoadGL()) TLFATAL("Failed to initialize glad(gl)");
 	if (!gladLoadWGL(hdc)) TLFATAL("Failed to initialize glad(wgl)");
 	
-#if defined(TL_BUILD_ALPHA) || defined(TL_BUILD_BETA)
+#if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
         glDebugMessageCallback(tl_graphics_debug, NULL);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-#endif
+#endif // defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
 
 	TLDEBUG("GL_VENDOR : %s", glGetString(GL_VENDOR));
 	TLDEBUG("GL_VERSION: %s", glGetString(GL_VERSION));
