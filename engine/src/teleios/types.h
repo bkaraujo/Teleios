@@ -102,7 +102,7 @@ TLASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 typedef int                 b32;
 typedef bool                b8;
 
-typedef struct { char ulid[27]; } TLUlid;
+typedef struct TLUlid TLUlid;
 // ############################################################################
 //
 //                               BASIC MACROS

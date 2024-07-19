@@ -1,6 +1,8 @@
 #include "teleios/teleios.h"
 #include "teleios/platform.h"
 
+struct TLUlid { char ulid[27]; };
+
 #define ULID_RELAXED   (1 << 0)
 #define ULID_PARANOID  (1 << 1)
 #define ULID_SECURE    (1 << 2)
