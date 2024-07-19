@@ -27,13 +27,13 @@ TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenum
     // 2 - Parse the message into the allocated memory
     // 3 - Free the user formatted message
     // =================================================================
-    TLTime time; tl_chrono_time_now(&time);
+    TLCalendar calendar = tl_chrono_calendar_get();
 
     void* logger_message = tl_platform_memory_salloc(SYS_BUFFERSIZE);
     tl_platform_memory_set(logger_message, SYS_BUFFERSIZE, 0);
     sprintf_s(logger_message, SYS_BUFFERSIZE, format, 
-        time.year, time.month, time.day,
-        time.hour, time.minute, time.seconds, time.millis,
+        calendar.year, calendar.month, calendar.day,
+        calendar.hour, calendar.minute, calendar.seconds, calendar.millis,
         strings[level], 
         tl_filesystem_get_filename(filename),
         linenumber,

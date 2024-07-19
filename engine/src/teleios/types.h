@@ -19,11 +19,11 @@
 //                               COMPILER MACROS
 // 
 // ############################################################################
-#if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
+// #if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
 #   define TLASSERT    _Static_assert
-#else
-#   define TLASSERT    
-#endif
+// #else
+// #   define TLASSERT    
+// #endif
 
 #define TLINLINE     __attribute__((always_inline)) inline
 #define TLNOINLINE   __attribute__((noinline))
@@ -78,7 +78,7 @@ typedef uint16_t            u16; // 0 to 65_535
 typedef uint32_t            u32; // 0 to 429_4967_295
 typedef uint64_t            u64; // 0 to 18_446_744_073_709_551_615
 
-TLASSERT(sizeof(u8) == 1, "Expected u8 to be 1 byte.");
+TLASSERT(sizeof(u8 ) == 1, "Expected u8 to be 1 byte.");
 TLASSERT(sizeof(u16) == 2, "Expected u16 to be 2 bytes.");
 TLASSERT(sizeof(u32) == 4, "Expected u32 to be 4 bytes.");
 TLASSERT(sizeof(u64) == 8, "Expected u64 to be 8 bytes.");
@@ -152,19 +152,16 @@ typedef enum {
 // 
 // ############################################################################
 typedef struct {
-    u16 year;
-    u8 month;
-    u8 day;
-    u8 hour;
-    u8 minute;
-    u8 seconds;
-    u16 millis;
-} TLTime;
+    const u16 year;
+    const u16 millis;
+    const u8 month;
+    const u8 day;
+    const u8 hour;
+    const u8 minute;
+    const u8 seconds;
+} TLCalendar;
 
-typedef struct {
-    u64 start;
-    u64 update;
-} TLTimer;
+typedef struct TLTimer TLTimer;
 // ############################################################################
 //
 //                          MESSAGING TYES
@@ -202,6 +199,7 @@ typedef union {
 // ############################################################################
 typedef enum {
     TL_MEMORY_ULID,
+    TL_MEMORY_TIMER,
     TL_MEMORY_CONTAINER_LIST,
     TL_MEMORY_CONTAINER_MAP,
     TL_MEMORY_CONTAINER_NODE,

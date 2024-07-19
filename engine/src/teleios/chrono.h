@@ -3,7 +3,11 @@
 
 #include "teleios/types.h"
 
-TLAPI void tl_chrono_time_now(TLTime* time);
+TLAPI TLCalendar tl_chrono_calendar_get(void);
+
+TLAPI TLTimer* tl_chrono_timer_create(void);
+void tl_chrono_timer_destroy(TLTimer* timer);
+
 TLAPI u64 tl_chrono_time_epoch_micros(void);
 TLAPI u64 tl_chrono_time_epoch_millis(void);
 

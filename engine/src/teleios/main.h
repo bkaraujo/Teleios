@@ -12,7 +12,7 @@ int main() {
         return 9;
     }
 
-    TLTimer timer; tl_chrono_timer_start(&timer);
+    TLTimer* timer = tl_chrono_timer_create();
 
     if (!tl_engine_initialize()) {
         TLERROR("Engine failed to initialize");
@@ -36,9 +36,11 @@ int main() {
         return 91;
     }
 
-    tl_chrono_timer_update(&timer);
-    TLINFO("Engine initialized in %.3f ms", tl_chrono_timer_millis(&timer));
-
+    tl_chrono_timer_update(timer);
+    TLINFO("Engine initialized in %.3f ms", tl_chrono_timer_millis(timer));
+    tl_chrono_timer_destroy(timer);
+    timer = NULL;
+    
     if (!tl_engine_run()) {
         TLERROR("Engine failed to run");
         if (!tl_engine_terminate()) {

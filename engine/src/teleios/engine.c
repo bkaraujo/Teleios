@@ -73,8 +73,8 @@ TLAPI b8 tl_engine_run(void) {
         nc->name = "My Component";
     } 
     
-    TLTimer timer = { 0 }; 
-    tl_chrono_timer_start(&timer);
+    TLTimer* timer = tl_chrono_timer_create();
+    tl_chrono_timer_start(timer);
     
     {
         TLNameComponent* nc = (TLNameComponent*) tl_ecs_entity_component(entity, TLNameComponentID);
@@ -140,18 +140,19 @@ TLAPI b8 tl_engine_run(void) {
         tl_input_update();
         tl_graphics_update();
         tl_platform_window_update();
-        tl_chrono_timer_update(&timer);
-        if (tl_chrono_timer_seconds(&timer) >= 1.0f) {
-            tl_chrono_timer_start(&timer);
+        tl_chrono_timer_update(timer);
+        if (tl_chrono_timer_seconds(timer) >= 1.0f) {
+            tl_chrono_timer_start(timer);
             TLDEBUG("FPS: %u", fps);
             fps = 0;
         }
     }
 
     tl_platform_window_hide();
+    tl_chrono_timer_destroy(timer);
+    
     tl_graphics_shader_destroy(shader);
     tl_graphics_geometry_destroy(geometry);
-    
     tl_ecs_entity_destroy(entity);
 
     TLDPOP;

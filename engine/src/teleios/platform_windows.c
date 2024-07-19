@@ -155,24 +155,31 @@ void tl_filesystem_close(TLFile* file) {
 //                                           C H R O N O
 //
 // #####################################################################################################
+struct TLTimer{
+    u64 start;
+    u64 update;
+};
+
 static LARGE_INTEGER e_frequency;
 static SYSTEMTIME e_unix_epoch;
 
-TLAPI void tl_chrono_time_now(TLTime* time) {
+
+TLAPI TLCalendar tl_chrono_calendar_get(void) {
     TLDPUSH;
-    if (time == NULL) { TLDPOP; return; }
-
     SYSTEMTIME st; GetLocalTime(&st);
+    
+    TLCalendar calendar = {0};
+    *(u16*)&calendar.year = st.wYear;
+    *(u8*)&calendar.month = (u8)st.wMonth;
+    *(u8*)&calendar.day = (u8)st.wDay;
+    *(u8*)&calendar.hour = (u8)st.wHour;
+    *(u8*)&calendar.minute = (u8)st.wMinute;
+    *(u8*)&calendar.seconds = (u8)st.wSecond;
+    *(u16*)&calendar.millis = st.wMilliseconds;
 
-    time->year = st.wYear;
-    time->month = (u8)st.wMonth;
-    time->day = (u8)st.wDay;
-    time->hour = (u8)st.wHour;
-    time->minute = (u8)st.wMinute;
-    time->seconds = (u8)st.wSecond;
-    time->millis = st.wMilliseconds;
-    TLDPOP;
+    TLDRV(calendar);
 }
+
 
 TLAPI u64 tl_chrono_time_epoch_micros(void) {
     TLDPUSH;
@@ -185,8 +192,19 @@ TLAPI u64 tl_chrono_time_epoch_micros(void) {
 TLAPI u64 tl_chrono_time_epoch_millis(void) {
     TLDPUSH;
     u64 millis = tl_chrono_time_epoch_micros() / 1000;
+    TLDRV(millis);
+}
+
+TLAPI TLTimer* tl_chrono_timer_create(void) {
     TLDPUSH;
-    return millis;
+    void* timer = tl_memory_alloc(TL_MEMORY_TIMER, sizeof(TLTimer));
+    TLDRV(timer);
+}
+
+void tl_chrono_timer_destroy(TLTimer* timer) {
+    TLDPUSH;
+    tl_memory_free(TL_MEMORY_TIMER, sizeof(TLTimer), timer);
+    TLDPOP;
 }
 
 TLAPI void tl_chrono_timer_start(TLTimer* timer) {
@@ -208,27 +226,24 @@ TLAPI void tl_chrono_timer_update(TLTimer* timer) {
 
 TLAPI u64 tl_chrono_timer_micros(TLTimer* timer) {
     TLDPUSH;
-    if (timer == NULL) { TLDPOP; return 0; }
+    if (timer == NULL) { TLDRV(0); }
     u64 elapsed = timer->update - timer->start;
-    u64 elapsedMicros = (elapsed * 1000000) / e_frequency.QuadPart; // 100-nanos to micros
-    TLDPOP;
-    return elapsedMicros;
+    u64 elaspsed = (elapsed * 1000000) / e_frequency.QuadPart; // 100-nanos to micros
+    TLDRV(elaspsed);
 }
 
 TLAPI f64 tl_chrono_timer_millis(TLTimer* timer) {
     TLDPUSH;
-    if (timer == NULL) { TLDPOP; return 0.0f; }
-    f64 elaspsedMillis = tl_chrono_timer_micros(timer) / 1000.0f;
-    TLDPOP;
-    return elaspsedMillis;
+    if (timer == NULL) { TLDRV(0.0f); }
+    f64 elaspsed = tl_chrono_timer_micros(timer) / 1000.0f;
+    TLDRV(elaspsed);
 }
 
 TLAPI f64 tl_chrono_timer_seconds(TLTimer* timer) {
     TLDPUSH;
-    if (timer == NULL) { TLDPOP; return 0.0f; }
-    f64 elaspsedSeconds = tl_chrono_timer_millis(timer) / 1000.0f;
-    TLDPOP;
-    return elaspsedSeconds;
+    if (timer == NULL) { TLDRV(0.0f); }
+    f64 elaspsed = tl_chrono_timer_millis(timer) / 1000.0f;
+    TLDRV(elaspsed);
 }
 // #####################################################################################################
 //
