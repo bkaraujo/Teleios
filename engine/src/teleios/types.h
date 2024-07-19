@@ -83,6 +83,11 @@ TLASSERT(sizeof(u16) == 2, "Expected u16 to be 2 bytes.");
 TLASSERT(sizeof(u32) == 4, "Expected u32 to be 4 bytes.");
 TLASSERT(sizeof(u64) == 8, "Expected u64 to be 8 bytes.");
 
+#define U8MAX               UINT8_MAX
+#define U16MAX              UINT16_MAX
+#define U32MAX              UINT32_MAX
+#define U64MAX              UINT64_MAX
+
 typedef int8_t              i8;  // -128 to 127
 typedef int16_t             i16; // -32_768 to 32_767
 typedef int32_t             i32; // -2_147_483_648 to 2_147_483_647
@@ -92,6 +97,16 @@ TLASSERT(sizeof(i8 ) == 1, "Expected i8 to be 1 byte.");
 TLASSERT(sizeof(i16) == 2, "Expected i16 to be 2 bytes.");
 TLASSERT(sizeof(i32) == 4, "Expected i32 to be 4 bytes.");
 TLASSERT(sizeof(i64) == 8, "Expected i64 to be 8 bytes.");
+
+#define I8MAX               INT8_MAX
+#define I16MAX              INT16_MAX
+#define I32MAX              INT32_MAX
+#define I64MAX              INT64_MAX
+
+#define I8MIN               INT8_MIN
+#define I16MIN              INT16_MIN
+#define I32MIN              INT32_MIN
+#define I64MIN              INT64_MIN
 
 typedef float               f32;
 typedef double              f64;
@@ -109,21 +124,6 @@ typedef struct TLUlid TLUlid;
 // 
 // ############################################################################
 #define TL_NONE             0
-
-#define U8MAX               UINT8_MAX
-#define U16MAX              UINT16_MAX
-#define U32MAX              UINT32_MAX
-#define U64MAX              UINT64_MAX
-
-#define I8MAX               INT8_MAX
-#define I16MAX              INT16_MAX
-#define I32MAX              INT32_MAX
-#define I64MAX              INT64_MAX
-
-#define I8MIN               INT8_MIN
-#define I16MIN              INT16_MIN
-#define I32MIN              INT32_MIN
-#define I64MIN              INT64_MIN
 
 #define TLARRLENGTH(array,type) sizeof(array) / sizeof(type)
 // ############################################################################

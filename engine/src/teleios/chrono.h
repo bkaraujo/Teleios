@@ -3,7 +3,7 @@
 
 #include "teleios/types.h"
 
-TLAPI TLCalendar tl_chrono_calendar_get(void);
+TLAPI void tl_chrono_calendar_get(TLCalendar* calendar);
 
 TLAPI TLTimer* tl_chrono_timer_create(void);
 void tl_chrono_timer_destroy(TLTimer* timer);

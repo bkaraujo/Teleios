@@ -164,29 +164,28 @@ static LARGE_INTEGER e_frequency;
 static SYSTEMTIME e_unix_epoch;
 
 
-TLAPI TLCalendar tl_chrono_calendar_get(void) {
+TLAPI void tl_chrono_calendar_get(TLCalendar* calendar) {
     TLDPUSH;
-    SYSTEMTIME st; GetLocalTime(&st);
+
+    if (calendar == NULL) TLDWRE("TLCalendar is NULL");
     
-    TLCalendar calendar = {0};
-    *(u16*)&calendar.year = st.wYear;
-    *(u8*)&calendar.month = (u8)st.wMonth;
-    *(u8*)&calendar.day = (u8)st.wDay;
-    *(u8*)&calendar.hour = (u8)st.wHour;
-    *(u8*)&calendar.minute = (u8)st.wMinute;
-    *(u8*)&calendar.seconds = (u8)st.wSecond;
-    *(u16*)&calendar.millis = st.wMilliseconds;
+    SYSTEMTIME st; GetLocalTime(&st);
+    *(u16*)&calendar->year = st.wYear;
+    *(u8*)&calendar->month = (u8)st.wMonth;
+    *(u8*)&calendar->day = (u8)st.wDay;
+    *(u8*)&calendar->hour = (u8)st.wHour;
+    *(u8*)&calendar->minute = (u8)st.wMinute;
+    *(u8*)&calendar->seconds = (u8)st.wSecond;
+    *(u16*)&calendar->millis = st.wMilliseconds;
 
-    TLDRV(calendar);
+    TLDRE;
 }
-
 
 TLAPI u64 tl_chrono_time_epoch_micros(void) {
     TLDPUSH;
     FILETIME ft; GetSystemTimeAsFileTime(&ft);
     u64 micros = ((u64)ft.dwHighDateTime << 32 | (u64)ft.dwLowDateTime <<  0) / 10 - 11644473600000000ULL;
-    TLDPOP;
-    return micros;
+    TLDRV(micros);
 }
 
 TLAPI u64 tl_chrono_time_epoch_millis(void) {
@@ -209,19 +208,19 @@ void tl_chrono_timer_destroy(TLTimer* timer) {
 
 TLAPI void tl_chrono_timer_start(TLTimer* timer) {
     TLDPUSH;
-    if (timer == NULL) { TLDPOP; return; }
+    if (timer == NULL) { TLDRE; }
     LARGE_INTEGER now; QueryPerformanceCounter(&now);
     timer->start = now.QuadPart;
     timer->update = 0;
-    TLDPOP;
+    TLDRE;
 }
 
 TLAPI void tl_chrono_timer_update(TLTimer* timer) {
     TLDPUSH;
-    if (timer == NULL) { TLDPOP; return; }
+    if (timer == NULL) { TLDRE; }
     LARGE_INTEGER now; QueryPerformanceCounter(&now);
     timer->update = now.QuadPart;
-    TLDPOP;
+    TLDRE;
 }
 
 TLAPI u64 tl_chrono_timer_micros(TLTimer* timer) {
@@ -299,40 +298,40 @@ void tl_platform_window_create(TLWindowCreateInfo* info) {
     // Break if failed to create window
     // =================================================================
     if (e_hwnd == 0) TLFATAL("Window creation failed!");
-    TLDPOP;
+    TLDRE;
 }
 
 void tl_platform_window_destroy() {
     TLDPUSH;
-    if (e_hwnd == 0) { TLDPOP;  return; }
+    if (e_hwnd == 0) { TLDRE; }
     DestroyWindow(e_hwnd);
-    TLDPOP;
+    TLDRE;
 }
 
 void tl_platform_window_show() {
     TLDPUSH;
-    if (e_hwnd == 0) { TLDPOP;  return; }
+    if (e_hwnd == 0) { TLDRE; }
     ShowWindow(e_hwnd, SW_SHOW);
     TLDPOP;
 }
 
 void tl_platform_window_hide() {
     TLDPUSH;
-    if (e_hwnd == 0) { TLDPOP;  return; }
+    if (e_hwnd == 0) { TLDRE; }
     ShowWindow(e_hwnd, SW_HIDE);
-    TLDPOP;
+    TLDRE;
 }
 
 void tl_platform_window_update() {
     TLDPUSH;
-    if (e_hwnd == 0) { TLDPOP;  return; }
+    if (e_hwnd == 0) { TLDRE; }
 
     MSG msg = { 0 };
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
         // TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-    TLDPOP;
+    TLDRE;
 }
 
 static b8 minimized = false;

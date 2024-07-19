@@ -27,7 +27,8 @@ TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenum
     // 2 - Parse the message into the allocated memory
     // 3 - Free the user formatted message
     // =================================================================
-    TLCalendar calendar = tl_chrono_calendar_get();
+    TLCalendar calendar;
+    tl_chrono_calendar_get(&calendar);
 
     void* logger_message = tl_platform_memory_salloc(SYS_BUFFERSIZE);
     tl_platform_memory_set(logger_message, SYS_BUFFERSIZE, 0);
