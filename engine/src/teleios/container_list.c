@@ -13,7 +13,7 @@ void  tl_list_add(TLList* list, void* payload) {
     TLDPUSH;
     if (list == NULL) { TLWARN("List is NULl"); TLDPOP; return; }
 
-    TLListNode* node = tl_memory_alloc(TL_MEMORY_CONTAINER_NODE, sizeof(TLListNode));
+    TLListNode* node = tl_memory_alloc(TL_MEMORY_CONTAINER_LIST_ENTRY, sizeof(TLListNode));
     node->payload = payload;
     node->next = NULL;
     node->previous = NULL;
@@ -73,7 +73,7 @@ void  tl_list_destroy(TLList* list, b8(*purger)(void*)) {
         TLListNode* node = list->head;
         while (node != NULL) {
             TLListNode* next = node->next;
-            tl_memory_free(TL_MEMORY_CONTAINER_NODE, sizeof(TLListNode), node);
+            tl_memory_free(TL_MEMORY_CONTAINER_LIST_ENTRY, sizeof(TLListNode), node);
             node = next;
         }
     }

@@ -46,7 +46,7 @@ TLOVERLOAD void tl_map_put(TLMap* map, u16 key, void* payload) {
     
     TLMapEntry* entry = tl_map_entry(map, key);
     if (entry == NULL) {
-        entry = tl_memory_alloc(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry));
+        entry = tl_memory_alloc(TL_MEMORY_CONTAINER_MAP_ENTRY, sizeof(TLMapEntry));
         entry->handle.u16 = key;
         entry->values = tl_list_create();
         tl_list_add(map, entry);
@@ -65,7 +65,7 @@ TLOVERLOAD void tl_map_put(TLMap* map, TLUlid* key, void* payload) {
     
     TLMapEntry* entry = tl_map_entry(map, key);
     if (entry == NULL) {
-        entry = tl_memory_alloc(TL_MEMORY_CONTAINER_NODE, sizeof(TLMapEntry));
+        entry = tl_memory_alloc(TL_MEMORY_CONTAINER_MAP_ENTRY, sizeof(TLMapEntry));
         entry->handle.ulid = key;
         entry->values = tl_list_create();
         tl_list_add(map, entry);
@@ -127,11 +127,12 @@ void tl_map_destroy(TLMap* map, b8 (*purger)(void*)) {
 
     TLListNode* node = map->head;
     while (node != NULL) {
-        TLMapEntry* entry = node->payload;
-        tl_list_destroy(entry->values, purger);
+        tl_list_destroy(((TLMapEntry*)node->payload)->values, purger);
+        tl_memory_free(TL_MEMORY_CONTAINER_MAP_ENTRY, sizeof(TLMapEntry), node->payload);
+        node->payload = NULL;
         node = node->next;
     }
 
-    tl_list_destroy(map, tl_list_purger_noop);
+    tl_memory_free(TL_MEMORY_CONTAINER_MAP, sizeof(TLMap), (void*) map);
     TLDRE;
 };
