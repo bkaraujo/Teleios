@@ -28,6 +28,8 @@ TLAPI b8 tl_engine_pre_initialize(void) {
     engine_state = tl_platform_memory_halloc(sizeof(TLEngineState));
     engine_state->running = false;
     engine_state->paused = false;
+    
+    if (!tl_memory_initialize()) { TLERROR("Failed to initialize: Memory Manager"); TLDPOP; return false; }
 
     return true;
 }
@@ -35,7 +37,6 @@ TLAPI b8 tl_engine_pre_initialize(void) {
 TLAPI b8 tl_engine_initialize(void) {
     TLDPUSH;
 
-    if (!tl_memory_initialize()) { TLERROR("Failed to initialize: Memory Manager"); TLDPOP; return false; }
     if (!tl_messaging_initialize()) { TLERROR("Failed to initialize: Messaging Manager"); TLDPOP; return false; }
 
     tl_messaging_subscribe(TL_MESSAGE_ALL_KNOWN, tl_engine_messaging);

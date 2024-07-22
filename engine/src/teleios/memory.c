@@ -3,7 +3,8 @@
 
 typedef struct {
     u64 allocated;
-    u64 oftype[TL_MEMORY_MAXIMUM];
+    u64 ofTypeSize[TL_MEMORY_MAXIMUM];
+    i64 oftypeAmmount[TL_MEMORY_MAXIMUM];
 } TLMemoryRegistry;
 
 static TLMemoryRegistry registry;
@@ -28,7 +29,8 @@ void* tl_memory_alloc(TLMemoryType type, u64 size) {
     }
 
     registry.allocated += size;
-    registry.oftype[type] += size;
+    registry.ofTypeSize[type] += size;
+    registry.oftypeAmmount[type]++;
 
     TLDPOP;
     return block;
@@ -46,7 +48,8 @@ void tl_memory_free(TLMemoryType type, u64 size, void* pointer) {
     tl_platform_memory_hfree(pointer);
 
     registry.allocated -= size;
-    registry.oftype[type] -= size;
+    registry.ofTypeSize[type] -= size;
+    registry.oftypeAmmount[type]--;
 
     TLDPOP;
 }
@@ -130,9 +133,9 @@ b8 tl_memory_terminate(void) {
     if (registry.allocated != 0) {
         TLERROR("Memory leaked");
         for (int i = 0; i < TL_MEMORY_MAXIMUM; ++i) {
-            if (registry.oftype[i] == 0) continue;
+            if (registry.ofTypeSize[i] == 0) continue;
 
-            TLERROR("%s: %llu", tl_memory_label(i), registry.oftype[i]);
+            TLERROR("%-24s [%-2d]: %llu", tl_memory_label(i), registry.oftypeAmmount[i], registry.ofTypeSize[i]);
         }
     }
 
