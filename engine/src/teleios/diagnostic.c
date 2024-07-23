@@ -16,7 +16,7 @@ b8 tl_diagnostic_initialize(void) {
 }
 
 void tl_diagnostics_push(const TLDiagnostic* diagnostic) {
-    TLTRACE("[IN ] %s", diagnostic->function);
+    // TLTRACE("[IN ] %s", diagnostic->function);
     if (used >= length) {
         // =================================================================
         // Create the new array
@@ -47,7 +47,7 @@ TLDiagnostic* tl_diagnostics_peek(void) {
 
 void tl_diagnostics_pop(void) {
     used--;
-    TLTRACE("[OUT] %s", registry[used].function);
+    // TLTRACE("[OUT] %s", registry[used].function);
     tl_platform_memory_set((void*)(registry + used), sizeof(TLDiagnostic), 0);
 }
 
