@@ -80,7 +80,7 @@ void tl_ulid_encode(char str[27], const unsigned char ulid[16]) {
     str[24] = set[(ulid[14] << 3 | ulid[15] >> 5) & 0x1f];
     str[25] = set[ ulid[15] >> 0];
     str[26] = 0;
-    TLDPOP;
+    TLDRE;
 }
 
 i32 tl_ulid_decode(unsigned char ulid[16], const char *s) {
@@ -121,14 +121,12 @@ i32 tl_ulid_decode(unsigned char ulid[16], const char *s) {
     };
     
     if (v[(int)s[0]] > 7) {
-        TLDPOP;
-        return 1;
+        TLDRV(1);
     }
     
     for (int i = 0; i < 26; i++) {
         if (v[(int)s[i]] == -1) {
-            TLDPOP;
-            return 2;
+            TLDRV(2);
         }
     }
 

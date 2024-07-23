@@ -19,19 +19,18 @@ b8 tl_audio_initialize(void) {
     TLDEBUG("AL_VERSION: %s", alGetString(AL_VERSION));
     TLDEBUG("AL_VENDOR: %s", alGetString(AL_VENDOR));
 
-    TLDPOP;
-    return true;
+    TLDRV(true);
 }
 
 void tl_audio_buffer_destroy(TLAudioBuffer* buffer) {
     TLDPUSH;
-    if (buffer == NULL) { TLDPOP; return; }
+    if (buffer == NULL) TLDRE;
 
     if (buffer->path != NULL) tl_string_free(buffer->path);
     if (alIsBuffer(buffer->handle)) alDeleteBuffers(1, &buffer->handle);
     tl_memory_free(TL_MEMORY_AUDIO, sizeof(TLAudioBuffer), (void*) buffer);
 
-    TLDPOP;
+    TLDRE;
 }
 
 
@@ -41,8 +40,7 @@ TLAudioSource* tl_audio_source_create(void) {
     TLAudioSource* source = tl_memory_alloc(TL_MEMORY_AUDIO, sizeof(TLAudioSource));
     alGenSources(1, &source->handle);
 
-    TLDPOP;
-    return source;
+    TLDRV(source);
 }
 
 void tl_audio_source_attach(TLAudioSource* source, TLAudioBuffer* buffer) {
@@ -53,61 +51,73 @@ void tl_audio_source_attach(TLAudioSource* source, TLAudioBuffer* buffer) {
     TLTRACE("[AUDIO][Source %d] Attaching buffer %d", source->handle, buffer->handle);
     alSourcei(source->handle, AL_BUFFER, buffer->handle);
 
-    TLDPOP;
+    TLDRE;
 }
 
 void tl_audio_source_play(TLAudioSource* source) {
     TLDPUSH;
-    if (source == NULL) { TLWARN("TLAudioSource is NULL"); TLDPOP; return; }
+    
+    if (source == NULL) TLDWRE("TLAudioSource is NULL");
     alSourcePlay(source->handle);
-    TLDPOP;
+
+    TLDRE;
 }
 
 void tl_audio_source_pause(TLAudioSource* source) {
     TLDPUSH;
-    if (source == NULL) { TLWARN("TLAudioSource is NULL"); TLDPOP; return; }
+
+    if (source == NULL) TLDWRE("TLAudioSource is NULL");
     alSourcePause(source->handle);
     source->status = TL_AUDIO_PAUSED;
-    TLDPOP;
+
+    TLDRE;
 }
 
 void tl_audio_source_stop(TLAudioSource* source) {
     TLDPUSH;
-    if (source == NULL) { TLWARN("TLAudioSource is NULL"); TLDPOP; return; }
+
+    if (source == NULL) TLDWRE("TLAudioSource is NULL");
     alSourceStop(source->handle);
     source->status = TL_AUDIO_STOPED;
-    TLDPOP;
+
+    TLDRE;
 }
 
 void tl_audio_source_rewind(TLAudioSource* source) {
     TLDPUSH;
-    if (source == NULL) { TLWARN("TLAudioSource is NULL"); TLDPOP; return; }
+
+    if (source == NULL) TLDWRE("TLAudioSource is NULL");
     alSourceRewind(source->handle);
-    TLDPOP;
+
+    TLDRE;
 }
 
 void tl_audio_source_set_gain(TLAudioSource* source, f32 desired) {
     TLDPUSH;
-    if (source == NULL) { TLWARN("TLAudioSource is NULL"); TLDPOP; return; }
+
+    if (source == NULL) TLDWRE("TLAudioSource is NULL");
     alSourcef(source->handle, AL_GAIN, desired);
-    TLDPOP;
+    
+    TLDRE;
 }
 
 void tl_audio_source_set_position(TLAudioSource* source, f32 x, f32 y, f32 z) {
     TLDPUSH;
-    if (source == NULL) { TLWARN("TLAudioSource is NULL"); TLDPOP; return; }
+
+    if (source == NULL) TLDWRE("TLAudioSource is NULL");
     alSource3f(source->handle, AL_POSITION, x, y, z);
-    TLDPOP;
+
+    TLDRE;
 }
 
 void tl_audio_source_destroy(TLAudioSource* source) {
     TLDPUSH;
     
-    if (source == NULL) { TLDPOP; return; }
+    if (source == NULL) TLDWRE("TLAudioSource is NULL");
     if (alIsSource(source->handle)) alDeleteSources(1, &source->handle);
     tl_memory_free(TL_MEMORY_AUDIO, sizeof(TLAudioSource), (void*) source);
 
-    TLDPOP;
+    TLDRE;
 }
 
 b8 tl_audio_terminate(void) {
@@ -117,6 +127,5 @@ b8 tl_audio_terminate(void) {
     alcDestroyContext(context);
     alcCloseDevice(device);
 
-    TLDPOP;
-    return true;
+    TLDRV(true);
 }

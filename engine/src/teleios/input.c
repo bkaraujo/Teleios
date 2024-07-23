@@ -19,9 +19,8 @@ static TLMessageChain tl_input_handle(const u16 code, const TLMessage* message) 
         case TL_MESSAGE_INPUT_MOUSE_WHELLED: mouse_scroll = message->i8[0]; break;
         case TL_MESSAGE_INPUT_MOUSE_MOVED: mouse_pos.x = message->i32[0]; mouse_pos.y = message->i32[1]; break;
     }
-    TLDPOP;
 
-    return TL_MESSAGE_AVALIABLE;
+    TLDRV(TL_MESSAGE_AVALIABLE);
 }
 
 b8 tl_input_initialize(void) {
@@ -43,15 +42,14 @@ b8 tl_input_initialize(void) {
     mouse_scroll = 0;
     tl_memory_zero((void*)&mouse_pos, sizeof(mouse_pos));
 
-    TLDPOP;
-    return true;
+    TLDRV(true);
 }
 
 void tl_input_update(void) {
     TLDPUSH;
     tl_memory_copy((void*)key_curr, sizeof(key_curr), (void*)key_prev);
     tl_memory_copy((void*)mouse_curr, sizeof(mouse_curr), (void*)mouse_prev);
-    TLDPOP;
+    TLDRE;
 }
 
 b8 tl_input_key_active(const TLInputKey key) { return key_curr[key]; }
@@ -72,6 +70,5 @@ b8 tl_input_terminate(void) {
     tl_memory_zero((void*)mouse_curr, sizeof(mouse_curr));
     tl_memory_zero((void*)key_prev, sizeof(mouse_curr));
     tl_memory_zero((void*)&mouse_pos, sizeof(mouse_pos));
-    TLDPOP;
-    return true;
+    TLDRV(true);
 }

@@ -17,19 +17,18 @@ static TLMessageChain tl_engine_messaging(const u16 code, const TLMessage* messa
         case TL_MESSAGE_APPLICATION_QUIT  : engine_state->running = false; break;
     }
 
-    TLDPOP;
-    return TL_MESSAGE_AVALIABLE;
+    TLDRV(TL_MESSAGE_AVALIABLE);
 }
 
 TLAPI b8 tl_engine_pre_initialize(void) {
-    if (!tl_platform_initialize()) { TLERROR("Failed to initialize: Platform Abstraction"); return false; }
-    if (!tl_diagnostic_initialize()) { TLERROR("Failed to initialize: Diagnostics"); return false; }
+    if (!tl_platform_initialize()) { TLDERV("Failed to initialize: Platform Abstraction", false); }
+    if (!tl_diagnostic_initialize()) { TLDERV("Failed to initialize: Diagnostics", false); }
 
     engine_state = tl_platform_memory_halloc(sizeof(TLEngineState));
     engine_state->running = false;
     engine_state->paused = false;
     
-    if (!tl_memory_initialize()) { TLERROR("Failed to initialize: Memory Manager"); TLDPOP; return false; }
+    if (!tl_memory_initialize()) { TLDERV("Failed to initialize: Memory Manager", false); }
 
     return true;
 }
@@ -37,16 +36,15 @@ TLAPI b8 tl_engine_pre_initialize(void) {
 TLAPI b8 tl_engine_initialize(void) {
     TLDPUSH;
 
-    if (!tl_messaging_initialize()) { TLERROR("Failed to initialize: Messaging Manager"); TLDPOP; return false; }
+    if (!tl_messaging_initialize()) { TLDERV("Failed to initialize: Messaging Manager", false); }
 
     tl_messaging_subscribe(TL_MESSAGE_ALL_KNOWN, tl_engine_messaging);
 
-    if (!tl_input_initialize()) { TLERROR("Failed to initialize: Input Manager"); TLDPOP; return false; }
-    if (!tl_audio_initialize()) { TLERROR("Failed to initialize: Audio Manager"); TLDPOP; return false; }
-    if (!tl_ecs_initialize()) { TLERROR("Failed to initialize: ECS System"); TLDPOP; return false; }
+    if (!tl_input_initialize()) { TLDERV("Failed to initialize: Input Manager", false); }
+    if (!tl_audio_initialize()) { TLDERV("Failed to initialize: Audio Manager", false); }
+    if (!tl_ecs_initialize()) { TLDERV("Failed to initialize: ECS System", false); }
 
-    TLDPOP;
-    return true;
+    TLDRV(true);
 }
 
 TLAPI b8 tl_engine_configure(TLAppSpecification* specification) {
@@ -56,10 +54,9 @@ TLAPI b8 tl_engine_configure(TLAppSpecification* specification) {
     tl_memory_copy((void*)specification->rootfs, tl_string_length(specification->rootfs), (void*)engine_state->rootfs);
 
     tl_platform_window_create(&specification->window);
-    if (!tl_graphics_initialize(&specification->graphics)) { TLERROR("Failed to initialize: Graphics Manager"); TLDPOP; return false; }
+    if (!tl_graphics_initialize(&specification->graphics)) { TLDERV("Failed to initialize: Graphics Manager", false); }
 
-    TLDPOP;
-    return true;
+    TLDRV(true);
 }
 
 TLAPI b8 tl_engine_run(void) {
@@ -86,7 +83,7 @@ TLAPI b8 tl_engine_run(void) {
     {
         const char* paths[] = { "/shader/hello.vert", "/shader/hello.frag" };
         shader = tl_resource_shader_program("hello-triangle", 2, paths);
-        if (shader == NULL) { TLERROR("Failed to create TLShaderProgram"); TLDPOP; return false; }
+        if (shader == NULL) { TLDERV("Failed to create TLShaderProgram", false); }
     }
 
     TLGeometry* geometry = NULL;
@@ -144,7 +141,7 @@ TLAPI b8 tl_engine_run(void) {
         tl_chrono_timer_update(timer);
         if (tl_chrono_timer_seconds(timer) >= 1.0f) {
             tl_chrono_timer_start(timer);
-            TLDEBUG("FPS: %u", fps);
+            TLINFO("FPS: %u", fps);
             fps = 0;
         }
     }
@@ -155,9 +152,8 @@ TLAPI b8 tl_engine_run(void) {
     tl_graphics_shader_destroy(shader);
     tl_graphics_geometry_destroy(geometry);
     tl_ecs_entity_destroy(entity);
-
-    TLDPOP;
-    return true;
+    
+    TLDRV(true);
 }
 
 TLAPI b8 tl_engine_terminate(void) {
@@ -165,15 +161,15 @@ TLAPI b8 tl_engine_terminate(void) {
 
     tl_memory_free(TL_MEMORY_RESOURCE, tl_string_length(engine_state->rootfs), (void*) engine_state->rootfs);
 
-    if (!tl_graphics_terminate()) { TLERROR("Failed to terminate: Graphics Manager"); TLDPOP; return false; }
+    if (!tl_graphics_terminate()) { TLDERV("Failed to terminate: Graphics Manager", false); }
 
     tl_platform_window_destroy();
 
-    if (!tl_ecs_terminate()) { TLERROR("Failed to terminate: ECS System"); TLDPOP; return false; }
-    if (!tl_audio_terminate()) { TLERROR("Failed to terminate: Audio Manager"); TLDPOP; return false; }
-    if (!tl_input_terminate()) { TLERROR("Failed to terminate: Input Manager"); TLDPOP; return false; }
-    if (!tl_messaging_terminate()) { TLERROR("Failed to terminate: Messaging Manager"); TLDPOP; return false; }
-    if (!tl_memory_terminate()) { TLERROR("Failed to terminate: Memory Manager"); TLDPOP; return false; }
+    if (!tl_ecs_terminate()) { TLDERV("Failed to terminate: ECS System", false); }
+    if (!tl_audio_terminate()) { TLDERV("Failed to terminate: Audio Manager", false); }
+    if (!tl_input_terminate()) { TLDERV("Failed to terminate: Input Manager", false); }
+    if (!tl_messaging_terminate()) { TLDERV("Failed to terminate: Messaging Manager", false); }
+    if (!tl_memory_terminate()) { TLDERV("Failed to terminate: Memory Manager", false); }
     if (!tl_diagnostic_terminate()) { TLERROR("Failed to terminate: Diagnostics"); return false; }
     if (!tl_platform_terminate()) { TLERROR("Failed to terminate: Platform Abstraction"); return false; }
 

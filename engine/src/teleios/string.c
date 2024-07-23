@@ -2,11 +2,14 @@
 #include <string.h>
 
 u64 tl_string_length(const char* string) {
-    return strlen(string);
+    u64 length = strlen(string);
+    return (length);
 }
 
 b8 tl_string_equals(const char* str0, const char* str1) {
-    return strcmp(str0, str1) == 0;
+    TLDPUSH;
+    b8 equals = strcmp(str0, str1) == 0;
+    TLDRV(equals);
 }
 
 b8 tl_string_begin_with(const char* string, const char* desired) {
@@ -14,17 +17,15 @@ b8 tl_string_begin_with(const char* string, const char* desired) {
     
     u64 len1 = tl_string_length(string);
     u64 len2 = tl_string_length(desired);
-    if (len2 > len1) { return false; }
+    if (len2 > len1) TLDRV(false);
 
     for (u32 i = 0 ; i < len2; ++i) {
         if (string[i] != desired[i]) {
-            TLDPOP;
-            return false;
+            TLDRV(false);
         }
     }
 
-    TLDPOP;
-    return true;
+    TLDRV(true);
 }
 
 b8 tl_string_end_with(const char* string, const char* desired) {
@@ -32,18 +33,16 @@ b8 tl_string_end_with(const char* string, const char* desired) {
     
     u64 len1 = tl_string_length(string);
     u64 len2 = tl_string_length(desired);
-    if (len2 > len1) { return false; }
+    if (len2 > len1) TLDRV(false);
 
     u32 index = len1 - len2;
     for (u32 i = 0 ; i < len2; ++i) {
         if (string[index++] != desired[i]) {
-            TLDPOP;
-            return false;
+            TLDRV(false);
         }
     }
 
-    TLDPOP;
-    return true;
+    TLDRV(true);
 }
 
 const char* tl_string_join(const char* string, const char* appended) {
@@ -56,8 +55,7 @@ const char* tl_string_join(const char* string, const char* appended) {
     strcat(joined, string);
     strcat(joined, appended);
 
-    TLDPOP;
-    return joined;
+    TLDRV(joined);
 }
 
 void tl_string_free(const char* string) {
@@ -66,7 +64,7 @@ void tl_string_free(const char* string) {
     u64 lentgh = tl_string_length(string);
     tl_memory_free(TL_MEMORY_STRING, lentgh, (void*)string);
 
-    TLDPOP;
+    TLDRE;
 }
 
 const char* tl_string_clone(const char* string) {
@@ -76,25 +74,22 @@ const char* tl_string_clone(const char* string) {
     void* cloned = tl_memory_alloc(TL_MEMORY_STRING, length);
     tl_memory_copy((void*) string, length, cloned);
 
-    TLDPOP;
-    return cloned;
+    TLDRV(cloned);
 }
 
 i32 tl_string_index_of(const char* str, char c) {
     TLDPUSH;
-    if (str == NULL) { TLDPOP; return -1; }
+    if (str == NULL) TLDRV(-1);
 
     u64 length = tl_string_length(str);
-    if (length == 0) { TLDPOP; return -1; }
-    if (str[0] == '\0') { TLDPOP; return -1; }
+    if (length == 0) TLDRV(-1);
+    if (str[0] == '\0') TLDRV(-1);
     
     for (i32 i = 0; i < length; ++i) {
         if (str[i] == c) {
-            TLDPOP;
-            return i;
+            TLDRV(i);
         }
     }
 
-    TLDPOP;
-    return -1;
+    TLDRV(-1);
 }

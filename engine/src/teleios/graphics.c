@@ -204,16 +204,14 @@ TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* info) {
         u32 stage = tl_parse_shader_stage(source->stage);
         if (stage == U32MAX) {
             TLWARN("Invalid shader (%s) stage", source->name);
-            TLDPOP;
-            return NULL;
+            TLDRV(NULL);
         }
         // =================================================================
         // Ensure single script for shader stage
         // =================================================================
         if(stage_count[source->stage] > 1) {
             TLWARN("Duplicated shader (%s) stage", source->name);
-            TLDPOP;
-            return NULL;
+            TLDRV(NULL);
         }
 
         stage_count[source->stage]++;
@@ -238,8 +236,7 @@ TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* info) {
                 glDeleteShader(shaders[i]);
             }
 
-            TLDPOP;
-            return NULL;
+            TLDRV(NULL);
         }
 
         // =================================================================
@@ -261,8 +258,7 @@ TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* info) {
             glDeleteShader(shaders[i]);
         }
 
-        TLDPOP;
-        return NULL;
+        TLDRV(NULL);
     }
     // =================================================================
     // Delete created shader handles
@@ -278,32 +274,31 @@ TLShaderProgram* tl_graphics_shader_create(TLShaderCreateInfo* info) {
     program->handle = handle;
     program->name = info->name;
 
-	TLDPOP;
     return program;
 }
 
 void tl_graphics_shader_bind(TLShaderProgram* program) {
     TLDPUSH;
-    if (program == NULL) { TLWARN("TLShaderProgram is NULL"); TLDPOP; return; }
-    if (state.shader == program->handle) { TLDPOP; return; }
+    if (program == NULL) TLDWRE("TLShaderProgram is NULL");
+    if (state.shader == program->handle) TLDRE;
     
     state.shader = program->handle;
     glUseProgram(state.shader);
-	TLDPOP;
+	TLDRE;
 }
 
 void tl_graphics_shader_uniform(TLShaderProgram* program, const char* name, TLBufferType type, void* uniform) {
     TLDPUSH;
-    if (name == NULL) { TLWARN("name is NULL"); TLDPOP; return; }
-    if (uniform == NULL) { TLWARN("uniform is NULL"); TLDPOP; return; }
-    if (program == NULL) { TLWARN("TLShaderProgram is NULL"); TLDPOP; return; }
+    if (name == NULL) TLDWRE("name is NULL");
+    if (uniform == NULL) TLDWRE("uniform is NULL");
+    if (program == NULL) TLDWRE("TLShaderProgram is NULL");
 
     // TODO: avoid glGetUniformLocation repetition for the same name
     u32 location = glGetUniformLocation(program->handle, name);
-    if (location == -1) { TLWARN("Uniform name %s not found", name); TLDPOP; return; }
+    if (location == -1) TLDWRE("Uniform not found");
 
     switch (type) {
-        default: TLFATAL("OPS!");
+        default: TLFATAL("Unsupported buffer type");
         case TL_BUFFER_TYPE_FLOAT1: glUniform1fv(location, 1, uniform); break;
         case TL_BUFFER_TYPE_FLOAT2: glUniform1fv(location, 2, uniform); break;
         case TL_BUFFER_TYPE_FLOAT3: glUniform1fv(location, 3, uniform); break;
@@ -327,17 +322,17 @@ void tl_graphics_shader_uniform(TLShaderProgram* program, const char* name, TLBu
         case TL_BUFFER_TYPE_MARIX44: glUniformMatrix4fv(location, 4*4, GL_FALSE, uniform); break;
     }
 
-	TLDPOP;
+	TLDRE;
 }
 
 void tl_graphics_shader_destroy(TLShaderProgram* program) {
     TLDPUSH;
-    if (program == NULL) { TLWARN("TLShaderProgram is NULL"); TLDPOP; return; }
+    if (program == NULL) TLDWRE("TLShaderProgram is NULL");
 
     glDeleteProgram(program->handle);
     tl_memory_free(TL_MEMORY_GRAPHICS, sizeof(TLShaderProgram), program);
 
-	TLDPOP;
+	TLDRE;
 }
 
 // #####################################################################################################
@@ -348,9 +343,9 @@ void tl_graphics_shader_destroy(TLShaderProgram* program) {
 
 TLGeometry* tl_graphics_geometry_create(TLGeometryCreateInfo* info) {
     TLDPUSH;
-    if (info == NULL) { TLDPOP; TLWARN("TLGeometryCreateInfo is NULL"); return NULL; }
-    if (info->buffers_length == 0) { TLDPOP; TLWARN("TLGeometryCreateInfo->buffers_length == 0"); return NULL; }
-    if (info->buffers == NULL) { TLDPOP; TLWARN("TLGeometryCreateInfo->buffers is NULL"); return NULL; }
+    if (info == NULL) TLDWRV("TLGeometryCreateInfo is NULL", NULL);
+    if (info->buffers_length == 0) TLDWRV("TLGeometryCreateInfo->buffers_length == 0", NULL);
+    if (info->buffers == NULL) TLDWRV("TLGeometryCreateInfo->buffers is NULL", NULL);
 
     TLGeometry* geometry = tl_memory_alloc(TL_MEMORY_GRAPHICS, sizeof(TLGeometry));
     if (geometry == NULL) { TLFATAL("Failed to allocate TLGeometry"); }
@@ -366,14 +361,13 @@ TLGeometry* tl_graphics_geometry_create(TLGeometryCreateInfo* info) {
         geometry->vbo_stride += offset;
     }
 
-	TLDPOP;
-    return geometry;
+	TLDRV(geometry);
 }
 
 static void tl_graphics_geometry_elements(TLGeometry* geometry, TLBufferType type, u32 lenght, void* elements) {
     TLDPUSH;
     
-    if(geometry == NULL) { TLWARN("TLGeometry is NULL"); TLDPOP; return; }
+    if(geometry == NULL) TLDWRE("TLGeometry is NULL");
     u32 bytes = tl_parse_buffer_bytes(type);
     u32 size = lenght * bytes;
 
@@ -391,7 +385,7 @@ static void tl_graphics_geometry_elements(TLGeometry* geometry, TLBufferType typ
     // Push the date into the GPU
     glNamedBufferSubData(geometry->ebo, 0, size, elements);
 
-	TLDPOP;
+	TLDRE;
 }
 
 void tl_graphics_geometry_elements_ui(TLGeometry* geometry, u32 lenght, u32* elements) {
@@ -399,7 +393,7 @@ void tl_graphics_geometry_elements_ui(TLGeometry* geometry, u32 lenght, u32* ele
 
     tl_graphics_geometry_elements(geometry, TL_BUFFER_TYPE_UINT1, lenght, elements);
 
-	TLDPOP;
+	TLDRE;
 }
 
 void tl_graphics_geometry_elements_us(TLGeometry* geometry, u32 lenght, u16* elements) {
@@ -407,13 +401,13 @@ void tl_graphics_geometry_elements_us(TLGeometry* geometry, u32 lenght, u16* ele
 
     tl_graphics_geometry_elements(geometry, TL_BUFFER_TYPE_USHORT1, lenght, elements);
 
-	TLDPOP;
+	TLDRE;
 }
 
 void tl_graphics_geometry_vertices(TLGeometry* geometry, u32 lenght, f32* vertices) {
     TLDPUSH;
     
-    if (geometry == NULL) { TLWARN("TLGeometry is NULL"); TLDPOP; return; }
+    if (geometry == NULL) TLDWRE("TLGeometry is NULL");
     u32 bytes = tl_parse_buffer_bytes(TL_BUFFER_TYPE_FLOAT1);
     u32 size = lenght * bytes;
     
@@ -427,34 +421,33 @@ void tl_graphics_geometry_vertices(TLGeometry* geometry, u32 lenght, f32* vertic
         geometry->vbo_length = lenght;
     }
 
-    // Push the date into the GPU
+    // Push the data into the GPU
     glNamedBufferSubData(geometry->vbo, 0, size, vertices);
 
-	TLDPOP;
+	TLDRE;
 }
 
 void tl_graphics_geometry_bind(TLGeometry* geometry) {
     TLDPUSH;
     
-    if (geometry == NULL) { TLWARN("TLGeometry is NULL"); TLDPOP; return; }
-    if (state.vao == geometry->vao) { TLDPOP; return; }
+    if (geometry == NULL) TLDWRE("TLGeometry is NULL");
+    if (state.vao == geometry->vao) TLDRE;
     state.vao = geometry->vao;
     glBindVertexArray(state.vao);
 
-	TLDPOP;
+	TLDRE;
 }
 
 void tl_graphics_geometry_destroy(TLGeometry* geometry) {
     TLDPUSH;
     
-    if (geometry == NULL) { TLWARN("TLGeometry is NULL"); TLDPOP; return; }
+    if (geometry == NULL) TLDWRE("TLGeometry is NULL");
     if (geometry->ebo != GL_NONE) glDeleteBuffers(1, &geometry->ebo);
     if (geometry->vbo != GL_NONE) glDeleteBuffers(1, &geometry->vbo);
     if (geometry->vao != GL_NONE) glDeleteVertexArrays(1, &geometry->vao);
-
     tl_memory_free(TL_MEMORY_GRAPHICS, sizeof(TLGeometry), geometry);
 
-	TLDPOP;
+	TLDRE;
 }
 
 // #####################################################################################################
@@ -468,7 +461,7 @@ void tl_graphics_clear(void) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    TLDPOP;
+    TLDRE;
 }
 
 void tl_graphics_draw(TLGeometry* geometry) {
@@ -481,5 +474,5 @@ void tl_graphics_draw(TLGeometry* geometry) {
         0
     );
 
-	TLDPOP;
+	TLDRE;
 }

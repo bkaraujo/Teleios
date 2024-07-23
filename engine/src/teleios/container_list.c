@@ -5,13 +5,12 @@ TLList* tl_list_create(void) {
 
     TLList* list = tl_memory_alloc(TL_MEMORY_CONTAINER_LIST, sizeof(TLList));
 
-    TLDPOP;
-    return list;
+    TLDRV(list);
 }
 
 void  tl_list_add(TLList* list, void* payload) {
     TLDPUSH;
-    if (list == NULL) { TLWARN("List is NULl"); TLDPOP; return; }
+    if (list == NULL) TLDWRE("List is NULl");
 
     TLListNode* node = tl_memory_alloc(TL_MEMORY_CONTAINER_LIST_ENTRY, sizeof(TLListNode));
     node->payload = payload;
@@ -23,8 +22,7 @@ void  tl_list_add(TLList* list, void* payload) {
         list->tail = node;
         list->length++;
     
-        TLDPOP;
-        return;
+        TLDRE;
     }
 
     node->previous = list->tail;
@@ -32,12 +30,12 @@ void  tl_list_add(TLList* list, void* payload) {
     list->tail = node;
     list->length++;
 
-    TLDPOP;
+    TLDRE;
 }
 
 void tl_list_rem(TLList* list, void* payload) {
     TLDPUSH;
-    if (list == NULL) { TLWARN("List is NULl"); TLDPOP; return; }
+    if (list == NULL) TLDWRE("List is NULl");
  
     TLListNode* node = list->head;
     while (node != NULL) {
@@ -52,20 +50,19 @@ void tl_list_rem(TLList* list, void* payload) {
                 list->tail = NULL;
             }
 
-            TLDPOP;
+            TLDRE;
             return;
         }
 
         node = node->next;
     }
 
-    TLWARN("Payload %p not found", payload);
-    TLDPOP;
+    TLDWRE("Payload not found");
 }
 
 void  tl_list_destroy(TLList* list, b8(*purger)(void*)) {
     TLDPUSH;
-    if (list == NULL) { TLWARN("List is NULl"); TLDPOP; return; }
+    if (list == NULL) TLDWRE("List is NULl");
 
     if (list->length > 0) {
         if (purger == NULL) { TLFATAL("Impossible to destroy a populated list without a purger function"); }
@@ -79,7 +76,7 @@ void  tl_list_destroy(TLList* list, b8(*purger)(void*)) {
     }
  
     tl_memory_free(TL_MEMORY_CONTAINER_LIST, sizeof(TLList), list);
-    TLDPOP;
+    TLDRE;
 }
 
 b8 tl_list_purger_noop(void* pointer) {

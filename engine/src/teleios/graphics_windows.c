@@ -49,7 +49,7 @@ static void tl_graphics_initialize_glextentions(const PIXELFORMATDESCRIPTOR* pfd
     ReleaseDC(hwnd, hdc);
     DestroyWindow(hwnd);
 
-	TLDPOP;
+	TLDRE;
 }
 
 static void tl_graphics_initialize_glcontext(PIXELFORMATDESCRIPTOR* pfd) {
@@ -94,7 +94,7 @@ static void tl_graphics_initialize_glcontext(PIXELFORMATDESCRIPTOR* pfd) {
     if (!context) TLFATAL("Failed to create OpenGL 4.6 context.");
     if (!wglMakeCurrent(hdc, context)) TLFATAL("Failed to activate OpenGL 4.6 rendering context.");
     
-	TLDPOP;
+	TLDRE;
 }
 
 static TLMessageChain tl_graphics_events(const u16 code, const TLMessage* message) {
@@ -106,8 +106,7 @@ static TLMessageChain tl_graphics_events(const u16 code, const TLMessage* messag
         } break;
     }
 
-	TLDPOP;
-    return TL_MESSAGE_AVALIABLE;
+	TLDRV(TL_MESSAGE_AVALIABLE);
 }
 
 #if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
@@ -173,7 +172,7 @@ static void APIENTRY tl_graphics_debug(GLenum source,
         message
     );
 
-    TLDPOP;
+    TLDRE;
 }
 #endif // defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
 
@@ -193,7 +192,7 @@ static void tl_graphics_initialize_glfunctions(void) {
 	TLDEBUG("GL_VENDOR : %s", glGetString(GL_VENDOR));
 	TLDEBUG("GL_VERSION: %s", glGetString(GL_VERSION));
     
-    TLDPOP;
+    TLDRE;
 }
 
 
@@ -229,14 +228,13 @@ b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
         info->clear_color.a
     );
 	
-	TLDPOP;
-    return true;
+	TLDRV(true);
 }
 
 void tl_graphics_update(void) {
     TLDPUSH;
 	SwapBuffers(hdc);
-    TLDPOP;
+    TLDRE;
 }
 
 b8 tl_graphics_terminate(void) {
@@ -246,8 +244,7 @@ b8 tl_graphics_terminate(void) {
     wglDeleteContext(context);
     ReleaseDC(hwnd, hdc);
 
-    TLDPOP;
-    return true;
+    TLDRV(true);
 }
 
 #endif // TELEIOS_PLATFORM_WINDOWS

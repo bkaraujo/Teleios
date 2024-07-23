@@ -13,7 +13,7 @@ static TLOVERLOAD TLMapEntry* tl_map_entry(TLMap* map, u16 key) {
     
     TLListNode* node = map->head;
     while (node != NULL) {
-        TLMapEntry* entry = node->payload;
+        TLMapEntry* entry = (TLMapEntry*) node->payload;
         if (entry->handle.u16 == key) TLDRV(entry);
         node = node->next;
     }

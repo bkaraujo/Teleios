@@ -14,17 +14,18 @@ u8 tl_scene_create(const char* name) {
 
         scenes[i].handle = i + 1;
         scenes[i].name = name;
-        TLDPOP;
-        return scenes[i].handle;
+
+        TLDRV(scenes[i].handle);
     }
 
-    TLDPOP;
-    return TL_NONE;
+    TLDRV(TL_NONE);
 }
 
 void tl_scene_destroy(u8 scene) {
     TLDPUSH;
+    
     scenes[scene].handle = TL_NONE;
     scenes[scene].name = NULL;
-    TLDPOP;
+    
+    TLDRE;
 }

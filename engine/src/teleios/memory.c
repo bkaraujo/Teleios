@@ -14,102 +14,62 @@ b8 tl_memory_initialize(void) {
 
     tl_platform_memory_set((void*) &registry, sizeof(TLMemoryRegistry), 0);
 
-    TLDPOP;
-    return true;
+    TLDRV(true);
 }
 
 void* tl_memory_alloc(TLMemoryType type, u64 size) {
     TLDPUSH;
     
     void* block = tl_platform_memory_halloc(size);
-    if (block == NULL) {
-        TLFATAL("Failed to allocate %llu bytes", size);
-        TLDPOP;
-        return NULL;
-    }
+    if (block == NULL) TLFATAL("Failed to allocate %llu bytes", size);
 
     registry.allocated += size;
     registry.ofTypeSize[type] += size;
     registry.oftypeAmmount[type]++;
 
-    TLDPOP;
-    return block;
+    TLDRV(block);
 }
 
 void tl_memory_free(TLMemoryType type, u64 size, void* pointer) {
     TLDPUSH;
 
-    if (registry.oftypeAmmount[type] == 0) {
-        TLTRACE("");
-    }
-
-    if (pointer == NULL) { 
-        TLFATAL("pointer is null");
-        TLDPOP;
-        return; 
-    }
-
+    if (pointer == NULL) TLFATAL("pointer is null");
     tl_platform_memory_hfree(pointer);
 
     registry.allocated -= size;
     registry.ofTypeSize[type] -= size;
     registry.oftypeAmmount[type]--;
 
-    TLDPOP;
+    TLDRE;    
 }
 
 void tl_memory_zero(void* pointer, u64 size) {
     TLDPUSH;
 
-    if (pointer == NULL) {
-        TLFATAL("pointer is null");
-        TLDPOP;
-        return;
-    }
-
+    if (pointer == NULL) TLFATAL("pointer is null");
     tl_platform_memory_set(pointer, size, 0);
 
-    TLDPOP;
+    TLDRE;
 }
 
 void tl_memory_copy(void* source, u64 size, void* target) {
     TLDPUSH;
 
-    if (size == 0) {
-        TLFATAL("size is zero");
-        TLDPOP;
-        return;
-    }
-
-    if (source == NULL) {
-        TLFATAL("source is null");
-        TLDPOP;
-        return;
-    }
-
-    if (target == NULL) {
-        TLFATAL("target is null");
-        TLDPOP;
-        return;
-    }
-
+    if (size == 0) TLFATAL("size is zero");
+    if (source == NULL) TLFATAL("source is null");
+    if (target == NULL) TLFATAL("target is null");
     tl_platform_memory_copy(source, size, target);
 
-    TLDPOP;
+    TLDRE;
 }
 
 void tl_memory_set(void* pointer, u64 size, i32 value) {
     TLDPUSH;
 
-    if (pointer == NULL) {
-        TLFATAL("pointer is null");
-        TLDPOP;
-        return;
-    }
-
+    if (pointer == NULL) TLFATAL("pointer is null");
     tl_platform_memory_set(pointer, size, value);
 
-    TLDPOP;
+    TLDRE;
 }
 
 static const char* tl_memory_label(TLMemoryType type) {
@@ -139,11 +99,9 @@ b8 tl_memory_terminate(void) {
         TLERROR("Memory leaked");
         for (int i = 0; i < TL_MEMORY_MAXIMUM; ++i) {
             if (registry.ofTypeSize[i] == 0) continue;
-
             TLERROR("%-24s [%-2d]: %llu", tl_memory_label(i), registry.oftypeAmmount[i], registry.ofTypeSize[i]);
         }
     }
-
-    TLDPOP;
-    return true;
+    
+    TLDRV(true);
 }

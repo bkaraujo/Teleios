@@ -6,9 +6,12 @@
 
 b8 tl_diagnostic_initialize(void);
 b8 tl_diagnostic_terminate(void);
+void tl_diagnostics_push(const TLDiagnostic* diagnostic);
+void tl_diagnostics_pop(void);
+void tl_diagnostics_print(void);
+TLDiagnostic* tl_diagnostics_peek(void);
 
 #if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
-#   define TLDPOP tl_diagnostics_pop()
 #   define TLDPRINT tl_diagnostics_print()
 #   define TLDPUSH \
     { \
@@ -18,19 +21,15 @@ b8 tl_diagnostic_terminate(void);
         diagnostic.function = __FUNCTION__; \
         tl_diagnostics_push(&diagnostic); \
     }
+
+#   define TLDRE { tl_diagnostics_pop(); return; }
+#   define TLDRV(value) { tl_diagnostics_pop(); return value; }
 #else
 #   define TLDPUSH
-#   define TLDPOP
 #   define TLDPRINT
+#   define TLDRE { return; }
+#   define TLDRV(value) { return value; }
 #endif // defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
-
-void tl_diagnostics_push(const TLDiagnostic* diagnostic);
-void tl_diagnostics_pop(void);
-void tl_diagnostics_print(void);
-TLDiagnostic* tl_diagnostics_peek(void);
-
-#define TLDRE { TLDPOP; return; }
-#define TLDRV(value) { TLDPOP; return value; }
 
 #define TLDERE(message) { TLERROR(message); TLDRE; }
 #define TLDWRE(message) { TLWARN(message); TLDRE; }

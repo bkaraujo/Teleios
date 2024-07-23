@@ -30,6 +30,7 @@ void tl_messaging_post(const u16 code, const TLMessage* message) {
     TLDPUSH;
 
     if (code >= TL_MESSAGE_ALL_KNOWN) TLFATAL("Message code %d beyond maximum capacity %llu", code, TL_MESSAGE_ALL_KNOWN);
+
     TLList* values = tl_map_values(of_codes, code);
     TLListNode* node = values->head;
     while (node != NULL) {
