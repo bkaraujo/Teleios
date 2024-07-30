@@ -1,6 +1,6 @@
 #include "teleios/teleios.h"
 
-TLMap* tl_map_create() {
+TLMap* tl_map_create(void) {
     TLDPUSH;
     TLMap* map = tl_memory_alloc(TL_MEMORY_CONTAINER_MAP, sizeof(TLMap));
     TLDRV(map);
@@ -112,7 +112,7 @@ TLOVERLOAD void tl_map_rem(TLMap* map, TLUlid* key) { TLMAPREM(map, key); }
 #define TLMAPVALUES(map,key) {                              \
     TLDPUSH;                                                \
     TLMapEntry* entry = tl_map_entry(map, key);             \
-    if (entry == NULL) TLDWRV("Key not found", NULL);       \
+    if (entry == NULL) TLDRV(NULL);                         \
     TLDRV(entry->values);                                   \
 }
 

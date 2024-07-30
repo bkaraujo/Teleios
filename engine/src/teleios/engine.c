@@ -17,7 +17,7 @@ static TLMessageChain tl_engine_messaging(const u16 code, const TLMessage* messa
         case TL_MESSAGE_APPLICATION_QUIT  : engine_state->running = false; break;
     }
 
-    TLDRV(TL_MESSAGE_AVALIABLE);
+    TLDRV(TL_MESSAGE_CHAIN_AVALIABLE);
 }
 
 TLAPI b8 tl_engine_pre_initialize(void) {
@@ -38,7 +38,9 @@ TLAPI b8 tl_engine_initialize(void) {
 
     if (!tl_messaging_initialize()) { TLDERV("Failed to initialize: Messaging Manager", false); }
 
-    tl_messaging_subscribe(TL_MESSAGE_ALL_KNOWN, tl_engine_messaging);
+    tl_messaging_subscribe(TL_MESSAGE_APPLICATION_PAUSE, tl_engine_messaging);
+    tl_messaging_subscribe(TL_MESSAGE_APPLICATION_RESUME, tl_engine_messaging);
+    tl_messaging_subscribe(TL_MESSAGE_APPLICATION_QUIT, tl_engine_messaging);
 
     if (!tl_input_initialize()) { TLDERV("Failed to initialize: Input Manager", false); }
     if (!tl_audio_initialize()) { TLDERV("Failed to initialize: Audio Manager", false); }
@@ -102,7 +104,7 @@ TLAPI b8 tl_engine_run(void) {
             0, 1, 3,   // first triangle
             1, 2, 3    // second triangle
         };
-        tl_graphics_geometry_elements_ui(geometry, TLARRLENGTH(indices, u32), indices);
+        tl_graphics_geometry_elements(geometry, TLARRLENGTH(indices, u32), indices);
         
         f32 vertices[] = {
             0.5f,  0.5f, 0.0f,  // right top

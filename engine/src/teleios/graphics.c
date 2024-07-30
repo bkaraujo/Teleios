@@ -388,7 +388,7 @@ static void tl_graphics_geometry_elements(TLGeometry* geometry, TLBufferType typ
 	TLDRE;
 }
 
-void tl_graphics_geometry_elements_ui(TLGeometry* geometry, u32 lenght, u32* elements) {
+TLOVERLOAD void tl_graphics_geometry_elements(TLGeometry* geometry, u32 lenght, u32* elements) {
     TLDPUSH;
 
     tl_graphics_geometry_elements(geometry, TL_BUFFER_TYPE_UINT1, lenght, elements);
@@ -396,7 +396,7 @@ void tl_graphics_geometry_elements_ui(TLGeometry* geometry, u32 lenght, u32* ele
 	TLDRE;
 }
 
-void tl_graphics_geometry_elements_us(TLGeometry* geometry, u32 lenght, u16* elements) {
+TLOVERLOAD void tl_graphics_geometry_elements(TLGeometry* geometry, u32 lenght, u16* elements) {
     TLDPUSH;
 
     tl_graphics_geometry_elements(geometry, TL_BUFFER_TYPE_USHORT1, lenght, elements);

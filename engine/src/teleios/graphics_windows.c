@@ -106,7 +106,7 @@ static TLMessageChain tl_graphics_events(const u16 code, const TLMessage* messag
         } break;
     }
 
-	TLDRV(TL_MESSAGE_AVALIABLE);
+	TLDRV(TL_MESSAGE_CHAIN_AVALIABLE);
 }
 
 #if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)

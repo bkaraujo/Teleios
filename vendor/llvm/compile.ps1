@@ -5,16 +5,18 @@ param (
     [string]$IFlags="", 
     [string]$DFlags=""
 ) 
-
-$BUILDFS = "$ROOTFS\build"
-$TARGETFS = "$BUILDFS\$Target"
-
+# ##############################################################################
+# Current script globals
+# ##############################################################################
+$global:success=0
 # ##############################################################################
 # script initialization
 # Caches initial location
 # ##############################################################################
 Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")] Compiling $Location"
 $ROOTFS = Get-Location
+$BUILDFS = "$ROOTFS\build"
+$TARGETFS = "$BUILDFS\$Target"
 # ##############################################################################
 # Creates build folder if it not exists
 # Set location to build folder
@@ -27,31 +29,37 @@ Set-Location "$TARGETFS"
 # Invoke the compiler
 # ##############################################################################
 foreach ($folder in Get-ChildItem $Location | Where-Object {$_.PSIsContainer} | Foreach-Object {$_.Name}) {
-    $FDir = "$TARGETFS/$folder"
-    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")]   Compiling $FDir"
+    $TargetFolder = "$TARGETFS/$folder"
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")]   Compiling $TargetFolder"
     
-    if (Test-Path -Path "$FDir" ){}
-    else { New-Item -ItemType Directory "$FDir" -Force | Out-Null }
+    if (Test-Path -Path "$TargetFolder" ){}
+    else { New-Item -ItemType Directory "$TargetFolder" -Force | Out-Null }
     
-    Set-Location "$FDir"
+    Set-Location "$TargetFolder"
     $(Get-ChildItem -Path "$Location/$folder" -Filter "*.c" -Recurse -File) | Foreach-Object -ThrottleLimit 8 -Parallel {
+        # ===============================================
+        # Calculate the current file hash
+        # ===============================================
         $Hash = $(Get-FileHash -Path "$PSItem" -Algorithm SHA1).Hash
-        $ShaFile = "$USING:FDir/$($PSItem.BaseName).sha1"
-
-        # Create the shafile for the first execution
+        # ===============================================
+        # Create the shafile if it dont exists
+        # ===============================================
+        $ShaFile = "$USING:TargetFolder/$($PSItem.BaseName).sha1"
         if (Test-Path -Path $ShaFile) {} 
         else { New-Item -ItemType File -Path $ShaFile | Out-Null }
-
+        # ===============================================
+        # If the hash changed compile the file
+        # ===============================================
         if ($Hash -ne $(Get-Content $ShaFile | Select-Object -First 1)) { 
             $Hash > $ShaFile
+            "clang -std=c11 -Wall -Werror -march=x86-64 $USING:CFlags $USING:IFlags $USING:DFlags -c $PSItem" > "$USING:TargetFolder/$($PSItem.BaseName).cmd"
 
-            "clang -std=c11 -Wall -Werror -march=x86-64 $USING:CFlags $USING:IFlags $USING:DFlags -c $PSItem" > "$FDir/$($PSItem.BaseName).cmd"
-            # Perform the compilation and store the result code
             $global:LastExitCode = 0;
             Invoke-Expression -Command "clang -std=c11 -Wall -Werror -march=x86-64 $USING:CFlags $USING:IFlags $USING:DFlags -c $PSItem"
             if ($LastExitCode -ne 0) {
                 Remove-Item -Path $ShaFile | Out-Null
-                return 1
+                $global:success = 1
+                Break
             }
         }
     }
@@ -60,3 +68,4 @@ foreach ($folder in Get-ChildItem $Location | Where-Object {$_.PSIsContainer} | 
 # Restores the original location
 # ##############################################################################
 Set-Location $ROOTFS
+return $global:success

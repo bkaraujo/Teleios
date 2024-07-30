@@ -20,8 +20,8 @@ TLGeometry* tl_graphics_geometry_create(TLGeometryCreateInfo* specification);
 void tl_graphics_geometry_destroy(TLGeometry* geometry);
 void tl_graphics_geometry_bind(TLGeometry* geometry);
 void tl_graphics_geometry_vertices(TLGeometry* geometry, u32 lenght, f32* vertices);
-void tl_graphics_geometry_elements_ui(TLGeometry* geometry, u32 lenght, u32* elements);
-void tl_graphics_geometry_elements_us(TLGeometry* geometry, u32 lenght, u16* elements);
+TLOVERLOAD void tl_graphics_geometry_elements(TLGeometry* geometry, u32 lenght, u32* elements);
+TLOVERLOAD void tl_graphics_geometry_elements(TLGeometry* geometry, u32 lenght, u16* elements);
 // #####################################################################################################
 //
 //                                           T E X T U R E

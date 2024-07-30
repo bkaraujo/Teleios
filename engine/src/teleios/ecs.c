@@ -199,9 +199,9 @@ static b8 tl_ecs_entity_purger(void* pointer) {
 b8 tl_ecs_terminate(void) {
     TLDPUSH;
     
-    tl_list_destroy(entities, tl_ecs_entity_purger);
-    tl_map_destroy(of_entities, tl_list_purger_noop);
-    tl_map_destroy(of_components, tl_list_purger_noop);
+    tl_list_destroy(entities, tl_ecs_entity_purger); entities = NULL;
+    tl_map_destroy(of_entities, tl_list_purger_noop); of_entities = NULL;
+    tl_map_destroy(of_components, tl_list_purger_noop); of_components = NULL;
 
     TLDRV(true);
 }

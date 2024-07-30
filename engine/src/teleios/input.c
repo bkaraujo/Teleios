@@ -20,7 +20,7 @@ static TLMessageChain tl_input_handle(const u16 code, const TLMessage* message) 
         case TL_MESSAGE_INPUT_MOUSE_MOVED: mouse_pos.x = message->i32[0]; mouse_pos.y = message->i32[1]; break;
     }
 
-    TLDRV(TL_MESSAGE_AVALIABLE);
+    TLDRV(TL_MESSAGE_CHAIN_AVALIABLE);
 }
 
 b8 tl_input_initialize(void) {

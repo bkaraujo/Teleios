@@ -9,10 +9,10 @@
 #   error "C11 not supported"
 #endif
 
-#include "stddef.h"
-#include "stdbool.h"
-#include "stdint.h"
-#include "assert.h"
+#include <stddef.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <assert.h>
 
 // ############################################################################
 //
@@ -168,9 +168,9 @@ typedef struct TLTimer TLTimer;
 // 
 // ############################################################################
 typedef enum {
-    TL_MESSAGE_AVALIABLE,
-    TL_MESSAGE_COMSUMED,
-    TL_MESSAGE_MAXIMUM
+    TL_MESSAGE_CHAIN_AVALIABLE,
+    TL_MESSAGE_CHAIN_COMSUMED,
+    TL_MESSAGE_CHAIN_MAXIMUM
 } TLMessageChain;
 
 typedef union {
