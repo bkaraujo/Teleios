@@ -52,7 +52,8 @@ foreach ($folder in Get-ChildItem $Location | Where-Object {$_.PSIsContainer} | 
         # ===============================================
         if ($Hash -ne $(Get-Content $ShaFile | Select-Object -First 1)) { 
             $Hash > $ShaFile
-            "clang -std=c11 -Wall -Werror -march=x86-64 $USING:CFlags $USING:IFlags $USING:DFlags -c $PSItem" > "$USING:TargetFolder/$($PSItem.BaseName).cmd"
+            Write-Host "clang -std=c11 -Wall -Werror -march=x86-64 $USING:CFlags $USING:IFlags $USING:DFlags -c $PSItem"
+            Set-Content -Path "$USING:TargetFolder/$($PSItem.BaseName).cmd" -Value "clang -std=c11 -Wall -Werror -march=x86-64 $USING:CFlags $USING:IFlags $USING:DFlags -c $PSItem"
 
             $global:LastExitCode = 0;
             Invoke-Expression -Command "clang -std=c11 -Wall -Werror -march=x86-64 $USING:CFlags $USING:IFlags $USING:DFlags -c $PSItem"
