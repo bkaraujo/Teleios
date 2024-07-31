@@ -50,8 +50,8 @@ void tl_list_rem(TLList* list, void* payload) {
                 list->tail = NULL;
             }
 
+            tl_memory_free(TL_MEMORY_CONTAINER_LIST_ENTRY, sizeof(TLListNode), node);
             TLDRE;
-            return;
         }
 
         node = node->next;
