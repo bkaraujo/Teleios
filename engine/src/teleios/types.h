@@ -83,10 +83,10 @@ TLASSERT(sizeof(u16) == 2, "Expected u16 to be 2 bytes.");
 TLASSERT(sizeof(u32) == 4, "Expected u32 to be 4 bytes.");
 TLASSERT(sizeof(u64) == 8, "Expected u64 to be 8 bytes.");
 
-#define U8MAX               UINT8_MAX
-#define U16MAX              UINT16_MAX
-#define U32MAX              UINT32_MAX
-#define U64MAX              UINT64_MAX
+#define U8MAX               0xff
+#define U16MAX              0xffff
+#define U32MAX              0xffffffff
+#define U64MAX              0xffffffffffffffff
 
 typedef int8_t              i8;  // -128 to 127
 typedef int16_t             i16; // -32_768 to 32_767

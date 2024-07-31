@@ -70,6 +70,7 @@ void  tl_list_destroy(TLList* list, b8(*purger)(void*)) {
         TLListNode* node = list->head;
         while (node != NULL) {
             TLListNode* next = node->next;
+            if (node->payload != NULL) purger(node->payload);
             tl_memory_free(TL_MEMORY_CONTAINER_LIST_ENTRY, sizeof(TLListNode), node);
             node = next;
         }

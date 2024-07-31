@@ -3,8 +3,8 @@
 
 typedef struct {
     u64 allocated;
-    u64 ofTypeSize[TL_MEMORY_MAXIMUM];
-    i64 oftypeAmmount[TL_MEMORY_MAXIMUM];
+    u64 of_type_size[TL_MEMORY_MAXIMUM];
+    i64 of_type_count[TL_MEMORY_MAXIMUM];
 } TLMemoryRegistry;
 
 static TLMemoryRegistry registry;
@@ -24,8 +24,8 @@ void* tl_memory_alloc(TLMemoryType type, u64 size) {
     if (block == NULL) TLFATAL("Failed to allocate %llu bytes", size);
 
     registry.allocated += size;
-    registry.ofTypeSize[type] += size;
-    registry.oftypeAmmount[type]++;
+    registry.of_type_size[type] += size;
+    registry.of_type_count[type]++;
 
     TLDRV(block);
 }
@@ -37,8 +37,8 @@ void tl_memory_free(TLMemoryType type, u64 size, void* pointer) {
     tl_platform_memory_hfree(pointer);
 
     registry.allocated -= size;
-    registry.ofTypeSize[type] -= size;
-    registry.oftypeAmmount[type]--;
+    registry.of_type_size[type] -= size;
+    registry.of_type_count[type]--;
 
     TLDRE;    
 }
@@ -98,8 +98,8 @@ b8 tl_memory_terminate(void) {
     if (registry.allocated != 0) {
         TLERROR("Memory leaked");
         for (int i = 0; i < TL_MEMORY_MAXIMUM; ++i) {
-            if (registry.ofTypeSize[i] == 0) continue;
-            TLERROR("%-24s [%-2d]: %llu", tl_memory_label(i), registry.oftypeAmmount[i], registry.ofTypeSize[i]);
+            if (registry.of_type_size[i] == 0) continue;
+            TLERROR("%-24s [%-2d]: %llu", tl_memory_label(i), registry.of_type_count[i], registry.of_type_size[i]);
         }
     }
     

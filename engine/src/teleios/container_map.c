@@ -132,7 +132,7 @@ void tl_map_destroy(TLMap* map, b8 (*purger)(void*)) {
         node->payload = NULL;
         node = node->next;
     }
-
-    tl_memory_free(TL_MEMORY_CONTAINER_MAP, sizeof(TLMap), (void*) map);
+    
+    tl_list_destroy(map, purger);
     TLDRE;
 };
