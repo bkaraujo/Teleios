@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Timestamp on console log
-- Concurrent compilation up to 8 files per folder
+- Dependent compilation based on header
 
 ### Changed
+
+- Concurrent compilation up to 8 files per folder
 
 ### Deprecated
 
