@@ -48,13 +48,21 @@ TLDiagnostic* tl_diagnostics_peek(void) {
 void tl_diagnostics_pop(void) {
     used--;
     // TLTRACE("[OUT] %s", registry[used].function);
+#if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
+    // =================================================================
+    // Erase memory for visual debug aid
+    // =================================================================
     tl_platform_memory_set((void*)(registry + used), sizeof(TLDiagnostic), 0);
+#endif
 }
 
 void tl_diagnostics_print(void) {
     if (used == 0) return;
 
     TLERROR("Stacktrace: ");
+    // =================================================================
+    // Top to bottom print of all records
+    // =================================================================
     for (int i = used - 1; i >=  0 ; --i) {
         TLDiagnostic entry = registry[i];
         TLERROR("  at %s:%d %s", entry.filename, entry.linenumber, entry.function);
@@ -62,11 +70,12 @@ void tl_diagnostics_print(void) {
 }
 
 b8 tl_diagnostic_terminate(void) {
-    TLDPUSH;
     TLTRACE("Diagnostic stack max depth: %d", max);
     if (registry == NULL) { return true; }
+    
     tl_platform_memory_hfree(registry);
     registry = NULL;
     length = used = max = 0;
+
     return true;
 }
