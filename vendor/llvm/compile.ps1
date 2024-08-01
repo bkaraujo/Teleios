@@ -21,8 +21,10 @@ $TARGETFS = "$BUILDFS\$Target"
 # Creates build folder if it not exists
 # Set location to build folder
 # ##############################################################################
-if (Test-Path -Path "$TARGETFS" ){}
-else { New-Item -ItemType Directory "$TARGETFS" -Force | Out-Null }
+if (Test-Path -Path "$TARGETFS" ) {} else { 
+    New-Item -ItemType Directory "$TARGETFS" -Force 1>$null 2>$null
+}
+
 Set-Location "$TARGETFS"
 # ##############################################################################
 # Blob the files that will be compiled
@@ -32,8 +34,9 @@ foreach ($folder in Get-ChildItem $Location | Where-Object {$_.PSIsContainer} | 
     $TargetFolder = "$TARGETFS/$folder"
     Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")]   Compiling $TargetFolder"
     
-    if (Test-Path -Path "$TargetFolder" ){}
-    else { New-Item -ItemType Directory "$TargetFolder" -Force | Out-Null }
+    if (Test-Path -Path "$TargetFolder" ) {} else { 
+        New-Item -ItemType Directory "$TargetFolder" -Force 1>$null 2>$null
+    }
     
     Set-Location "$TargetFolder"
     $(Get-ChildItem -Path "$Location/$folder" -Filter "*.c" -Recurse -File) | Foreach-Object -ThrottleLimit 8 -Parallel {
@@ -45,8 +48,9 @@ foreach ($folder in Get-ChildItem $Location | Where-Object {$_.PSIsContainer} | 
         # Create the shafile if it dont exists
         # ===============================================
         $ShaFile = "$USING:TargetFolder/$($PSItem.BaseName).sha1"
-        if (Test-Path -Path $ShaFile) {} 
-        else { New-Item -ItemType File -Path $ShaFile | Out-Null }
+        if (Test-Path -Path $ShaFile) {} else { 
+            New-Item -ItemType File -Path $ShaFile 1>$null 2>$null 
+        }
         # ===============================================
         # If the hash changed compile the file
         # ===============================================
@@ -58,7 +62,7 @@ foreach ($folder in Get-ChildItem $Location | Where-Object {$_.PSIsContainer} | 
             $global:LastExitCode = 0;
             Invoke-Expression -Command "clang -std=c11 -Wall -Werror -march=x86-64 $USING:CFlags $USING:IFlags $USING:DFlags -c $PSItem"
             if ($LastExitCode -ne 0) {
-                Remove-Item -Path $ShaFile | Out-Null
+                Remove-Item -Path $ShaFile 1>$null 2>$null
                 $global:success = 1
                 Break
             }

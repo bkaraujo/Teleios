@@ -17,8 +17,9 @@ $ROOTFS = Get-Location
 # Creates build folder if it not exists
 # Set location to build folder
 # ##############################################################################
-if (Test-Path -Path "$TARGETFS" ){}
-else { New-Item -ItemType Directory "$TARGETFS" -Force 1>$null 2>$null }
+if (Test-Path -Path "$TARGETFS" ) {} else { 
+    New-Item -ItemType Directory "$TARGETFS" -Force 1>$null 2>$null 
+}
 
 Set-Location "$TARGETFS"
 # ##############################################################################

@@ -18,8 +18,10 @@ $ROOTFS = Get-Location
 # Creates build folder if it not exists
 # Set location to build folder
 # ##############################################################################
-if (Test-Path -Path "$TARGETFS" ){}
-else { Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")] Link source folder $TARGETFS not found" ; return 1 }
+if (Test-Path -Path "$TARGETFS" ) {} else { 
+    Write-Host "[$(Get-Date -Format "dd/MM/yyyy HH:mm K")] Link source folder $TARGETFS not found"
+    return 1
+}
 
 Set-Location "$TARGETFS"
 # ##############################################################################
