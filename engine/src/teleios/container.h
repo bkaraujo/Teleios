@@ -20,6 +20,7 @@ TLOVERLOAD void tl_map_del(TLMap* map, u16 key, void* payload);
 TLOVERLOAD void tl_map_del(TLMap* map, TLUlid* key, void* payload);
 TLOVERLOAD void tl_map_rem(TLMap* map, u16 key);
 TLOVERLOAD void tl_map_rem(TLMap* map, TLUlid* key);
+TLOVERLOAD void tl_map_rem(TLMap* map, TLMapEntry* entry);
 TLOVERLOAD TLList* tl_map_values(TLMap* map, u16 key);
 TLOVERLOAD TLList* tl_map_values(TLMap* map, TLUlid* key);
 

@@ -99,7 +99,7 @@ TLShaderProgram* tl_resource_shader_program(const char* name, u8 length, const c
     }
     
     tl_memory_free(TL_MEMORY_GRAPHICS, length * sizeof(TLShaderSource), sources);
-    if (shader == NULL) { TLERROR("Failed to create shader program");  TLDRV(NULL); }
+    if (shader == NULL) TLDERV("Failed to create shader program", NULL);
 
     TLDRV(shader);
 }

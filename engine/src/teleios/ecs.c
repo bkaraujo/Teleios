@@ -192,7 +192,11 @@ b8 tl_ecs_initialize(void) {
 
 static b8 tl_ecs_entity_purger(void* pointer) {
     TLDPUSH;
-    tl_ecs_entity_destroy((TLUlid*) pointer);
+    
+    if (pointer != NULL) {
+        tl_ecs_entity_destroy((TLUlid*) pointer);
+    }
+
     TLDRV(true);
 }
 

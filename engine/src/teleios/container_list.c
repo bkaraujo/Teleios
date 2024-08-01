@@ -37,6 +37,40 @@ void tl_list_rem(TLList* list, void* payload) {
     TLDPUSH;
     if (list == NULL) TLDWRE("List is NULl");
  
+    if (list->head->payload == payload) {
+        TLListNode* node = list->head;
+
+        if (list->length == 1) {
+            list->head = NULL;
+            list->tail = NULL;
+        } else {
+            list->head = node->next;
+            list->head->previous = NULL;
+        }
+        
+        list->length--;
+        tl_memory_free(TL_MEMORY_CONTAINER_LIST_ENTRY, sizeof(TLListNode), node);
+
+        TLDRE;
+    }
+    
+    if (list->tail->payload == payload) {
+        TLListNode* node = list->head;
+
+        if (list->length == 1) {
+            list->head = NULL;
+            list->tail = NULL;
+        } else {
+            list->tail = node->previous;
+            list->tail->next = NULL;
+        }
+        
+        list->length--;
+        tl_memory_free(TL_MEMORY_CONTAINER_LIST_ENTRY, sizeof(TLListNode), node);
+
+        TLDRE;
+    }
+
     TLListNode* node = list->head;
     while (node != NULL) {
         if (node->payload == payload) {
