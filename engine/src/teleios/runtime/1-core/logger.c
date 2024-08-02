@@ -1,5 +1,6 @@
-#include "teleios/teleios.h"
 #include "teleios/runtime/platform.h"
+#include "teleios/runtime/core.h"
+#include "teleios/filesystem.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -48,4 +49,8 @@ TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenum
     // =================================================================
     tl_platform_console(level, logger_message);
     tl_platform_memory_sfree(logger_message);
+
+    if (level == TL_LOG_LEVEL_FATAL) {
+        exit(99);
+    }
 }

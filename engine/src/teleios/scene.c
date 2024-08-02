@@ -17,7 +17,9 @@ u8 tl_scene_create(const char* name) {
         scenes[i].name = tl_string_clone(name);
         TLDRV(i);
     }
+
     TLFATAL("Failed to create scene");
+    TLDRV(0);
 }
 
 void tl_scene_set_initializer(u8 scene, b8(*initializer)(void)) {

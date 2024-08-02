@@ -11,16 +11,13 @@
 // ==================================================
 #include "teleios/types.h"
 #include "teleios/messaging.h"
-#include "teleios/logger.h"
 // ==================================================
 // Development APIs
 // ==================================================
-#include "teleios/diagnostic.h"
 // ==================================================
 // Utility APIs
 // ==================================================
 #include "teleios/container.h"
-#include "teleios/chrono.h"
 #include "teleios/memory.h"
 #include "teleios/resource.h"
 #include "teleios/string.h"

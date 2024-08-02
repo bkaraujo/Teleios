@@ -1,8 +1,8 @@
-#ifndef TELEIOS_DIAGNOSTIC
-#define TELEIOS_DIAGNOSTIC
+#ifndef TELEIOS_RUNTIME_CORE_DIAGNOSTIC
+#define TELEIOS_RUNTIME_CORE_DIAGNOSTIC
 
 #include "teleios/types.h"
-#include "teleios/logger.h"
+#include "teleios/runtime/core.h"
 
 b8 tl_diagnostic_initialize(void);
 b8 tl_diagnostic_terminate(void);
@@ -43,4 +43,4 @@ TLStack* tl_diagnostics_peek(void);
 #define TLDDRV(message, value) { TLDEBUG(message); TLDRV(value); }
 #define TLDTRV(message, value) { TLTRACE(message); TLDRV(value); }
 
-#endif // TELEIOS_DIAGNOSTIC
+#endif // TELEIOS_RUNTIME_CORE_DIAGNOSTIC

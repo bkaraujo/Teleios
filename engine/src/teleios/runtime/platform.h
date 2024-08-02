@@ -7,7 +7,6 @@
 #include "teleios/runtime/0-platform/crypto.h"
 #include "teleios/runtime/0-platform/window.h"
 #include "teleios/runtime/0-platform/console.h"
-#include "teleios/runtime/0-platform/filesystem.h"
 
 void* tl_platform_handle(void);
 b8 tl_platform_initialize(void);

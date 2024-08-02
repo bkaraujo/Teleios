@@ -1,5 +1,5 @@
-#ifndef TELEIOS_CHRONO
-#define TELEIOS_CHRONO
+#ifndef TELEIOS_RUNTIME_CORE_CHRONO
+#define TELEIOS_RUNTIME_CORE_CHRONO
 
 #include "teleios/types.h"
 
@@ -17,4 +17,4 @@ TLAPI u64 tl_chrono_timer_micros(TLTimer* timer);
 TLAPI f64 tl_chrono_timer_millis(TLTimer* timer);
 TLAPI f64 tl_chrono_timer_seconds(TLTimer* timer);
 
-#endif // TELEIOS_CHRONO
+#endif // TELEIOS_RUNTIME_CORE_CHRONO

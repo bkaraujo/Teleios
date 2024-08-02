@@ -1,6 +1,5 @@
-#include "teleios/diagnostic.h"
 #include "teleios/runtime/platform.h"
-#include "teleios/logger.h"
+#include "teleios/runtime/core.h"
 
 static u8 max = 0;
 static u8 used = 0;

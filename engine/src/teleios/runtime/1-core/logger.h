@@ -1,13 +1,12 @@
-#ifndef TELEIOS_LOGGER
-#define TELEIOS_LOGGER
+#ifndef TELEIOS_RUNTIME_CORE_LOGGER
+#define TELEIOS_RUNTIME_CORE_LOGGER
 
-#include <stdlib.h>
 #include "teleios/types.h"
-#include "teleios/diagnostic.h"
+#include "teleios/runtime/core.h"
 
 TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenumber, const char* message, ...);
 
-#define TLFATAL(message, ...) { tl_logger_console(TL_LOG_LEVEL_FATAL, __FILE__, __LINE__, message, ##__VA_ARGS__); TLDPUSH; TLDPRINT; exit(99); }
+#define TLFATAL(message, ...) tl_logger_console(TL_LOG_LEVEL_FATAL, __FILE__, __LINE__, message, ##__VA_ARGS__)
 #define TLERROR(message, ...) tl_logger_console(TL_LOG_LEVEL_ERROR, __FILE__, __LINE__, message, ##__VA_ARGS__)
 #define TLWARN(message, ...) tl_logger_console(TL_LOG_LEVEL_WARN, __FILE__, __LINE__, message, ##__VA_ARGS__)
 #define TLINFO(message, ...) tl_logger_console(TL_LOG_LEVEL_INFO, __FILE__, __LINE__, message, ##__VA_ARGS__)
@@ -20,4 +19,4 @@ TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenum
 #   define TLTRACE(message, ...) 
 #endif // defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
 
-#endif // TELEIOS_LOGGER
+#endif // TELEIOS_RUNTIME_CORE_LOGGER
