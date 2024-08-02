@@ -31,7 +31,7 @@ Set-Location "$TARGETFS"
 Remove-Item -Path "$BUILDFS/$Output.*" -Force 1>$null 2>$null
 
 $global:LastExitCode = 0;
-Invoke-Expression "clang -g $LFlags $(Get-ChildItem -Path "$TARGETFS" -Filter "*.o" -Recurse -File) -o $BUILDFS/$Output.exe" 1>$null 2>$null
+Invoke-Expression "clang -g $LFlags $(Get-ChildItem -Path "$TARGETFS" -Filter "*.o" -Recurse -File) -o $BUILDFS/$Output.exe"
 if ($LastExitCode -ne 0) { return $LastExitCode }
 # ##############################################################################
 # Restores the original location

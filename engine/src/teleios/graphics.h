@@ -27,11 +27,12 @@ TLOVERLOAD void tl_graphics_geometry_elements(TLGeometry* geometry, u32 lenght, 
 //                                           T E X T U R E
 //
 // #####################################################################################################
-TLTexture* tl_graphics_texture_create(void);
+
+TLTexture* tl_graphics_texture_create(TLTextureCreateInfo* info);
 void tl_graphics_texture_destroy(TLTexture* texture);
-void tl_graphics_texture_bind(TLTexture* texture);
-void tl_graphics_texture_bind_at(TLTexture* texture, u8 slot);
-void tl_graphics_texture_load(TLTexture* texture, const char* path);
+TLOVERLOAD void tl_graphics_texture_bind(TLTexture* texture);
+TLOVERLOAD void tl_graphics_texture_bind(TLTexture* texture, u8 slot);
+void tl_graphics_texture_load(TLTextureLoadInfo* info);
 // #####################################################################################################
 //
 //                                           R E N D E R E R

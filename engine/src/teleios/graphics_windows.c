@@ -7,6 +7,9 @@
 #include "teleios/messagingcodes.h"
 #include "glad/glad.h"
 #include "glad/wgl.h"
+#include "teleios/graphics_helpers.h"
+
+TLGraphicsState state;
 
 // #####################################################################################################
 //
@@ -228,6 +231,8 @@ b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
         info->clear_color.a
     );
 	
+    tl_memory_zero(&state, sizeof(TLGraphicsState));
+
 	TLDRV(true);
 }
 
