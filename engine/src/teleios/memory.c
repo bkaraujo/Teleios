@@ -11,19 +11,28 @@ static TLMemoryRegistry registry;
 
 static const char* tl_memory_label(TLMemoryType type) {
     switch (type) {
-        case TL_MEMORY_ULID          : return "TL_MEMORY_ULID";
-        case TL_MEMORY_TIMER         : return "TL_MEMORY_TIMER";
-        case TL_MEMORY_AUDIO         : return "TL_MEMORY_AUDIO";
-        case TL_MEMORY_STRING        : return "TL_MEMORY_STRING";
-        case TL_MEMORY_GRAPHICS      : return "TL_MEMORY_GRAPHICS";
-        case TL_MEMORY_RESOURCE      : return "TL_MEMORY_RESOURCE";
-        case TL_MEMORY_FILESYSTEM    : return "TL_MEMORY_FILESYSTEM";
-        case TL_MEMORY_ECS_ENTITY    : return "TL_MEMORY_ECS_ENTITY";
-        case TL_MEMORY_ECS_COMPONENT : return "TL_MEMORY_ECS_COMPONENT";
-        case TL_MEMORY_CONTAINER_MAP : return "TL_MEMORY_CONTAINER_MAP";
+        case TL_MEMORY_ULID: return "TL_MEMORY_ULID";
+        case TL_MEMORY_TIMER: return "TL_MEMORY_TIMER";
+        case TL_MEMORY_STRING: return "TL_MEMORY_STRING";
+        
+        case TL_MEMORY_AUDIO: return "TL_MEMORY_AUDIO";
+        
+case TL_MEMORY_CONTAINER_MAP: return "TL_MEMORY_CONTAINER_MAP";
         case TL_MEMORY_CONTAINER_MAP_ENTRY : return "TL_MEMORY_CONTAINER_MAP_ENTRY";
         case TL_MEMORY_CONTAINER_LIST: return "TL_MEMORY_CONTAINER_LIST";
         case TL_MEMORY_CONTAINER_LIST_ENTRY: return "TL_MEMORY_CONTAINER_LIST_ENTRY";
+        
+
+        case TL_MEMORY_GRAPHICS_IMAGE: return "TL_MEMORY_GRAPHICS_IMAGE";
+        case TL_MEMORY_GRAPHICS_SHADER: return "TL_MEMORY_GRAPHICS_SHADER";
+        case TL_MEMORY_GRAPHICS_TEXTURE: return "TL_MEMORY_GRAPHICS_TEXTURE";
+        case TL_MEMORY_GRAPHICS_GEOMETRY: return "TL_MEMORY_GRAPHICS_GEOMETRY";
+
+        case TL_MEMORY_RESOURCE: return "TL_MEMORY_RESOURCE";
+        case TL_MEMORY_FILESYSTEM: return "TL_MEMORY_FILESYSTEM";
+        
+        case TL_MEMORY_ECS_ENTITY: return "TL_MEMORY_ECS_ENTITY";
+        case TL_MEMORY_ECS_COMPONENT: return "TL_MEMORY_ECS_COMPONENT";
         
         default: return "????";
     }

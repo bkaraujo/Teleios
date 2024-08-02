@@ -204,7 +204,10 @@ typedef enum {
     TL_MEMORY_CONTAINER_LIST_ENTRY,
     TL_MEMORY_CONTAINER_MAP,
     TL_MEMORY_CONTAINER_MAP_ENTRY,
-    TL_MEMORY_GRAPHICS,
+    TL_MEMORY_GRAPHICS_SHADER,
+    TL_MEMORY_GRAPHICS_TEXTURE,
+    TL_MEMORY_GRAPHICS_GEOMETRY,
+    TL_MEMORY_GRAPHICS_IMAGE,
     TL_MEMORY_FILESYSTEM,
     TL_MEMORY_RESOURCE,
     TL_MEMORY_STRING,
@@ -254,7 +257,7 @@ typedef struct {
 } TLDiagnostic;
 // ############################################################################
 //
-//                                AUDIo TYPES
+//                                AUDIO TYPES
 // 
 // ############################################################################
 typedef struct {
@@ -393,23 +396,29 @@ typedef struct {
 } TLGeometry;
 
 typedef enum {
-    CLAMP_EDGE,
-    CLAMP_BORDER,
-    REPEAT,
-    MIRROR_REPEAT
+    TL_TEXTURE_2D,
+    TL_TEXTURE_3D
+} TLTextureTarget;
+
+typedef enum {
+    TL_TEXTURE_WRAP_CLAMP_EDGE,
+    TL_TEXTURE_WRAP_CLAMP_BORDER,
+    TL_TEXTURE_WRAP_REPEAT,
+    TL_TEXTURE_WRAP_MIRROR_REPEAT
 } TLTextureWrapMode;
 
 typedef enum {
-    NEAREST,
-    NEAREST_MIPMAP_NEAREST,
-    NEAREST_MIPMAP_LINEAR,
+    TL_TEXTURE_FILTER_NEAREST,
+    TL_TEXTURE_FILTER_NEAREST_MIPMAP_LINEAR,
+    TL_TEXTURE_FILTER_NEAREST_MIPMAP_NEAREST,
 
-    LINEAR,
-    LINEAR_MIPMAP_LINEAR,
-    LINEAR_MIPMAP_NEAREST,
+    TL_TEXTURE_FILTER_LINEAR,
+    TL_TEXTURE_FILTER_LINEAR_MIPMAP_LINEAR,
+    TL_TEXTURE_FILTER_LINEAR_MIPMAP_NEAREST,
 } TLTextureFilterMode;
-
 typedef struct {
+    TLTextureTarget target;
+    u8 mipmap;
     TLTextureWrapMode wrap_s;
     TLTextureWrapMode wrap_t;
     TLTextureFilterMode filter_min;
@@ -417,12 +426,32 @@ typedef struct {
 } TLTextureCreateInfo;
 
 typedef struct {
-    u32 handle;
-    const char* name;
-
+    const char* path;
     u32 width;
     u32 height;
+    u32 channels;
+    void* payload;
+    u64 size;
+} TLImage;
+
+typedef struct {
+    u32 handle;
+    TLImage* image;
+    u8 mipmap;
+    u64 size;
+    TLTextureWrapMode wrap_s;
+    TLTextureWrapMode wrap_t;
+    TLTextureFilterMode filter_min;
+    TLTextureFilterMode filter_mag;
 } TLTexture;
+
+typedef struct {
+    TLTexture* texture;
+    const char* path;
+    u32 image_format;
+    u32 storage_format;
+    TLBufferType type;
+} TLTextureLoadInfo;
 // ############################################################################
 //
 //                               GLM TYPES
