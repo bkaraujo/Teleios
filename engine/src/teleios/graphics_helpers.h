@@ -6,6 +6,7 @@
 typedef struct {
     u32 vao;
     u32 shader;
+    u32 texture;
 } TLGraphicsState;
 
 extern TLGraphicsState state;

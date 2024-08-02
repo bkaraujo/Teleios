@@ -4,7 +4,7 @@
 #include "stb/image.h"
 #include "teleios/graphics_helpers.h"
 
-static u32 tl_parse_texture_target(TLTextureTarget target) {
+u32 tl_parse_texture_target(TLTextureTarget target) {
     switch (target) {
         case TL_TEXTURE_2D: return GL_TEXTURE_2D;
         case TL_TEXTURE_3D: return GL_TEXTURE_3D;
@@ -13,7 +13,7 @@ static u32 tl_parse_texture_target(TLTextureTarget target) {
     TLFATAL("Unkown TLTextureTarget: %d", target);
 }
 
-static u32 tl_parse_texture_wrap_mode(TLTextureWrapMode mode) {
+u32 tl_parse_texture_wrap_mode(TLTextureWrapMode mode) {
     switch (mode) {
         case TL_TEXTURE_WRAP_CLAMP_EDGE: return GL_CLAMP_TO_EDGE;
         case TL_TEXTURE_WRAP_CLAMP_BORDER: return GL_CLAMP_TO_BORDER;
@@ -24,7 +24,7 @@ static u32 tl_parse_texture_wrap_mode(TLTextureWrapMode mode) {
     TLFATAL("Unkown TLTextuTLTextureWrapModereTarget: %d", mode);
 }
 
-static u32 tl_parse_texture_filter_mode(TLTextureFilterMode mode) {
+u32 tl_parse_texture_filter_mode(TLTextureFilterMode mode) {
     switch (mode) {
         case TL_TEXTURE_FILTER_NEAREST: return GL_NEAREST;
         case TL_TEXTURE_FILTER_NEAREST_MIPMAP_LINEAR: return GL_NEAREST_MIPMAP_LINEAR;
@@ -92,6 +92,8 @@ TLOVERLOAD void tl_graphics_texture_bind(TLTexture* texture) {
 
 TLOVERLOAD void tl_graphics_texture_bind(TLTexture* texture, u8 slot) {
     TLDPUSH;
+    if (state.texture == texture->handle) return;
+    state.texture = texture->handle;
     glBindTextureUnit(slot, texture->handle);
     TLDRE;
 }

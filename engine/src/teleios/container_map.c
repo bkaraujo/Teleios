@@ -33,4 +33,4 @@ void tl_map_destroy(TLMap* map, b8 (*purger)(void*)) {
     
     tl_memory_free(TL_MEMORY_CONTAINER_MAP, sizeof(TLMap), map);
     TLDRE;
-};
+}

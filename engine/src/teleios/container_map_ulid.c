@@ -63,7 +63,6 @@ TLOVERLOAD void tl_map_del(TLMap* map, TLUlid* key, void* payload) {
     TLDRE;
 }
 
-
 TLOVERLOAD void tl_map_rem(TLMap* map, TLUlid* key) {
     TLDPUSH;
     TLMapEntry* entry = tl_map_entry(map, key);

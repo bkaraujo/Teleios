@@ -198,7 +198,6 @@ static void tl_graphics_initialize_glfunctions(void) {
     TLDRE;
 }
 
-
 b8 tl_graphics_initialize(TLGraphicsCreateInfo* info) {
     TLDPUSH;
 	
