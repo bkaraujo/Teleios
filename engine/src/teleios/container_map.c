@@ -12,7 +12,7 @@ TLOVERLOAD void tl_map_rem(TLMap* map, TLMapEntry* entry) {
     
     tl_list_rem(map, entry); 
     tl_list_destroy(entry->values, tl_list_purger_noop);
-    tl_memory_free(TL_MEMORY_CONTAINER_MAP_ENTRY, sizeof(TLMapEntry), entry);
+    tl_memory_free(entry);
     TLDRE;
 }
 
@@ -26,11 +26,11 @@ void tl_map_destroy(TLMap* map, b8 (*purger)(void*)) {
         TLMapEntry* entry = (TLMapEntry*)map->head->payload;
 
         tl_list_destroy(entry->values, purger);
-        tl_memory_free(TL_MEMORY_CONTAINER_MAP_ENTRY, sizeof(TLMapEntry), entry);
+        tl_memory_free(entry);
 
         tl_list_rem(map, map->head->payload);
     }
     
-    tl_memory_free(TL_MEMORY_CONTAINER_MAP, sizeof(TLMap), map);
+    tl_memory_free(map);
     TLDRE;
 }

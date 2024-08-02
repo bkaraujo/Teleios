@@ -6,16 +6,16 @@
 
 b8 tl_diagnostic_initialize(void);
 b8 tl_diagnostic_terminate(void);
-void tl_diagnostics_push(const TLDiagnostic* diagnostic);
+void tl_diagnostics_push(const TLStack* diagnostic);
 void tl_diagnostics_pop(void);
 void tl_diagnostics_print(void);
-TLDiagnostic* tl_diagnostics_peek(void);
+TLStack* tl_diagnostics_peek(void);
 
 #if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
 #   define TLDPRINT tl_diagnostics_print()
 #   define TLDPUSH \
     { \
-        TLDiagnostic diagnostic; \
+        TLStack diagnostic; \
         diagnostic.filename = __FILE__; \
         diagnostic.linenumber = __LINE__; \
         diagnostic.function = __FUNCTION__; \

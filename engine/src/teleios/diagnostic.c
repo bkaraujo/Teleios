@@ -1,29 +1,29 @@
 #include "teleios/diagnostic.h"
-#include "teleios/platform.h"
+#include "teleios/runtime/platform.h"
 #include "teleios/logger.h"
 
 static u8 max = 0;
 static u8 used = 0;
 static u8 length = 10;
-static TLDiagnostic* registry;
+static TLStack* registry;
 
 b8 tl_diagnostic_initialize(void) {
     // =================================================================
     // Preallocate 10 positions
     // =================================================================
-    registry = (TLDiagnostic*) tl_platform_memory_halloc(length * sizeof(TLDiagnostic));
+    registry = (TLStack*) tl_platform_memory_halloc(TL_MEMORY_ENGINE_STACK, length * sizeof(TLStack));
     return true;
 }
 
-void tl_diagnostics_push(const TLDiagnostic* diagnostic) {
+void tl_diagnostics_push(const TLStack* diagnostic) {
     // TLTRACE("[IN ] %s", diagnostic->function);
     if (used >= length) {
         // =================================================================
         // Create the new array
         // Copy the content from the old to the new
         // =================================================================
-        TLDiagnostic* created = (TLDiagnostic*)tl_platform_memory_halloc((length + 10) * sizeof(TLDiagnostic));
-        tl_platform_memory_copy(registry, length * sizeof(TLDiagnostic), created);
+        TLStack* created = (TLStack*)tl_platform_memory_halloc(TL_MEMORY_ENGINE_STACK, (length + 10) * sizeof(TLStack));
+        tl_platform_memory_copy(registry, length * sizeof(TLStack), created);
         // =================================================================
         // Release the old array
         // Reassing the pointer to the newly created array
@@ -36,12 +36,12 @@ void tl_diagnostics_push(const TLDiagnostic* diagnostic) {
     // Append the new diagnostic to the array
     // Increase the length counter
     // =================================================================
-    tl_platform_memory_copy((void*)diagnostic, sizeof(TLDiagnostic), (void*) (registry + used));
+    tl_platform_memory_copy((void*)diagnostic, sizeof(TLStack), (void*) (registry + used));
     used++;
     if (used > max) max = used;
 }
 
-TLDiagnostic* tl_diagnostics_peek(void) {
+TLStack* tl_diagnostics_peek(void) {
     return &registry[used - 1];
 }
 
@@ -52,7 +52,7 @@ void tl_diagnostics_pop(void) {
     // =================================================================
     // Erase memory for visual debug aid
     // =================================================================
-    tl_platform_memory_set((void*)(registry + used), sizeof(TLDiagnostic), 0);
+    tl_platform_memory_set((void*)(registry + used), sizeof(TLStack), 0);
 #endif
 }
 
@@ -64,7 +64,7 @@ void tl_diagnostics_print(void) {
     // Top to bottom print of all records
     // =================================================================
     for (int i = used - 1; i >=  0 ; --i) {
-        TLDiagnostic entry = registry[i];
+        TLStack entry = registry[i];
         TLERROR("  at %s:%d %s", entry.filename, entry.linenumber, entry.function);
     }
 }

@@ -2,7 +2,7 @@
 #include "teleios/teleios.h"
 #include "teleios/messagingcodes.h"
 #include "teleios/state.h"
-#include "teleios/platform.h"
+#include "teleios/runtime/platform.h"
 
 TLEngineState* engine_state;
 static u64 frame_overflow = 0;
@@ -24,7 +24,7 @@ TLAPI b8 tl_engine_pre_initialize(void) {
     if (!tl_platform_initialize()) { TLDERV("Failed to initialize: Platform Abstraction", false); }
     if (!tl_diagnostic_initialize()) { TLDERV("Failed to initialize: Diagnostics", false); }
 
-    engine_state = tl_platform_memory_halloc(sizeof(TLEngineState));
+    engine_state = tl_platform_memory_halloc(TL_MEMORY_ENGINE_STATE, sizeof(TLEngineState));
     engine_state->running = false;
     engine_state->paused = false;
     
@@ -65,55 +65,9 @@ TLAPI b8 tl_engine_run(void) {
     TLDPUSH;
     u32 fps = 0;
     
-    TLUlid* entity;
-    {
-        entity = tl_ecs_entity_create();
-        tl_ecs_entity_attach(entity, TLNameComponentID);
-        TLNameComponent* nc = (TLNameComponent*) tl_ecs_entity_component(entity, TLNameComponentID);
-        nc->name = "My Component";
-    } 
     
     TLTimer* timer = tl_chrono_timer_create();
     tl_chrono_timer_start(timer);
-    
-    {
-        TLNameComponent* nc = (TLNameComponent*) tl_ecs_entity_component(entity, TLNameComponentID);
-        TLINFO("TLNameComponent->name = %s", nc->name);
-    }
-
-    TLShaderProgram* shader = NULL;
-    {
-        const char* paths[] = { "/shader/hello.vert", "/shader/hello.frag" };
-        shader = tl_resource_shader_program("hello-triangle", 2, paths);
-        if (shader == NULL) { TLDERV("Failed to create TLShaderProgram", false); }
-    }
-
-    TLGeometry* geometry = NULL;
-    {
-        TLGeometryBuffer gbuffer = { 0 };
-        gbuffer.name = "aPos";
-        gbuffer.type = TL_BUFFER_TYPE_FLOAT3;
-
-        TLGeometryCreateInfo gspec = { 0 };
-        gspec.mode = TL_GEOMETRY_MODE_TRIANGLES;
-        gspec.buffers_length = 1;
-        gspec.buffers = &gbuffer;
-
-        geometry = tl_graphics_geometry_create(&gspec);
-        u32 indices[] = {
-            0, 1, 3,   // first triangle
-            1, 2, 3    // second triangle
-        };
-        tl_graphics_geometry_elements(geometry, TLARRLENGTH(indices, u32), indices);
-        
-        f32 vertices[] = {
-            0.5f,  0.5f, 0.0f,  // right top
-            0.5f, -0.5f, 0.0f,  // right bottom 
-            -0.5f, -0.5f, 0.0f,  // left bottom 
-            -0.5f,  0.5f, 0.0f   // left top
-        };
-        tl_graphics_geometry_vertices(geometry, TLARRLENGTH(vertices, f32), vertices);
-    }
 
     // Pre update so the window dont blink upon the first update    
     tl_graphics_update();
@@ -132,9 +86,6 @@ TLAPI b8 tl_engine_run(void) {
             }
 
             tl_graphics_clear();
-            tl_graphics_shader_bind(shader);
-            tl_graphics_geometry_bind(geometry);
-            tl_graphics_draw(geometry);
         }
 
         tl_input_update();
@@ -151,9 +102,6 @@ TLAPI b8 tl_engine_run(void) {
     tl_platform_window_hide();
     tl_chrono_timer_destroy(timer);
     
-    tl_graphics_shader_destroy(shader);
-    tl_graphics_geometry_destroy(geometry);
-    tl_ecs_entity_destroy(entity);
     
     TLDRV(true);
 }
@@ -161,7 +109,6 @@ TLAPI b8 tl_engine_run(void) {
 TLAPI b8 tl_engine_terminate(void) {
     TLDPUSH;
 
-    tl_memory_free(TL_MEMORY_RESOURCE, tl_string_length(engine_state->rootfs), (void*) engine_state->rootfs);
 
     if (!tl_graphics_terminate()) { TLDERV("Failed to terminate: Graphics Manager", false); }
 
@@ -173,6 +120,9 @@ TLAPI b8 tl_engine_terminate(void) {
     if (!tl_messaging_terminate()) { TLDERV("Failed to terminate: Messaging Manager", false); }
     if (!tl_memory_terminate()) { TLDERV("Failed to terminate: Memory Manager", false); }
     if (!tl_diagnostic_terminate()) { TLERROR("Failed to terminate: Diagnostics"); return false; }
+    
+    tl_memory_free((void*)engine_state->rootfs);
+    tl_memory_free((void*)engine_state);
     if (!tl_platform_terminate()) { TLERROR("Failed to terminate: Platform Abstraction"); return false; }
 
     return true;

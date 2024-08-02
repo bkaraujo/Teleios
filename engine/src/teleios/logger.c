@@ -1,5 +1,5 @@
 #include "teleios/teleios.h"
-#include "teleios/platform.h"
+#include "teleios/runtime/platform.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,7 +15,7 @@ TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenum
     // 1 - Allocate 3k stack memory for the formatted user message
     // 2 - Parse the message into the allocated memory
     // =================================================================
-    void* user_message = tl_platform_memory_salloc(USER_BUFFERSIZE);
+    void* user_message = tl_platform_memory_salloc(TL_MEMORY_ENGINE_LOGGER, USER_BUFFERSIZE);
     tl_platform_memory_set(user_message, USER_BUFFERSIZE, 0);
 
     va_list ap;
@@ -30,7 +30,7 @@ TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenum
     TLCalendar calendar;
     tl_chrono_calendar_get(&calendar);
 
-    void* logger_message = tl_platform_memory_salloc(SYS_BUFFERSIZE);
+    void* logger_message = tl_platform_memory_salloc(TL_MEMORY_ENGINE_LOGGER, SYS_BUFFERSIZE);
     tl_platform_memory_set(logger_message, SYS_BUFFERSIZE, 0);
     sprintf_s(logger_message, SYS_BUFFERSIZE, format, 
         calendar.year, calendar.month, calendar.day,

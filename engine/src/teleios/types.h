@@ -118,6 +118,13 @@ typedef int                 b32;
 typedef bool                b8;
 
 typedef struct TLUlid TLUlid;
+typedef struct {
+    f32 left;
+    f32 right;
+    f32 top;
+    f32 bottom;
+} TLRectangle;
+
 // ############################################################################
 //
 //                               BASIC MACROS
@@ -198,6 +205,9 @@ typedef union {
 // 
 // ############################################################################
 typedef enum {
+    TL_MEMORY_ENGINE_STATE,
+    TL_MEMORY_ENGINE_STACK,
+    TL_MEMORY_ENGINE_LOGGER,
     TL_MEMORY_ULID,
     TL_MEMORY_TIMER,
     TL_MEMORY_CONTAINER_LIST,
@@ -254,7 +264,7 @@ typedef struct {
     const char* function;
     const char* filename;
     u32 linenumber;
-} TLDiagnostic;
+} TLStack;
 // ############################################################################
 //
 //                                AUDIO TYPES
@@ -278,6 +288,7 @@ typedef struct {
 //                                GRAPHICS TYPES
 // 
 // ############################################################################
+
 typedef enum {
     TL_BUFFER_TYPE_MARIX22,
     TL_BUFFER_TYPE_MARIX23,
@@ -436,22 +447,39 @@ typedef struct {
 
 typedef struct {
     u32 handle;
-    TLImage* image;
     u8 mipmap;
-    u64 size;
+    TLTextureTarget target;
     TLTextureWrapMode wrap_s;
     TLTextureWrapMode wrap_t;
     TLTextureFilterMode filter_min;
     TLTextureFilterMode filter_mag;
+    TLImage* image;
+
+    u32 width;
+    u32 height;
+    u32 storage_format;
 } TLTexture;
 
 typedef struct {
     TLTexture* texture;
     const char* path;
-    u32 image_format;
-    u32 storage_format;
     TLBufferType type;
 } TLTextureLoadInfo;
+
+typedef struct {
+    TLTexture* texture;
+    u32 sprites;
+    u32 width;
+    u32 height;
+    u32 space;
+} TLSpriteAtlas;
+
+typedef struct {
+    TLTexture* texture;
+    u32 width;
+    u32 height;
+    TLRectangle rectangle;
+} TLSprite;
 // ############################################################################
 //
 //                               GLM TYPES

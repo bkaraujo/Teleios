@@ -40,7 +40,7 @@ static void tl_ecs_component_dealocator(u16 type, void* component) {
 
     switch (type) {
         case TLNameComponentID: {
-            tl_memory_free(TL_MEMORY_ECS_COMPONENT, sizeof(TLNameComponent), component);
+            tl_memory_free(component);
         } break;
     }
 

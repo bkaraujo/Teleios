@@ -44,7 +44,7 @@ static void tl_graphics_geometry_elements(TLGeometry* geometry, TLBufferType typ
 
     // Expand the buffer to acomodate the elements
     if (lenght > geometry->ebo_length || geometry->ebo_type != type) {
-        TLTRACE("TLGeometry[vao %d] Expanding EBO from %lu to %lu bytes", geometry->vao, geometry->ebo_length * bytes, size);
+        TLTRACE("TLGeometry [vao %d] Expanding EBO from %lu to %lu bytes", geometry->vao, geometry->ebo_length * bytes, size);
         if (geometry->ebo != GL_NONE) { glDeleteBuffers(1, &geometry->ebo); }
         glCreateBuffers(1, &geometry->ebo);
         glVertexArrayElementBuffer(geometry->vao, geometry->ebo);
@@ -116,7 +116,7 @@ void tl_graphics_geometry_destroy(TLGeometry* geometry) {
     if (geometry->ebo != GL_NONE) glDeleteBuffers(1, &geometry->ebo);
     if (geometry->vbo != GL_NONE) glDeleteBuffers(1, &geometry->vbo);
     if (geometry->vao != GL_NONE) glDeleteVertexArrays(1, &geometry->vao);
-    tl_memory_free(TL_MEMORY_GRAPHICS_GEOMETRY, sizeof(TLGeometry), geometry);
+    tl_memory_free(geometry);
 
 	TLDRE;
 }

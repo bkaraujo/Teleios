@@ -1,79 +1,24 @@
 #include "teleios/teleios.h"
-#include "teleios/platform.h"
-
-typedef struct {
-    u64 allocated;
-    u64 of_type_size[TL_MEMORY_MAXIMUM];
-    u64 of_type_count[TL_MEMORY_MAXIMUM];
-} TLMemoryRegistry;
-
-static TLMemoryRegistry registry;
-
-static const char* tl_memory_label(TLMemoryType type) {
-    switch (type) {
-        case TL_MEMORY_ULID: return "TL_MEMORY_ULID";
-        case TL_MEMORY_TIMER: return "TL_MEMORY_TIMER";
-        case TL_MEMORY_STRING: return "TL_MEMORY_STRING";
-        
-        case TL_MEMORY_AUDIO: return "TL_MEMORY_AUDIO";
-        
-case TL_MEMORY_CONTAINER_MAP: return "TL_MEMORY_CONTAINER_MAP";
-        case TL_MEMORY_CONTAINER_MAP_ENTRY : return "TL_MEMORY_CONTAINER_MAP_ENTRY";
-        case TL_MEMORY_CONTAINER_LIST: return "TL_MEMORY_CONTAINER_LIST";
-        case TL_MEMORY_CONTAINER_LIST_ENTRY: return "TL_MEMORY_CONTAINER_LIST_ENTRY";
-        
-
-        case TL_MEMORY_GRAPHICS_IMAGE: return "TL_MEMORY_GRAPHICS_IMAGE";
-        case TL_MEMORY_GRAPHICS_SHADER: return "TL_MEMORY_GRAPHICS_SHADER";
-        case TL_MEMORY_GRAPHICS_TEXTURE: return "TL_MEMORY_GRAPHICS_TEXTURE";
-        case TL_MEMORY_GRAPHICS_GEOMETRY: return "TL_MEMORY_GRAPHICS_GEOMETRY";
-
-        case TL_MEMORY_RESOURCE: return "TL_MEMORY_RESOURCE";
-        case TL_MEMORY_FILESYSTEM: return "TL_MEMORY_FILESYSTEM";
-        
-        case TL_MEMORY_ECS_ENTITY: return "TL_MEMORY_ECS_ENTITY";
-        case TL_MEMORY_ECS_COMPONENT: return "TL_MEMORY_ECS_COMPONENT";
-        
-        default: return "????";
-    }
-}
+#include "teleios/runtime/platform.h"
 
 b8 tl_memory_initialize(void) {
-    TLDPUSH;
-
-    tl_platform_memory_set((void*) &registry, sizeof(TLMemoryRegistry), 0);
-
-    TLDRV(true);
+    return true;
 }
 
 void* tl_memory_alloc(TLMemoryType type, u64 size) {
     TLDPUSH;
     
-    void* block = tl_platform_memory_halloc(size);
+    void* block = tl_platform_memory_halloc(type, size);
     if (block == NULL) TLFATAL("Failed to allocate %llu bytes", size);
-
-    registry.allocated += size;
-    registry.of_type_size[type] += size;
-    registry.of_type_count[type]++;
 
     TLDRV(block);
 }
 
-void tl_memory_free(TLMemoryType type, u64 size, void* pointer) {
+void tl_memory_free(void* pointer) {
     TLDPUSH;
 
     if (pointer == NULL) TLFATAL("pointer is null");
     tl_platform_memory_hfree(pointer);
-
-#if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
-    if (registry.of_type_count[type] == 0) {
-        TLFATAL("%s Underflow", tl_memory_label(type));
-    }
-#endif
-
-    registry.allocated -= size;
-    registry.of_type_size[type] -= size;
-    registry.of_type_count[type]--;
 
     TLDRE;    
 }
@@ -108,15 +53,5 @@ void tl_memory_set(void* pointer, u64 size, i32 value) {
 }
 
 b8 tl_memory_terminate(void) {
-    TLDPUSH;
-
-    if (registry.allocated != 0) {
-        TLERROR("Memory leaked");
-        for (int i = 0; i < TL_MEMORY_MAXIMUM; ++i) {
-            if (registry.of_type_size[i] == 0) continue;
-            TLERROR("%-24s [%-2d]: %llu", tl_memory_label(i), registry.of_type_count[i], registry.of_type_size[i]);
-        }
-    }
-    
-    TLDRV(true);
+    return true;
 }

@@ -28,7 +28,7 @@ void tl_audio_buffer_destroy(TLAudioBuffer* buffer) {
 
     if (buffer->path != NULL) tl_string_free(buffer->path);
     if (alIsBuffer(buffer->handle)) alDeleteBuffers(1, &buffer->handle);
-    tl_memory_free(TL_MEMORY_AUDIO, sizeof(TLAudioBuffer), (void*) buffer);
+    tl_memory_free((void*) buffer);
 
     TLDRE;
 }
@@ -115,7 +115,7 @@ void tl_audio_source_destroy(TLAudioSource* source) {
     
     if (source == NULL) TLDWRE("TLAudioSource is NULL");
     if (alIsSource(source->handle)) alDeleteSources(1, &source->handle);
-    tl_memory_free(TL_MEMORY_AUDIO, sizeof(TLAudioSource), (void*) source);
+    tl_memory_free((void*) source);
 
     TLDRE;
 }

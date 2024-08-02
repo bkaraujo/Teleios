@@ -70,7 +70,7 @@ TLShaderSource* tl_resource_shader_source(const char* path) {
     if (source->stage == U32MAX && tl_string_end_with(source->name, ".frag")) source->stage = TL_SHADER_STAGE_FRAGMENT;
     if (source->stage == U32MAX) {
         tl_filesystem_close(file);
-        tl_memory_free(TL_MEMORY_GRAPHICS_SHADER, sizeof(TLShaderSource), source);
+        tl_memory_free(source);
         TLDRV(NULL);
     }
 
@@ -96,7 +96,7 @@ TLShaderProgram* tl_resource_shader_program(const char* name, u8 length, const c
     for (u8 i = 0; i < length ; ++i) {
         sources[i] = tl_resource_shader_source(path[i]);
         if (sources[i] == NULL) {
-            tl_memory_free(TL_MEMORY_GRAPHICS_SHADER, length * sizeof(TLShaderSource), sources);
+            tl_memory_free((void*)sources);
             TLWARN("Failed to read shader source %d", i);
             TLDRV(NULL);
         }
@@ -111,13 +111,13 @@ TLShaderProgram* tl_resource_shader_program(const char* name, u8 length, const c
     // ###############################################################################################
     TLShaderProgram* shader = tl_graphics_shader_create(&shader_spec);    
     for (u8 i = 0; i < length ; ++i) {
-        tl_memory_free(TL_MEMORY_GRAPHICS_SHADER, sources[i]->size, (void*)sources[i]->script);
-        tl_memory_free(TL_MEMORY_GRAPHICS_SHADER, sizeof(TLShaderSource), (void*)sources[i]);
+        tl_memory_free((void*)sources[i]->script);
+        tl_memory_free((void*)sources[i]);
     }
     // ###############################################################################################
     // Release TLShaderSource array and return
     // ###############################################################################################
-    tl_memory_free(TL_MEMORY_GRAPHICS_SHADER, length * sizeof(TLShaderSource), sources);
+    tl_memory_free((void*)sources);
     if (shader == NULL) TLDERV("Failed to create shader program", NULL);
     TLDRV(shader);
 }

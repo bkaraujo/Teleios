@@ -3,11 +3,11 @@
 #include <Windows.h>
 
 #include "teleios/teleios.h"
-#include "teleios/platform.h"
 #include "teleios/messagingcodes.h"
 #include "glad/glad.h"
 #include "glad/wgl.h"
 #include "teleios/graphics_helpers.h"
+#include "teleios/runtime/platform.h"
 
 TLGraphicsState state;
 

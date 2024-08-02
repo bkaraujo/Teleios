@@ -14,6 +14,7 @@ typedef struct {
     const char* name;
 } TLNameComponent;
 
+
 TLUlid* tl_ecs_entity_create(void);
 b8 tl_ecs_entity_exists(TLUlid* entity);
 void tl_ecs_entity_attach(TLUlid* entity, u16 type);

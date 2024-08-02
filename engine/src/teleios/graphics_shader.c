@@ -156,7 +156,7 @@ void tl_graphics_shader_destroy(TLShaderProgram* program) {
     if (program == NULL) TLDWRE("TLShaderProgram is NULL");
 
     glDeleteProgram(program->handle);
-    tl_memory_free(TL_MEMORY_GRAPHICS_SHADER, sizeof(TLShaderProgram), program);
+    tl_memory_free(program);
 
 	TLDRE;
 }

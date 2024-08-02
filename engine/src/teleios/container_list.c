@@ -49,7 +49,7 @@ void tl_list_rem(TLList* list, void* payload) {
         }
         
         list->length--;
-        tl_memory_free(TL_MEMORY_CONTAINER_LIST_ENTRY, sizeof(TLListNode), node);
+        tl_memory_free(node);
 
         TLDRE;
     }
@@ -66,7 +66,7 @@ void tl_list_rem(TLList* list, void* payload) {
         }
         
         list->length--;
-        tl_memory_free(TL_MEMORY_CONTAINER_LIST_ENTRY, sizeof(TLListNode), node);
+        tl_memory_free(node);
 
         TLDRE;
     }
@@ -84,7 +84,7 @@ void tl_list_rem(TLList* list, void* payload) {
                 list->tail = NULL;
             }
 
-            tl_memory_free(TL_MEMORY_CONTAINER_LIST_ENTRY, sizeof(TLListNode), node);
+            tl_memory_free(node);
             TLDRE;
         }
 
@@ -105,12 +105,12 @@ void  tl_list_destroy(TLList* list, b8(*purger)(void*)) {
         while (node != NULL) {
             TLListNode* next = node->next;
             if (node->payload != NULL) purger(node->payload);
-            tl_memory_free(TL_MEMORY_CONTAINER_LIST_ENTRY, sizeof(TLListNode), node);
+            tl_memory_free(node);
             node = next;
         }
     }
  
-    tl_memory_free(TL_MEMORY_CONTAINER_LIST, sizeof(TLList), list);
+    tl_memory_free(list);
     TLDRE;
 }
 

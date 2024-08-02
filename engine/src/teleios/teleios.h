@@ -1,6 +1,11 @@
 #ifndef TELEIOS
 #define TELEIOS
 
+#include "teleios/runtime/core.h"
+#include "teleios/runtime/resource.h"
+#include "teleios/runtime/function.h"
+#include "teleios/runtime/tools.h"
+
 // ==================================================
 // Core APIs
 // ==================================================
@@ -19,7 +24,6 @@
 #include "teleios/memory.h"
 #include "teleios/resource.h"
 #include "teleios/string.h"
-#include "teleios/ulid.h"
 // ==================================================
 // IO APIs
 // ==================================================

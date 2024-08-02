@@ -35,6 +35,14 @@ TLOVERLOAD void tl_graphics_texture_bind(TLTexture* texture, u8 slot);
 void tl_graphics_texture_load(TLTextureLoadInfo* info);
 // #####################################################################################################
 //
+//                                           S P R I T E
+//
+// #####################################################################################################
+TLSpriteAtlas* tl_graphics_sprite_atlas(TLTexture* texture, u32 sprites, u32 width, u32 height, u32 space);
+TLSprite* tl_graphics_sprite(TLSpriteAtlas* atlas, u32 index);
+
+// #####################################################################################################
+//
 //                                           R E N D E R E R
 //
 // #####################################################################################################

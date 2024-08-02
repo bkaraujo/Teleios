@@ -51,6 +51,7 @@ TLTexture* tl_graphics_texture_create(TLTextureCreateInfo* info) {
     glTextureParameteri(texture->handle, GL_TEXTURE_MIN_FILTER, tl_parse_texture_filter_mode(info->filter_min));
     glTextureParameteri(texture->handle, GL_TEXTURE_MAG_FILTER, tl_parse_texture_filter_mode(info->filter_mag));
 
+    texture->target = info->target;
     texture->wrap_s = info->wrap_s;
     texture->wrap_t = info->wrap_t;
     texture->filter_min = info->filter_min;
@@ -63,17 +64,38 @@ TLTexture* tl_graphics_texture_create(TLTextureCreateInfo* info) {
 void tl_graphics_texture_load(TLTextureLoadInfo* info) {
     TLDPUSH;
     TLTexture* texture = info->texture;
-
     texture->image = tl_resource_image(info->path);
     if (texture->image == NULL) TLDWRE("Failed to load texture image");
 
-    if (texture->size != texture->image->size) {
-        // TODO: When should the glTextureStorage2D be recreated
-        texture->size = texture->image->size;
-        glTextureStorage2D(texture->handle, texture->mipmap, info->storage_format, texture->image->width, texture->image->height);
+    u32 storage_format = 0;
+    u32 image_format = 0;
+    switch (texture->image->channels) {
+        case 1: { storage_format = GL_RED   ; image_format = GL_RED ; } break;
+        case 2: { storage_format = GL_RG8   ; image_format = GL_RG  ; } break;
+        case 3: { storage_format = GL_RGB8  ; image_format = GL_RGB ; } break;
+        case 4: { storage_format = GL_RGBA8 ; image_format = GL_RGBA; } break;
     }
 
-    glTextureSubImage2D(texture->handle, 0, 0, 0, texture->image->width, texture->image->height, info->image_format, info->type, texture->image->payload);
+    switch (texture->target) {
+        case TL_TEXTURE_2D: {
+            if (texture->storage_format == 0 || texture->width != texture->image->width || texture->height != texture->image->height) {
+                texture->width = texture->image->width;
+                texture->height = texture->image->height;
+                texture->storage_format = storage_format;
+                
+                TLTRACE("TLTexture [ %d] Creating storage with %ux%u", texture->handle, texture->width, texture->height);
+                glTextureStorage2D(texture->handle, texture->mipmap, storage_format, texture->image->width, texture->image->height);
+            }
+
+            TLTRACE("TLTexture [ %d] Uploading %s", texture->handle, texture->image->path);
+            glTextureSubImage2D(texture->handle, 0, 0, 0, texture->image->width, texture->image->height, image_format, tl_parse_buffer_type(info->type), texture->image->payload);
+
+        } break;
+        case TL_TEXTURE_3D: {
+            TLFATAL("Unsupported texture target: TL_TEXTURE_3D");
+        } break;
+    }
+
     stbi_image_free(texture->image->payload);
     texture->image->payload = NULL;
     
@@ -108,11 +130,11 @@ void tl_graphics_texture_destroy(TLTexture* texture) {
             stbi_image_free(texture->image->payload);
         }
 
-        tl_memory_free(TL_MEMORY_GRAPHICS_IMAGE, sizeof(TLImage), texture->image);
+        tl_memory_free(texture->image);
         texture->image = NULL;
     }
 
-    tl_memory_free(TL_MEMORY_GRAPHICS_TEXTURE, sizeof(TLTexture), texture);
+    tl_memory_free(texture);
 
     TLDRE;
 }

@@ -61,8 +61,7 @@ const char* tl_string_join(const char* string, const char* appended) {
 void tl_string_free(const char* string) {
     TLDPUSH;
     
-    u64 lentgh = tl_string_length(string);
-    tl_memory_free(TL_MEMORY_STRING, lentgh, (void*)string);
+    tl_memory_free((void*)string);
 
     TLDRE;
 }
