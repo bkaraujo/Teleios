@@ -1,8 +1,8 @@
 #include "teleios/runtime/teleios.h"
-#include "teleios/state.h"
+#include "teleios/runtime/state.h"
 #include "glad/glad.h"
 #include "stb/image.h"
-#include "teleios/graphics_helpers.h"
+#include "teleios/runtime/graphics_helpers.h"
 
 u32 tl_parse_texture_target(TLTextureTarget target) {
     switch (target) {

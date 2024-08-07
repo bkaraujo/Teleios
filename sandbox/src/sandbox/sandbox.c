@@ -1,4 +1,4 @@
-#include "teleios/main.h"
+#include "teleios/runtime/main.h"
 
 static u8 scene;
 

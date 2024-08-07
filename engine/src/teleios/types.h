@@ -19,11 +19,11 @@
 //                               COMPILER MACROS
 // 
 // ############################################################################
-#if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
+// #if defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
 #   define TLASSERT    _Static_assert
-#else
-#   define TLASSERT    
-#endif
+// #else
+// #   define TLASSERT    
+// #endif
 
 #define TLINLINE     __attribute__((always_inline)) inline
 #define TLNOINLINE   __attribute__((noinline))
