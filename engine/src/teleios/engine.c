@@ -23,12 +23,12 @@ static TLMessageChain tl_engine_messaging(const u16 code, const TLMessage* messa
 TLAPI b8 tl_engine_pre_initialize(void) {
     if (!tl_platform_initialize()) { TLDERV("Failed to initialize: Platform Abstraction", false); }
     if (!tl_diagnostic_initialize()) { TLDERV("Failed to initialize: Diagnostics", false); }
+    if (!tl_memory_initialize()) { TLDERV("Failed to initialize: Memory Manager", false); }
 
-    engine_state = tl_platform_memory_halloc(TL_MEMORY_ENGINE_STATE, sizeof(TLEngineState));
+    engine_state = tl_memory_halloc(TL_MEMORY_ENGINE_STATE, sizeof(TLEngineState));
     engine_state->running = false;
     engine_state->paused = false;
     
-    if (!tl_memory_initialize()) { TLDERV("Failed to initialize: Memory Manager", false); }
 
     return true;
 }
