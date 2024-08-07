@@ -11,11 +11,7 @@
 static const char* strings[6] = { "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE" };
 
 TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenumber, const char* message, ...) {
-    // ==================================================================================================================
-    // Allocate BUFFERSIZE bytes into the stack
-    // ==================================================================================================================
-    void* buffer = tl_platform_memory_salloc(TL_MEMORY_ENGINE_LOGGER, BUFFERSIZE);
-    tl_platform_memory_set(buffer, BUFFERSIZE, 0);
+    char buffer[BUFFERSIZE] = {0};
     // ==================================================================================================================
     // Write the fixed line beginning
     // ==================================================================================================================
@@ -39,11 +35,7 @@ TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenum
     // ==================================================================================================================
     sprintf_s(buffer, BUFFERSIZE, "%s\n", buffer);
     tl_platform_console(level, buffer);
-    // ==================================================================================================================
-    // Clear the memory
-    // Exit if its a FATAL
-    // ==================================================================================================================
-    tl_platform_memory_sfree(buffer);
+
     if (level == TL_LOG_LEVEL_FATAL) {
         exit(99);
     }
