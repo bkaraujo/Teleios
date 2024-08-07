@@ -219,7 +219,9 @@ void tl_filesystem_read(TLFile* file) {
     DWORD dwBytesRead = 0;
     file->payload = tl_memory_alloc(TL_MEMORY_FILESYSTEM, file->size);
     ReadFile(file->handle, (void*)file->payload, file->size, &dwBytesRead, 0);
-    if (dwBytesRead != file->size) { TLWARN("Read less bytes then expected: %s", file->path); }
+    if (dwBytesRead != file->size) { 
+        TLWARN("Expected to dead %llu but got %llu: %s", file->size, dwBytesRead, file->path);
+    }
 
     TLDRE;
 }
@@ -229,8 +231,9 @@ void tl_filesystem_close(TLFile* file) {
 
     if (file == NULL) TLDRE;
     if (file->handle != NULL) { CloseHandle(file->handle); }
+    if (file->path != NULL) { tl_string_free(file->path); }
     if (file->payload != NULL) { tl_memory_free((void*)file->payload); }
-    tl_string_free(file->path);
+    
     tl_memory_free(file);
 
     TLDRE;    
