@@ -1,6 +1,6 @@
-#include "teleios/runtime/platform.h"
-#include "teleios/runtime/core.h"
+#include "teleios/platform.h"
 #include "teleios/filesystem.h"
+#include "teleios/chrono.h"
 
 #include <stdlib.h>
 #include <stdio.h>

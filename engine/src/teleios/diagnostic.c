@@ -1,5 +1,5 @@
-#include "teleios/runtime/platform.h"
-#include "teleios/runtime/core.h"
+#include "teleios/teleios.h"
+#include "teleios/platform.h"
 
 static u8 max = 0;
 static u8 used = 0;

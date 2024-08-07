@@ -1,8 +1,7 @@
-#ifndef TELEIOS_RUNTIME_CORE_LOGGER
-#define TELEIOS_RUNTIME_CORE_LOGGER
+#ifndef TELEIOS_CORE_LOGGER
+#define TELEIOS_CORE_LOGGER
 
 #include "teleios/types.h"
-#include "teleios/runtime/core.h"
 
 TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenumber, const char* message, ...);
 
@@ -19,4 +18,4 @@ TLAPI void tl_logger_console(TLLogLevel level, const char* filename, u32 linenum
 #   define TLTRACE(message, ...) 
 #endif // defined(TELEIOS_BUILD_ALPHA) || defined(TELEIOS_BUILD_BETA)
 
-#endif // TELEIOS_RUNTIME_CORE_LOGGER
+#endif // TELEIOS_CORE_LOGGER

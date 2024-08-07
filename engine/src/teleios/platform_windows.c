@@ -1,4 +1,4 @@
-#include "teleios/runtime/platform.h"
+#include "teleios/platform.h"
 
 #ifdef TLPLATFORM_WINDOWS
 #include <Windows.h>

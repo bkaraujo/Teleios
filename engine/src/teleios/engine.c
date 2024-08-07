@@ -2,7 +2,7 @@
 #include "teleios/teleios.h"
 #include "teleios/messagingcodes.h"
 #include "teleios/state.h"
-#include "teleios/runtime/platform.h"
+#include "teleios/platform.h"
 
 TLEngineState* engine_state;
 static u64 frame_overflow = 0;

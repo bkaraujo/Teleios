@@ -1,5 +1,5 @@
 #include "teleios/teleios.h"
-#include "teleios/runtime/platform.h"
+#include "teleios/platform.h"
 
 struct TLUlid { char ulid[27]; };
 

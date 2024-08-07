@@ -1,5 +1,5 @@
 #include "teleios/teleios.h"
-#include "teleios/runtime/platform.h"
+#include "teleios/platform.h"
 
 b8 tl_memory_initialize(void) {
     return true;
